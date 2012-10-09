@@ -1,0 +1,1 @@
+<?php $counter = 0; ?>(<?php foreach ($this->tags as $tag): ?><?php $counter++; echo $tag; ?><?php if (count($this->tags) != $counter): ?>+<?php endif; ?><?php endforeach; ?>)
