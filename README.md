@@ -1,0 +1,4 @@
+tags
+====
+
+Contao tags extension
