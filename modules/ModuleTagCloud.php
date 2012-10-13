@@ -128,7 +128,7 @@ class ModuleTagCloud extends \Module
 		$strParams = '';
 		if ($this->keep_url_params)
 		{
-			$strParams = TagHelper::getSavedURLParams($this->Input);
+			$strParams = TagHelper::getSavedURLParams();
 		}
 		foreach ($this->arrTags as $idx => $tag)
 		{

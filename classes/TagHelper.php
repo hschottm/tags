@@ -63,21 +63,21 @@ class TagHelper extends \Backend
 		}
 	}
 	
-	public static function getSavedURLParams($objInput)
+	public static function getSavedURLParams()
 	{
 		$strParams = '';
 		$arrParams = array();
-		if (strlen($objInput->get('year')))
+		if (strlen(\Input::get('year')))
 		{
-			array_push($arrParams, 'year=' . $objInput->get('year'));
+			array_push($arrParams, 'year=' . \Input::get('year'));
 		}
-		if (strlen($objInput->get('month')))
+		if (strlen(\Input::get('month')))
 		{
-			array_push($arrParams, 'month=' . $objInput->get('month'));
+			array_push($arrParams, 'month=' . \Input::get('month'));
 		}
-		if (strlen($objInput->get('day')))
+		if (strlen(\Input::get('day')))
 		{
-			array_push($arrParams, 'day=' . $objInput->get('day'));
+			array_push($arrParams, 'day=' . \Input::get('day'));
 		}
 		if (count($arrParams))
 		{
