@@ -52,9 +52,10 @@ class NewsTags extends \News
 	 * @param boolean
 	 * @return string
 	 */
+	/* TODO: No longer possible in Contao 3
 	protected function convertRelativeUrls($strContent, $strBase='', $blnHrefOnly=false)
 	{
-		$content = parent::convertRelativeURLs($strContent, $strBase, $blnHrefOnly);
+		$content = \Controller::convertRelativeURLs($strContent, $strBase, $blnHrefOnly);
 		if ($GLOBALS['tags']['showInFeeds'])
 		{
 			$tags = $this->getTagsForTableAndId('tl_news', $this->savedArticleId);
@@ -65,7 +66,7 @@ class NewsTags extends \News
 		}
 		return $content;
 	}
-	
+	*/
 	/**
 	 * Return the link of a news article
 	 * @param object
