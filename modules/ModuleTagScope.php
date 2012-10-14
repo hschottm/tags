@@ -96,7 +96,7 @@ class ModuleTagScope extends \Module
 		$strParams = '';
 		if ($this->keep_url_params)
 		{
-			$strParams = TagHelper::getSavedURLParams();
+			$strParams = \TagHelper::getSavedURLParams($this->Input);
 		}
 		$tagurls = array();
 		foreach ($this->arrTags as $idx => $tag)

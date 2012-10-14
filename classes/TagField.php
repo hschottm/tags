@@ -28,8 +28,6 @@
 
 namespace Contao;
 
-if (!defined('TL_ROOT')) die('You can not access this file directly!');
-
 /**
  * Class TagField
  *
@@ -73,10 +71,15 @@ class TagField extends \TextField
 	 */
 	protected function readTags()
 	{
-		$this->import('Database');
-		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE id = ? AND from_table = ? ORDER BY tag ASC")
-			->execute($this->currentRecord, $this->table)
-			->fetchEach('tag');
+		$arrTags = array();
+		$tags = \TagModel::findByIdAndTable($this->currentRecord, $this->table);
+		if ($tags)
+		{
+			while ($tags->next())
+			{
+				array_push($arrTags, $tags->tag);
+			}
+		}
 		return count($arrTags) ? implode(",", $arrTags) : '';
 	}
 

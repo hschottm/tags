@@ -24,6 +24,9 @@ ClassLoader::addClasses(array
 	'Contao\TagHelper'               => 'system/modules/tags/classes/TagHelper.php',
 	'Contao\TagList'                 => 'system/modules/tags/classes/TagList.php',
 
+	// Models
+	'Contao\TagModel'                => 'system/modules/tags/models/TagModel.php',
+
 	// Modules
 	'Contao\ModuleEventlistTags'     => 'system/modules/tags/modules/ModuleEventlistTags.php',
 	'Contao\ModuleFaqListTags'       => 'system/modules/tags/modules/ModuleFaqListTags.php',

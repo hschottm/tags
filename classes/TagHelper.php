@@ -37,10 +37,17 @@
 
 namespace Contao;
 
-if (!defined('TL_ROOT')) die('You can not access this file directly!');
-
-class TagHelper extends \Backend
+class TagHelper extends \System
 {
+	/**
+	 * Load the database object
+	 */
+	protected function __construct()
+	{
+		parent::__construct();
+		$this->import('Database');
+	}
+
 	/*
 	* Cleanup all tags that are associated to no longer existing TYPOlight objects
 	*/
@@ -63,21 +70,21 @@ class TagHelper extends \Backend
 		}
 	}
 	
-	public static function getSavedURLParams()
+	public static function getSavedURLParams($objInput)
 	{
 		$strParams = '';
 		$arrParams = array();
-		if (strlen(\Input::get('year')))
+		if (strlen($objInput->get('year')))
 		{
-			array_push($arrParams, 'year=' . \Input::get('year'));
+			array_push($arrParams, 'year=' . $objInput->get('year'));
 		}
-		if (strlen(\Input::get('month')))
+		if (strlen($objInput->get('month')))
 		{
-			array_push($arrParams, 'month=' . \Input::get('month'));
+			array_push($arrParams, 'month=' . $objInput->get('month'));
 		}
-		if (strlen(\Input::get('day')))
+		if (strlen($objInput->get('day')))
 		{
-			array_push($arrParams, 'day=' . \Input::get('day'));
+			array_push($arrParams, 'day=' . $objInput->get('day'));
 		}
 		if (count($arrParams))
 		{
