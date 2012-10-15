@@ -140,15 +140,58 @@ class TagHelper extends \System
 			->fetchEach('tag');
 	}
 
-	private function getTagsForTableAndId($table, $id, $url = false)
+	public function sortByRelevance($a, $b)
 	{
-		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND id = ?")
+		if ($a['tagcount'] == $b['tagcount']) 
+		{
+			return 0;
+		}
+		return ($a['tagcount'] < $b['tagcount']) ? 1 : -1;
+	} 
+
+	private function getTagsForTableAndId($table, $id, $url = false, $max_tags = 0, $relevance = 0, $target = 0)
+	{
+		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND id = ? ORDER BY tag ASC")
 			->execute($table, $id)
 			->fetchAllAssoc();
 		$res = false;
-		$strUrl = '';
 		if (count($arrTags))
 		{
+			if ($max_tags > 0)
+			{
+				$arrTags = array_slice($arrTags,0,$max_tags);
+			}
+			$arrTagsWithCount = $this->Database->prepare("SELECT tag, COUNT(tag) as tagcount FROM tl_tag WHERE from_table = ? GROUP BY tag ORDER BY tag ASC")
+				->execute($table)
+				->fetchAllAssoc();
+			$countarray = array();
+			foreach ($arrTagsWithCount as $data)
+			{
+				$countarray[$data['tag']] = $data['tagcount'];
+			}
+			foreach ($arrTags as $idx => $tag)
+			{
+				$arrTags[$idx]['tagcount'] = $countarray[$tag['tag']];
+			}
+			if ($relevance == 1)
+			{
+				usort($arrTags, array($this, 'sortByRelevance'));
+			}
+			if (strlen($target))
+			{
+				$pageArr = array();
+				$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=? OR alias=?")
+					->limit(1)
+					->execute(array($target, $target));
+				$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
+				if (count($pageArr))
+				{
+					foreach ($arrTags as $idx => $tag)
+					{
+						$arrTags[$idx]['url'] = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . $tag['tag']));
+					}
+				}
+			}
 			if ($url)
 			{
 				switch ($table)
@@ -163,14 +206,17 @@ class TagHelper extends \System
 						}
 						else
 						{
-							$strUrl = $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+							foreach ($arrTags as $idx => $tag)
+							{
+								$arrTags[$idx]['url'] = $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+							}
+							$objTemplate->url = $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 						}
 						break;
 				}
 			}
 			$objTemplate = new FrontendTemplate('tags_inserttag');
 			$objTemplate->tags = $arrTags;
-			$objTemplate->url = $strUrl;
 			$res = $objTemplate->parse();
 		}
 		return $res;
@@ -181,10 +227,10 @@ class TagHelper extends \System
 		if ($strTag == 'tags_used')
 		{
 			$headlinetags = array();
-			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			if (strlen(\Input::get('tag')))
+			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
+			if (strlen($this->Input->get('tag')))
 			{
-				$headlinetags = array_merge($headlinetags, array(\Input::get('tag')));
+				$headlinetags = array_merge($headlinetags, array($this->Input->get('tag')));
 				if (count($relatedlist))
 				{
 					$headlinetags = array_merge($headlinetags, $relatedlist);
@@ -198,22 +244,25 @@ class TagHelper extends \System
 			}
 		}
 		$elements = explode('::', $strTag);
+		$max_tags = (count($elements) > 2) ? $elements[2] : 0;
+		$relevance = (count($elements) > 3) ? $elements[3] : 0;
+		$target = (count($elements) > 4) ? $elements[4] : 0;
 		switch ($elements[0])
 		{
 			case 'tags_news':
-				return $this->getTagsForTableAndId('tl_news', $elements[1]);
+				return $this->getTagsForTableAndId('tl_news', $elements[1], false, $max_tags, $relevance, $target);
 				break;
 			case 'tags_event':
-				return $this->getTagsForTableAndId('tl_calendar_events', $elements[1]);
+				return $this->getTagsForTableAndId('tl_calendar_events', $elements[1], false, $max_tags, $relevance, $target);
 				break;
 			case 'tags_article':
-				return $this->getTagsForTableAndId('tl_article', $elements[1]);
+				return $this->getTagsForTableAndId('tl_article', $elements[1], false, $max_tags, $relevance, $target);
 				break;
 			case 'tags_article_url':
 				return $this->getTagsForTableAndId('tl_article', $elements[1], true);
 				break;
 			case 'tags_content':
-				return $this->getTagsForTableAndId('tl_content', $elements[1]);
+				return $this->getTagsForTableAndId('tl_content', $elements[1], false, $max_tags, $relevance, $target);
 				break;
 		}
 		return false;
