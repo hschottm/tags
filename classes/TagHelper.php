@@ -135,7 +135,7 @@ class TagHelper extends \System
 	 */
 	protected function getTags($id)
 	{
-		return $this->Database->prepare("SELECT * FROM tl_tag WHERE id = ? AND from_table = ? ORDER BY tag ASC")
+		return $this->Database->prepare("SELECT tag FROM tl_tag WHERE id = ? AND from_table = ? ORDER BY tag ASC")
 			->execute($id, 'tl_news')
 			->fetchEach('tag');
 	}
