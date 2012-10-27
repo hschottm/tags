@@ -2,7 +2,7 @@
 /**
  * TL_ROOT/system/modules/tags/languages/cs/tl_module.php 
  * 
- * Contao extension: tags 1.7.4 stable 
+ * Contao extension: tags 3.0.0 stable 
  * Czech translation file 
  * 
  * Copyright : &copy; Helmut Schottmüller 
