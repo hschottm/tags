@@ -57,6 +57,121 @@ class ModuleNewsListTags extends \ModuleNewsList
 	}
 
 	/**
+	 * Generate the module
+	 */
+	protected function compileFromParent($arrIds)
+	{
+		$offset = intval($this->skipFirst);
+		$limit = null;
+		$this->Template->articles = array();
+
+		// Maximum number of items
+		if ($this->numberOfItems > 0)
+		{
+			$limit = $this->numberOfItems;
+		}
+
+		// Handle featured news
+		if ($this->news_featured == 'featured')
+		{
+			$blnFeatured = true;
+		}
+		elseif ($this->news_featured == 'unfeatured')
+		{
+			$blnFeatured = false;
+		}
+		else
+		{
+			$blnFeatured = null;
+		}
+
+		// Get the total number of items
+		$intTotal = \TagsNewsModel::countPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured);
+
+		if ($intTotal < 1)
+		{
+			$this->Template->articles = array();
+			return;
+		}
+
+		$total = $intTotal - $offset;
+
+		// Split the results
+		if ($this->perPage > 0 && (!isset($limit) || $this->numberOfItems > $this->perPage))
+		{
+			// Adjust the overall limit
+			if (isset($limit))
+			{
+				$total = min($limit, $total);
+			}
+
+			// Get the current page
+			$id = 'page_n' . $this->id;
+			$page = \Input::get($id) ?: 1;
+
+			// Do not index or cache the page if the page number is outside the range
+			if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
+			{
+				global $objPage;
+				$objPage->noSearch = 1;
+				$objPage->cache = 0;
+
+				// Send a 404 header
+				header('HTTP/1.1 404 Not Found');
+				return;
+			}
+
+			// Set limit and offset
+			$limit = $this->perPage;
+			$offset += (max($page, 1) - 1) * $this->perPage;
+
+			// Overall limit
+			if ($offset + $limit > $total)
+			{
+				$limit = $total - $offset;
+			}
+
+			// Add the pagination menu
+			$objPagination = new \Pagination($total, $this->perPage, 7, $id);
+			$this->Template->pagination = $objPagination->generate("\n  ");
+		}
+
+		// Get the items
+		if (isset($limit))
+		{
+			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, $limit, $offset);
+		}
+		else
+		{
+			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, 0, $offset);
+		}
+
+		// No items found
+		if ($objArticles === null)
+		{
+			$this->Template = new \FrontendTemplate('mod_newsarchive_empty');
+		}
+		else
+		{
+			$this->Template->articles = $this->parseArticles($objArticles);
+		}
+
+		// new code for tags
+		$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
+		$headlinetags = array();
+		if (strlen(\Input::get('tag')))
+		{
+			$headlinetags = array_merge($headlinetags, array(\Input::get('tag')));
+			if (count($relatedlist))
+			{
+				$headlinetags = array_merge($headlinetags, $relatedlist);
+			}
+		}
+		$this->Template->tags_total_found = $intTotal;
+		$this->Template->tags_activetags = $headlinetags;
+	}
+
+	/**
 	 * Generate module
 	 */
 	protected function compile()
@@ -97,90 +212,13 @@ class ModuleNewsListTags extends \ModuleNewsList
 					}
 				}
 			}
-
-			$time = time();
-			$skipFirst = intval($this->skipFirst);
-			$offset = 0;
-			$limit = null;
-
-			// Maximum number of items
-			if ($this->news_numberOfItems > 0)
-			{
-				$limit = $this->news_numberOfItems;
-			}
-
-			$total = 0;
 			if (count($tagids))
 			{
-				// Get the total number of items
-				$objTotal = $this->Database->execute("SELECT COUNT(*) total FROM tl_news WHERE pid IN(" . implode(',', array_map('intval', $this->news_archives)) . ")" . (($this->news_featured == 'featured') ? " AND featured=1" : (($this->news_featured == 'unfeatured') ? " AND featured=''" : "")) ." AND id IN (" . join($tagids, ",") . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) AND published=1" : "") . " ORDER BY date DESC");
-				$total = $objTotal->total - $skipFirst;
-
-				// Split the results
-				if ($this->perPage > 0 && (!isset($limit) || $this->news_numberOfItems > $this->perPage))
-				{
-					// Adjust the overall limit
-					if (isset($limit))
-					{
-						$total = min($limit, $total);
-					}
-
-					$page = \Input::get('page') ? \Input::get('page') : 1;
-
-					// Check the maximum page number
-					if ($page > ($total/$this->perPage))
-					{
-						$page = ceil($total/$this->perPage);
-					}
-
-					// Limit and offset
-					$limit = $this->perPage;
-					$offset = ($page - 1) * $this->perPage;
-
-					// Overall limit
-					if ($offset + $limit > $total)
-					{
-						$limit = $total - $offset;
-					}
-
-					// Add the pagination menu
-					$objPagination = new Pagination($total, $this->perPage);
-					$this->Template->pagination = $objPagination->generate("\n  ");
-				}
-
-				$objArticlesCount = $this->Database->execute("SELECT author FROM tl_news WHERE pid IN(" . implode(',', array_map('intval', $this->news_archives)) . ")" . (($this->news_featured == 'featured') ? " AND featured=1" : (($this->news_featured == 'unfeatured') ? " AND featured=''" : "")) ." AND id IN (" . join($tagids, ",") . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) AND published=1" : "") . " ORDER BY date DESC");
-				$totalfound = $objArticlesCount->numRows;
-				$objArticles = $this->Database->prepare("SELECT *, author AS authorId, (SELECT title FROM tl_news_archive WHERE tl_news_archive.id=tl_news.pid) AS archive, (SELECT jumpTo FROM tl_news_archive WHERE tl_news_archive.id=tl_news.pid) AS parentJumpTo, (SELECT name FROM tl_user WHERE id=author) AS author FROM tl_news WHERE pid IN(" . implode(',', array_map('intval', $this->news_archives)) . ")" . (($this->news_featured == 'featured') ? " AND featured=1" : (($this->news_featured == 'unfeatured') ? " AND featured=''" : "")) ." AND id IN (" . join($tagids, ",") . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) AND published=1" : "") . " ORDER BY date DESC");
-
-				// Limit the result
-				if (isset($limit))
-				{
-					$objArticles->limit($limit, $offset + $skipFirst);
-				}
-				elseif ($skipFirst > 0 && $total > 0)
-				{
-					$objArticles->limit($total, $skipFirst);
-				}
-
-				$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-				$headlinetags = array();
-				if (strlen(\Input::get('tag')))
-				{
-					$headlinetags = array_merge($headlinetags, array(\Input::get('tag')));
-					if (count($relatedlist))
-					{
-						$headlinetags = array_merge($headlinetags, $relatedlist);
-					}
-				}
-				$this->Template->articles = $this->parseArticles($objArticles->execute());
-				$this->Template->archives = $this->news_archives;
-				$this->Template->tags_total_found = $totalfound;
-				$this->Template->tags_activetags = $headlinetags;
+				$this->compileFromParent($tagids);
 			}
 			else
 			{
-				$this->Template->articles = array();
-				$this->Template->archives = $this->news_archives;
+				parent::compile();
 			}
 		}
 		else

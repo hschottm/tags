@@ -37,7 +37,7 @@
 
 namespace Contao;
 
-class TagHelper extends \System
+class TagHelper extends \Backend
 {
 	/**
 	 * Load the database object

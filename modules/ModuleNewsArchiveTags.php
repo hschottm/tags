@@ -67,14 +67,153 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 	}
 
 	/**
+	 * Generate the module
+	 */
+	protected function compileFromParent($arrIds)
+	{
+		global $objPage;
+
+		$limit = null;
+		$offset = 0;
+		$intBegin = 0;
+		$intEnd = 0;
+
+		// Jump to the current period
+		if (!isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']) && $this->news_jumpToCurrent != 'all_items')
+		{
+			switch ($this->news_format)
+			{
+				case 'news_year':
+					\Input::setGet('year', date('Y'));
+					break;
+
+				default:
+				case 'news_month':
+					\Input::setGet('month', date('Ym'));
+					break;
+
+				case 'news_day':
+					\Input::setGet('day', date('Ymd'));
+					break;
+			}
+		}
+
+		// Display year
+		if (\Input::get('year'))
+		{
+			$strDate = \Input::get('year');
+			$objDate = new \Date($strDate, 'Y');
+			$intBegin = $objDate->yearBegin;
+			$intEnd = $objDate->yearEnd;
+			$this->headline .= ' ' . date('Y', $objDate->tstamp);
+		}
+		// Display month
+		elseif (\Input::get('month'))
+		{
+			$strDate = \Input::get('month');
+			$objDate = new \Date($strDate, 'Ym');
+			$intBegin = $objDate->monthBegin;
+			$intEnd = $objDate->monthEnd;
+			$this->headline .= ' ' . $this->parseDate('F Y', $objDate->tstamp);
+		}
+		// Display day
+		elseif (\Input::get('day'))
+		{
+			$strDate = \Input::get('day');
+			$objDate = new \Date($strDate, 'Ymd');
+			$intBegin = $objDate->dayBegin;
+			$intEnd = $objDate->dayEnd;
+			$this->headline .= ' ' . $this->parseDate($objPage->dateFormat, $objDate->tstamp);
+		}
+		// Show all items
+		elseif ($this->news_jumpToCurrent == 'all_items')
+		{
+			$intBegin = 0;
+			$intEnd = time();
+		}
+
+		$this->Template->articles = array();
+
+		// Split the result
+		if ($this->perPage > 0)
+		{
+			// Get the total number of items
+			$intTotal = \NewsModel::countPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $arrIds);
+
+			if ($intTotal > 0)
+			{
+				$total = $intTotal;
+
+				// Get the current page
+				$id = 'page_a' . $this->id;
+				$page = \Input::get($id) ?: 1;
+
+				// Do not index or cache the page if the page number is outside the range
+				if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
+				{
+					global $objPage;
+					$objPage->noSearch = 1;
+					$objPage->cache = 0;
+
+					// Send a 404 header
+					header('HTTP/1.1 404 Not Found');
+					return;
+				}
+
+				// Set limit and offset
+				$limit = $this->perPage;
+				$offset = (max($page, 1) - 1) * $this->perPage;
+
+				// Add the pagination menu
+				$objPagination = new \Pagination($total, $this->perPage, 7, $id);
+				$this->Template->pagination = $objPagination->generate("\n  ");
+			}
+		}
+
+		// Get the news items
+		if (isset($limit))
+		{
+			$objArticles = \NewsModel::findPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $tagids, $limit, $offset);
+		}
+		else
+		{
+			$objArticles = \NewsModel::findPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $tagids);
+		}
+
+		// No items found
+		if ($objArticles === null)
+		{
+			$this->Template = new \FrontendTemplate('mod_newsarchive_empty');
+		}
+		else
+		{
+			$this->Template->articles = $this->parseArticles($objArticles);
+		}
+
+		$headlinetags = array();
+
+		if (strlen(\Input::get('tag')))
+		{
+			$headlinetags = array_merge($headlinetags, array(\Input::get('tag')));
+			if (count($relatedlist))
+			{
+				$headlinetags = array_merge($headlinetags, $relatedlist);
+			}
+		}
+		$this->Template->tags_total_found = $total;
+		$this->Template->tags_activetags = $headlinetags;
+		$this->Template->headline = trim($this->headline);
+		$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
+		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['empty'];
+	}
+	
+	/**
 	 * Generate module
 	 */
 	protected function compile()
 	{
 		if ((strlen(\Input::get('tag')) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
-			$limit = null;
-			$offset = 0;
 			$tagids = array();
 			
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
@@ -111,130 +250,11 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 			}
 			if (count($tagids))
 			{
-				$limit = null;
-				$offset = 0;
-
-				// Jump to the current period
-				if (!isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']) && $this->news_jumpToCurrent != 'all_items')
-				{
-					switch ($this->news_format)
-					{
-						case 'news_year':
-							\Input::setGet('year', date('Y'));
-							break;
-
-						default:
-						case 'news_month':
-							\Input::setGet('month', date('Ym'));
-							break;
-
-						case 'news_day':
-							\Input::setGet('day', date('Ymd'));
-							break;
-					}
-				}
-
-				// Display year
-				if (\Input::get('year'))
-				{
-					$strDate = \Input::get('year');
-					$objDate = new Date($strDate, 'Y');
-					$intBegin = $objDate->yearBegin;
-					$intEnd = $objDate->yearEnd;
-					$this->headline .= ' ' . date('Y', $objDate->tstamp);
-				}
-
-				// Display month
-				elseif (\Input::get('month'))
-				{
-					$strDate = \Input::get('month');
-					$objDate = new Date($strDate, 'Ym');
-					$intBegin = $objDate->monthBegin;
-					$intEnd = $objDate->monthEnd;
-					$this->headline .= ' ' . $this->parseDate('F Y', $objDate->tstamp);
-				}
-
-				// Display day
-				elseif (\Input::get('day'))
-				{
-					$strDate = \Input::get('day');
-					$objDate = new Date($strDate, 'Ymd');
-					$intBegin = $objDate->dayBegin;
-					$intEnd = $objDate->dayEnd;
-					$this->headline .= ' ' . $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $objDate->tstamp);
-				}
-
-				// Show all items 
-				elseif ($this->news_jumpToCurrent == 'all_items')
-				{
-					$intBegin = 0;
-					$intEnd = time();
-				}
-
-				$time = time();
-
-				// Split result
-				if ($this->perPage > 0)
-				{
-					// Get the total number of items
-					$objTotal = $this->Database->prepare("SELECT COUNT(*) AS total FROM tl_news WHERE pid IN(" . implode(',', array_map('intval', $this->news_archives)) . ") AND date>=? AND date<=? AND id IN (" . join($tagids, ",") . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) AND published=1" : "") . " ORDER BY date DESC")
-											   ->execute($intBegin, $intEnd);
-
-					$total = $objTotal->total;
-
-					// Get the current page
-					$page = \Input::get('page') ? \Input::get('page') : 1;
-
-					if ($page > ($total/$this->perPage))
-					{
-						$page = ceil($total/$this->perPage);
-					}
-
-					// Set limit and offset
-					$limit = $this->perPage;
-					$offset = ((($page > 1) ? $page : 1) - 1) * $this->perPage;
-
-					// Add the pagination menu
-					$objPagination = new Pagination($total, $this->perPage);
-					$this->Template->pagination = $objPagination->generate("\n  ");
-				}
-
-				$objArticlesStmt = $this->Database->prepare("SELECT *, author AS authorId, (SELECT title FROM tl_news_archive WHERE tl_news_archive.id=tl_news.pid) AS archive, (SELECT jumpTo FROM tl_news_archive WHERE tl_news_archive.id=tl_news.pid) AS parentJumpTo, (SELECT name FROM tl_user WHERE id=author) AS author FROM tl_news WHERE pid IN(" . implode(',', array_map('intval', $this->news_archives)) . ") AND date>=? AND date<=? AND id IN (" . join($tagids, ",") . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) AND published=1" : "") . " ORDER BY date DESC");
-
-				// Limit result
-				if ($limit)
-				{
-					$objArticlesStmt->limit($limit, $offset);
-				}
-
-				$objArticles = $objArticlesStmt->execute($intBegin, $intEnd);
-
-				// No items found
-				if ($objArticles->numRows < 1)
-				{
-					$this->Template = new FrontendTemplate('mod_newsarchive_empty');
-				}
-
-				$headlinetags = array();
-
-				if (strlen(\Input::get('tag')))
-				{
-					$headlinetags = array_merge($headlinetags, array(\Input::get('tag')));
-					if (count($relatedlist))
-					{
-						$headlinetags = array_merge($headlinetags, $relatedlist);
-					}
-				}
-				$this->Template->tags_total_found = $total;
-				$this->Template->tags_activetags = $headlinetags;
-				$this->Template->headline = trim($this->headline);
-				$this->Template->articles = $this->parseArticles($objArticles);
-				$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
-				$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['empty'];
+				$this->compileFromParent($tagids);
 			}
 			else
 			{
-				$this->Template = new FrontendTemplate('mod_newsarchive_empty');
+				parent::compile();
 			}
 		}
 		else

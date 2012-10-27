@@ -26,6 +26,7 @@ ClassLoader::addClasses(array
 
 	// Models
 	'Contao\TagModel'                => 'system/modules/tags/models/TagModel.php',
+	'Contao\TagsNewsModel'           => 'system/modules/tags/models/TagsNewsModel.php',
 
 	// Modules
 	'Contao\ModuleEventlistTags'     => 'system/modules/tags/modules/ModuleEventlistTags.php',
