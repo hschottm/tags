@@ -28,16 +28,15 @@ class ModuleNewsReaderTags extends \ModuleNewsReader
 	 * @param boolean
 	 * @return array
 	 */
-	protected function parseArticles($objArticles, $blnAddArchive=false)
+	protected function compile()
 	{
 		$this->Session->set('news_showtags', $this->news_showtags);
 		$this->Session->set('news_jumpto', $this->tag_jumpTo);
 		$this->Session->set('news_tag_named_class', $this->tag_named_class);
-		$result = parent::parseArticles($objArticles, $blnAddArchive);
+		parent::compile();
 		$this->Session->set('news_showtags', '');
 		$this->Session->set('news_jumpto', '');
 		$this->Session->set('news_tag_named_class', '');
-		return $result;
 	}
 }
 
