@@ -176,6 +176,9 @@ class ModuleNewsListTags extends \ModuleNewsList
 	 */
 	protected function compile()
 	{
+		$this->Session->set('news_showtags', $this->news_showtags);
+		$this->Session->set('news_jumpto', $this->tag_jumpTo);
+		$this->Session->set('news_tag_named_class', $this->tag_named_class);
 		if ((strlen(\Input::get('tag')) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
@@ -225,25 +228,9 @@ class ModuleNewsListTags extends \ModuleNewsList
 		{
 			parent::compile();
 		}
-	}
-
-	/**
-	 * Parse one or more items and return them as array
-	 * Identical method as in ModuleNewsReaderTags. On changes, please replace this version with the version of ModuleNewsReaderTags
-	 * @param object
-	 * @param boolean
-	 * @return array
-	 */
-	protected function parseArticles($objArticles, $blnAddArchive=false)
-	{
-		$this->Session->set('news_showtags', $this->news_showtags);
-		$this->Session->set('news_jumpto', $this->tag_jumpTo);
-		$this->Session->set('news_tag_named_class', $this->tag_named_class);
-		$result = parent::parseArticles($objArticles, $blnAddArchive);
 		$this->Session->set('news_showtags', '');
 		$this->Session->set('news_jumpto', '');
 		$this->Session->set('news_tag_named_class', '');
-		return $result;
 	}
 }
 
