@@ -12,6 +12,15 @@
 
 
 /**
+ * Register the namespaces
+ */
+ClassLoader::addNamespaces(array
+(
+	'Aurealis',
+));
+
+
+/**
  * Register the classes
  */
 ClassLoader::addClasses(array
@@ -29,6 +38,7 @@ ClassLoader::addClasses(array
 	'Contao\TagsNewsModel'           => 'system/modules/tags/models/TagsNewsModel.php',
 
 	// Modules
+	'Aurealis\ModuleArticle'         => 'system/modules/tags/modules/ModuleArticle.php',
 	'Contao\ModuleEventlistTags'     => 'system/modules/tags/modules/ModuleEventlistTags.php',
 	'Contao\ModuleFaqListTags'       => 'system/modules/tags/modules/ModuleFaqListTags.php',
 	'Contao\ModuleGlobalArticlelist' => 'system/modules/tags/modules/ModuleGlobalArticlelist.php',
@@ -49,6 +59,7 @@ ClassLoader::addClasses(array
 TemplateLoader::addFiles(array
 (
 	'event_default_tags'     => 'system/modules/tags/templates',
+	'mod_article_tags'       => 'system/modules/tags/templates',
 	'mod_global_articlelist' => 'system/modules/tags/templates',
 	'mod_tag_contentlist'    => 'system/modules/tags/templates',
 	'mod_tag_listbycategory' => 'system/modules/tags/templates',
