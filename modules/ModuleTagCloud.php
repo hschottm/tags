@@ -222,7 +222,7 @@ class ModuleTagCloud extends \Module
 			$this->Template->lngEmpty = $GLOBALS['TL_LANG']['tl_module']['tag_clear_tags'];
 		}
 		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/tags/assets/tagcloud.js';
-		if ($this->tag_jumpTo)
+		if (count($pageArr))
 		{
 			$this->Template->topten = $this->tag_topten;
 			if ($this->tag_topten)
