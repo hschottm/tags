@@ -124,7 +124,9 @@ class ModuleTagCloud extends \Module
 		$objPageObject = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
 			->limit(1)
 			->execute($this->tag_jumpTo);
-		$pageArr = ($objPageObject->numRows) ? $objPageObject->fetchAssoc() : array();
+		global $objPage;
+		$default = ($objPage != null) ? $objPage->row() : array();
+		$pageArr = ($objPageObject->numRows) ? $objPageObject->fetchAssoc() : $default;
 		$strParams = '';
 		if ($this->keep_url_params)
 		{
