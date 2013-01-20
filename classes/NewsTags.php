@@ -73,10 +73,10 @@ class NewsTags extends \News
 	 * @param string
 	 * @return string
 	 */
-	protected function getLink($objItem, $strUrl)
+	protected function getLink($objItem, $strUrl, $strBase='')
 	{
 		$this->savedArticleId = $objItem->id;
-		return parent::getLink($objItem, $strUrl);
+		return parent::getLink($objItem, $strUrl, $strBase);
 	}
 	
 	private function getTagsForTableAndId($table, $id, $url = false)
