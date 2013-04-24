@@ -80,6 +80,7 @@ class ModuleArticle extends \Contao\ModuleArticle
 			foreach ($arrTags as $idx => $tag)
 			{
 				$arrTags[$idx]['tagcount'] = $countarray[$tag['tag']];
+				$arrTags[$idx]['tag_class'] = \Contao\TagList::_getTagNameClass($tag['tag']);
 			}
 			if ($relevance == 1)
 			{
