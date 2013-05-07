@@ -47,10 +47,9 @@ class ModuleFaqListTags extends \ModuleFaqList
 	 */
 	protected function compile()
 	{
-		$tagcondition = "";
+		$tagids = array();
 		if (strlen(\Input::get('tag')))
 		{
-			$tagids = array();
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
 			$alltags = array_merge(array(\Input::get('tag')), $relatedlist);
 			$first = true;
@@ -78,12 +77,11 @@ class ModuleFaqListTags extends \ModuleFaqList
 				$this->Template->faq = array();
 				return;
 			}
-			$tagcondition = " AND tl_faq.id IN (" . join($tagids, ",") . ") ";
 		}
 
-		$objFaq = $this->Database->execute("SELECT *, tl_faq.id AS id FROM tl_faq LEFT JOIN tl_faq_category ON(tl_faq_category.id=tl_faq.pid) WHERE pid IN(" . implode(',', array_map('intval', $this->faq_categories)) . ") $tagcondition " . (!BE_USER_LOGGED_IN ? " AND published=1" : "") . " ORDER BY pid, sorting");
+		$objFaq = \TagsFaqModel::findPublishedByPidsAndIds($this->faq_categories, $tagids);
 
-		if ($objFaq->numRows < 1)
+		if ($objFaq === null)
 		{
 			$this->Template->faq = array();
 			return;
@@ -100,10 +98,10 @@ class ModuleFaqListTags extends \ModuleFaqList
 			$arrTemp['href'] = $this->generateFaqLink($objFaq);
 
 			$arrFaq[$objFaq->pid]['items'][] = $arrTemp;
-			$arrFaq[$objFaq->pid]['headline'] = $objFaq->headline;
+			$arrFaq[$objFaq->pid]['headline'] = $objFaq->getRelated('pid')->headline;
 		}
 
-		$arrFaq = array_values($arrFaq);
+		$arrFaq = array_values(array_filter($arrFaq));
 
 		$cat_count = 0;
 		$cat_limit = count($arrFaq);

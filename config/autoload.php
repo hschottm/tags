@@ -3,10 +3,10 @@
 /**
  * Contao Open Source CMS
  * 
- * Copyright (C) 2005-2012 Leo Feyer
+ * Copyright (C) 2005-2013 Leo Feyer
  * 
  * @package Tags
- * @link    http://contao.org
+ * @link    https://contao.org
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
@@ -35,6 +35,7 @@ ClassLoader::addClasses(array
 
 	// Models
 	'Contao\TagModel'                => 'system/modules/tags/models/TagModel.php',
+	'Contao\TagsFaqModel'            => 'system/modules/tags/models/TagsFaqModel.php',
 	'Contao\TagsNewsModel'           => 'system/modules/tags/models/TagsNewsModel.php',
 
 	// Modules
