@@ -53,12 +53,12 @@ class TagField extends \TextField
 		{
 			$this->import('Database');
 			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
-				->execute($this->table, $this->currentRecord);
+				->execute($this->table, $this->activeRecord->id);
 			$tags = array_filter(trimsplit(",", $value), 'strlen');
 			foreach ($tags as $tag)
 			{
 				$this->Database->prepare("INSERT INTO tl_tag (id, tag, from_table) VALUES (?, ?, ?)")
-					->execute($this->currentRecord, $tag, $this->table);
+					->execute($this->activeRecord->id, $tag, $this->table);
 			}
 			return "";
 		}
@@ -72,7 +72,7 @@ class TagField extends \TextField
 	protected function readTags()
 	{
 		$arrTags = array();
-		$tags = \TagModel::findByIdAndTable($this->currentRecord, $this->table);
+		$tags = \TagModel::findByIdAndTable($this->activeRecord->id, $this->table);
 		if ($tags)
 		{
 			while ($tags->next())
