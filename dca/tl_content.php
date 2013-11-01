@@ -1,18 +1,5 @@
 <?php
 
-/**
- * @copyright  Helmut Schottmüller <contao@aurealis.de>
- * @author     Helmut Schottmüller <contao@aurealis.de>
- * @package    Backend
- * @license    LGPL
- * @filesource
- */
-
-
-/**
- * Table tl_content
- */
-
 $disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
 if (!in_array('tl_content', $disabledObjects))
 {
@@ -36,14 +23,16 @@ if (!in_array('tl_content', $disabledObjects))
 $GLOBALS['TL_DCA']['tl_content']['fields']['tagsonly'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_content']['tagsonly'],
-	'inputType'               => 'checkbox'
+	'inputType'               => 'checkbox',
+	'sql'                     => "char(1) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['tags'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
 	'inputType'               => 'tag',
-	'eval'                    => array('tl_class'=>'clr long')
+	'eval'                    => array('tl_class'=>'clr long'),
+	'sql'                     => "char(1) NOT NULL default ''"
 );
 
 /**
@@ -88,4 +77,3 @@ class tl_content_tags extends tl_content
 	}
 }
 
-?>

@@ -1,18 +1,5 @@
 <?php
 
-/**
- * @copyright  Helmut Schottmüller <contao@aurealis.de>
- * @author     Helmut Schottmüller <contao@aurealis.de>
- * @package    Backend
- * @license    LGPL
- * @filesource
- */
-
-
-/**
- * Table tl_files
- */
-
 $disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
 if (!in_array('tl_files', $disabledObjects))
 {
@@ -72,4 +59,3 @@ class tl_files_tags extends tl_files
 	}
 }
 
-?>
