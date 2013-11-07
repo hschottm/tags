@@ -31,4 +31,3 @@ class tl_settings_tags extends tl_settings
 	}
 }
 
-?>

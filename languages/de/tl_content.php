@@ -17,6 +17,10 @@
  
 $GLOBALS['TL_LANG']['tl_content']['tagsonly']['0'] = "Nur bei Auszeichnungen anzeigen";
 $GLOBALS['TL_LANG']['tl_content']['tagsonly']['1'] = "Dieses Inhaltselement nur anzeigen, wenn Auszeichnungen verwendet werden.";
+$GLOBALS['TL_LANG']['tl_content']['tag_filter']['0'] = "Auszeichnungs-Filter";
+$GLOBALS['TL_LANG']['tl_content']['tag_filter']['1'] = "Geben Sie eine kommagetrennte Liste von Auszeichnungen an, um die Ausgabe des Inhaltselements auf die angegebenen Auszeichnungen einzuschränken.";
+$GLOBALS['TL_LANG']['tl_content']['tag_ignore']['0'] = "Auszeichnungen ignorieren";
+$GLOBALS['TL_LANG']['tl_content']['tag_ignore']['1'] = "Das Modul ignoriert alle Auszeichnungen (z.B. die Filterung nach Auszeichnungen)";
 $GLOBALS['TL_LANG']['tl_content']['tags_legend'] = "Auszeichnungen";
  
 ?>

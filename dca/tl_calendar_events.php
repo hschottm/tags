@@ -1,28 +1,5 @@
 <?php
 
-/**
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at http://www.gnu.org/licenses/.
- *
- * PHP version 5
- * @copyright  Helmut Schottmüller 2008
- * @author     Helmut Schottmüller <helmut.schottmueller@aurealis.de>
- * @package    tags
- * @license    LGPL
- * @filesource
- */
-
 if (@class_exists("tl_calendar_events"))
 {
 
@@ -87,9 +64,9 @@ $GLOBALS['TL_DCA']['tl_calendar_events']['fields']['tags'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
 	'inputType'               => 'tag',
-	'eval'                    => array('tl_class'=>'clr long')
+	'eval'                    => array('tl_class'=>'clr long'),
+	'sql'                     => "char(1) NOT NULL default ''"
 );
 
 }
 
-?>
