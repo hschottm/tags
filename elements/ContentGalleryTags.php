@@ -94,11 +94,11 @@ class ContentGalleryTags extends ContentGallery
 			{
 				if ($this->objFiles->type == 'file')
 				{
-					if (in_array($this->objFiles->id, tagids)) array_push($newMultiSRC, $this->objFiles->id);
+					if (in_array($this->objFiles->id, tagids)) array_push($newMultiSRC, $this->objFiles->uuid);
 				}
 				else
 				{
-					$objSubfiles = \FilesModel::findByPid($this->objFiles->id);
+					$objSubfiles = \FilesModel::findByPid($this->objFiles->uuid);
 					if ($objSubfiles === null)
 					{
 						continue;
@@ -106,12 +106,12 @@ class ContentGalleryTags extends ContentGallery
 
 					while ($objSubfiles->next())
 					{
-						if (in_array($objSubfiles->id, $tagids)) array_push($newMultiSRC, $objSubfiles->id);
+						if (in_array($objSubfiles->id, $tagids)) array_push($newMultiSRC, $objSubfiles->uuid);
 					}
 				}
 			}
 			$this->multiSRC = $newMultiSRC;
-			$this->objFiles = \FilesModel::findMultipleByIds($this->multiSRC);
+			$this->objFiles = \FilesModel::findMultipleByUuids($this->multiSRC);
 		}
 
 		// Return if there are no files
