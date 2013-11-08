@@ -78,9 +78,9 @@ class TagList extends \System
 			$ids = array();
 			for ($i = 0; $i < count($for_tags); $i++)
 			{
-				$arr = $this->Database->prepare("SELECT DISTINCT id FROM $tagtable WHERE (" . join($keys, " OR ") . ") AND $tagfield = ? ORDER BY id ASC")
+				$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE (" . join($keys, " OR ") . ") AND $tagfield = ? ORDER BY id ASC")
 					->execute(array_merge($values, array($for_tags[$i])))
-					->fetchEach('id');
+					->fetchEach('tid');
 				if ($i == 0)
 				{
 					$ids = $arr;
@@ -98,9 +98,9 @@ class TagList extends \System
 				$ids = array();
 				for ($i = 0; $i < count($for_tags); $i++)
 				{
-					$arr = $this->Database->prepare("SELECT DISTINCT id FROM $tagtable WHERE from_table = ? AND $tagfield = ? ORDER BY id ASC")
+					$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE from_table = ? AND $tagfield = ? ORDER BY id ASC")
 						->execute(array($this->forTable, $for_tags[$i]))
-						->fetchEach('id');
+						->fetchEach('tid');
 					if ($i == 0)
 					{
 						$ids = $arr;
@@ -116,9 +116,9 @@ class TagList extends \System
 				$ids = array();
 				for ($i = 0; $i < count($for_tags); $i++)
 				{
-					$arr = $this->Database->prepare("SELECT DISTINCT id FROM $tagtable WHERE $tagfield = ? ORDER BY id ASC")
+					$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE $tagfield = ? ORDER BY id ASC")
 						->execute($for_tags[$i])
-						->fetchEach('id');
+						->fetchEach('tid');
 					if ($i == 0)
 					{
 						$ids = $arr;
@@ -142,19 +142,19 @@ class TagList extends \System
 				{
 					array_push($keys, 'from_table = ?');
 				}
-				$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . join($keys, " OR ") . ") AND id IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
+				$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . join($keys, " OR ") . ") AND tid IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 					->execute($this->forTable);
 			}
 			else
 			{
 				if (strlen($this->forTable))
 				{
-					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE from_table = ? AND id IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
+					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE from_table = ? AND tid IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 						->execute($this->forTable);
 				}
 				else
 				{
-					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE id IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
+					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE tid IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 						->execute();
 				}
 			}
@@ -175,7 +175,7 @@ class TagList extends \System
 							{
 								array_push($keys, 'from_table = ?');
 							}
-							$count = count($this->Database->prepare("SELECT id FROM $tagtable WHERE $tagfield = ? AND (" . join($keys, " OR ") . ") AND id IN (" . join($ids, ",") . ")")
+							$count = count($this->Database->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND (" . join($keys, " OR ") . ") AND tid IN (" . join($ids, ",") . ")")
 								->execute(array_merge(array($objTags->tag), $this->forTable))
 								->fetchAllAssoc());
 						}
@@ -183,13 +183,13 @@ class TagList extends \System
 						{
 							if (strlen($this->forTable))
 							{
-								$count = count($this->Database->prepare("SELECT id FROM $tagtable WHERE $tagfield = ? AND from_table = ? AND id IN (" . join($ids, ",") . ")")
+								$count = count($this->Database->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND from_table = ? AND tid IN (" . join($ids, ",") . ")")
 									->execute($objTags->tag, $this->forTable)
 									->fetchAllAssoc());
 							}
 							else
 							{
-								$count = count($this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE $tagfield = ? AND id IN (" . join($ids, ",") . ")")
+								$count = count($this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE $tagfield = ? AND tid IN (" . join($ids, ",") . ")")
 									->execute($objTags->tag)
 									->fetchAllAssoc());
 							}

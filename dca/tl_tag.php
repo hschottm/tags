@@ -14,7 +14,8 @@ $GLOBALS['TL_DCA']['tl_tag'] = array
 		(
 			'keys' => array
 			(
-				'id' => 'index',
+				'id' => 'primary',
+				'tid' => 'index',
 				'tag' => 'index',
 				'from_table' => 'index'
 			)
@@ -25,6 +26,10 @@ $GLOBALS['TL_DCA']['tl_tag'] = array
 	'fields' => array
 	(
 		'id' => array
+		(
+			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
+		),
+		'tid' => array
 		(
 			'sql'                     => "int(10) unsigned NOT NULL default '0'"
 		),

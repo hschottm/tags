@@ -19,7 +19,7 @@ class tl_news_tags extends tl_news
 {
 	public function deleteNews($dc)
 	{
-		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
+		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($dc->table, $dc->id);
 	}
 	
@@ -29,7 +29,7 @@ class tl_news_tags extends tl_news
 		{
 			foreach ($this->Session->get('tl_news_copy') as $data)
 			{
-				$this->Database->prepare("INSERT INTO tl_tag (id, tag, from_table) VALUES (?, ?, ?)")
+				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
 					->execute($dc->id, $data['tag'], $data['table']);
 			}
 		}
@@ -38,8 +38,8 @@ class tl_news_tags extends tl_news
 		{
 			return;
 		}
-		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE id = ? AND from_table = ?")
-			->execute(\Input::get('id'), $dc->table);
+		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")
+			->execute(\Input::get('tid'), $dc->table);
 		$tags = array();
 		while ($objTags->next())
 		{

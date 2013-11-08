@@ -160,8 +160,8 @@ class ModuleTagCloud extends \Module
 				// get articles on page
 				$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid = ?")
 					->execute($objPage->id)->fetchEach('id');
-				$arrTagIds = $this->Database->prepare("SELECT id FROM " . $this->tag_tagtable . " WHERE from_table = ? AND tag = ?")
-					->execute('tl_article', $tag['tag_name'])->fetchEach('id');
+				$arrTagIds = $this->Database->prepare("SELECT tid FROM " . $this->tag_tagtable . " WHERE from_table = ? AND tag = ?")
+					->execute('tl_article', $tag['tag_name'])->fetchEach('tid');
 				if (count(array_intersect($arrArticles, $arrTagIds)))
 				{
 					$this->arrTags[$idx]['tag_class'] .= ' here';
@@ -177,8 +177,8 @@ class ModuleTagCloud extends \Module
 				{
 					$arrCE = $this->Database->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(",", $arrArticles) . ")")
 						->execute()->fetchEach('id');
-					$arrTagIds = $this->Database->prepare("SELECT id FROM " . $this->tag_tagtable . " WHERE from_table = ? AND tag = ?")
-						->execute('tl_content', $tag['tag_name'])->fetchEach('id');
+					$arrTagIds = $this->Database->prepare("SELECT tid FROM " . $this->tag_tagtable . " WHERE from_table = ? AND tag = ?")
+						->execute('tl_content', $tag['tag_name'])->fetchEach('tid');
 					if (count(array_intersect($arrCE, $arrTagIds)))
 					{
 						$this->arrTags[$idx]['tag_class'] .= ' here';

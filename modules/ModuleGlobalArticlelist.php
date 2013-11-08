@@ -72,13 +72,13 @@ class ModuleGlobalArticlelist extends \Module
 			$limit = null;
 			$offset = 0;
 			
-			$objIds = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ?")
+			$objIds = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
 				->execute('tl_article', \Input::get('tag'));
 			if ($objIds->numRows)
 			{
 				while ($objIds->next())
 				{
-					array_push($tagids, $objIds->id);
+					array_push($tagids, $objIds->tid);
 				}
 			}
 		}

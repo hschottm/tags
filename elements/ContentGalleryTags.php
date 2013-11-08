@@ -39,18 +39,18 @@ class ContentGalleryTags extends ContentGallery
 			return '';
 		}
 
-		// Check for version 3 format
-		if (!is_numeric($this->multiSRC[0]))
-		{
-			return '<p class="error">'.$GLOBALS['TL_LANG']['ERR']['version2format'].'</p>';
-		}
-
 		$newMultiSRC = array();
+
 		// Get the file entries from the database
-		$this->objFiles = \FilesModel::findMultipleByIds($this->multiSRC);
+		$this->objFiles = \FilesModel::findMultipleByUuids($this->multiSRC);
 
 		if ($this->objFiles === null)
 		{
+			if (!\Validator::isUuid($this->multiSRC[0]))
+			{
+				return '<p class="error">'.$GLOBALS['TL_LANG']['ERR']['version2format'].'</p>';
+			}
+
 			return '';
 		}
 
@@ -77,15 +77,15 @@ class ContentGalleryTags extends ContentGallery
 				{
 					if (count($tagids))
 					{
-						$tagids = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ? AND id IN (" . join($tagids, ",") . ")")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
 							->execute('tl_files', $tag)
-							->fetchEach('id');
+							->fetchEach('tid');
 					}
 					else if ($first)
 					{
-						$tagids = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ?")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
 							->execute('tl_files', $tag)
-							->fetchEach('id');
+							->fetchEach('tid');
 						$first = false;
 					}
 				}
@@ -114,8 +114,19 @@ class ContentGalleryTags extends ContentGallery
 			$this->objFiles = \FilesModel::findMultipleByIds($this->multiSRC);
 		}
 
+		// Return if there are no files
+		if (!is_array($this->multiSRC) || empty($this->multiSRC))
+		{
+			return '';
+		}
+
 		if ($this->objFiles === null)
 		{
+			if (!\Validator::isUuid($this->multiSRC[0]))
+			{
+				return '<p class="error">'.$GLOBALS['TL_LANG']['ERR']['version2format'].'</p>';
+			}
+
 			return '';
 		}
 
@@ -133,9 +144,9 @@ class ContentGalleryTags extends ContentGallery
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_files');
-			return $this->Database->prepare("SELECT id FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
-				->fetchEach('id');
+				->fetchEach('tid');
 		}
 		else
 		{

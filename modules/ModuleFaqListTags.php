@@ -59,15 +59,15 @@ class ModuleFaqListTags extends \ModuleFaqList
 				{
 					if (count($tagids))
 					{
-						$tagids = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ? AND id IN (" . join($tagids, ",") . ")")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
 							->execute('tl_faq', $tag)
-							->fetchEach('id');
+							->fetchEach('tid');
 					}
 					else if ($first)
 					{
-						$tagids = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ?")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
 							->execute('tl_faq', $tag)
-							->fetchEach('id');
+							->fetchEach('tid');
 						$first = false;
 					}
 				}

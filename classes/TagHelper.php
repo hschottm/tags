@@ -59,12 +59,12 @@ class TagHelper extends \Backend
 			->fetchEach('from_table');
 		foreach ($arrTables as $table)
 		{
-			$ids = $this->Database->prepare("select DISTINCT tl_tag.id from tl_tag left join " . $table . " on tl_tag.id = " . $table . ".id where tl_tag.from_table = ? and " . $table . ".id is null")
+			$ids = $this->Database->prepare("select DISTINCT tl_tag.tid from tl_tag left join " . $table . " on tl_tag.tid = " . $table . ".id where tl_tag.from_table = ? and " . $table . ".id is null")
 				->execute($table)
-				->fetchEach('id');
+				->fetchEach('tid');
 			foreach ($ids as $id)
 			{
-				$this->Database->prepare("DELETE FROM tl_tag WHERE id = ? AND from_table = ?")
+				$this->Database->prepare("DELETE FROM tl_tag WHERE tid = ? AND from_table = ?")
 					->execute($id, $table);
 			}
 		}
@@ -98,12 +98,12 @@ class TagHelper extends \Backend
 	*/
 	public function deleteUnusedTagsForTable($table, $new_records, $parent_table, $child_tables)
 	{
-		$ids = $this->Database->prepare("select DISTINCT tl_tag.id from tl_tag left join " . $table . " on tl_tag.id = " . $table . ".id where tl_tag.from_table = ? and " . $table . ".id is null")
+		$ids = $this->Database->prepare("select DISTINCT tl_tag.tid from tl_tag left join " . $table . " on tl_tag.tid = " . $table . ".id where tl_tag.from_table = ? and " . $table . ".id is null")
 			->execute($table)
-			->fetchEach('id');
+			->fetchEach('tid');
 		foreach ($ids as $id)
 		{
-			$this->Database->prepare("DELETE FROM tl_tag WHERE id = ? AND from_table = ?")
+			$this->Database->prepare("DELETE FROM tl_tag WHERE tid = ? AND from_table = ?")
 				->execute($id, $table);
 		}
 	}
@@ -117,12 +117,12 @@ class TagHelper extends \Backend
 		{
 			foreach ($new_records as $id)
 			{
-				$ids = $this->Database->prepare("SELECT tl_tag.id FROM tl_tag, $table WHERE tl_tag.id = $table.id AND $table.tstamp = 0")
+				$ids = $this->Database->prepare("SELECT tl_tag.tid FROM tl_tag, $table WHERE tl_tag.tid = $table.id AND $table.tstamp = 0")
 					->execute()
-					->fetchEach('id');
+					->fetchEach('tid');
 				if (count($ids))
 				{
-					$this->Database->prepare("DELETE FROM tl_tag WHERE id IN (" . join($ids, ",") . ") AND from_table = ?")
+					$this->Database->prepare("DELETE FROM tl_tag WHERE tid IN (" . join($ids, ",") . ") AND from_table = ?")
 						->execute($table);
 				}
 			}
@@ -135,7 +135,7 @@ class TagHelper extends \Backend
 	 */
 	protected function getTags($id)
 	{
-		return $this->Database->prepare("SELECT tag FROM tl_tag WHERE id = ? AND from_table = ? ORDER BY tag ASC")
+		return $this->Database->prepare("SELECT tag FROM tl_tag WHERE tid = ? AND from_table = ? ORDER BY tag ASC")
 			->execute($id, 'tl_news')
 			->fetchEach('tag');
 	}
@@ -151,7 +151,7 @@ class TagHelper extends \Backend
 
 	private function getTagsForTableAndId($table, $id, $url = false, $max_tags = 0, $relevance = 0, $target = 0)
 	{
-		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND id = ? ORDER BY tag ASC")
+		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
 			->execute($table, $id)
 			->fetchAllAssoc();
 		$res = false;

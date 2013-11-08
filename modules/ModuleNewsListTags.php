@@ -46,9 +46,9 @@ class ModuleNewsListTags extends \ModuleNewsList
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_news');
-			return $this->Database->prepare("SELECT id FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
-				->fetchEach('id');
+				->fetchEach('tid');
 		}
 		else
 		{
@@ -202,15 +202,15 @@ class ModuleNewsListTags extends \ModuleNewsList
 				{
 					if (count($tagids))
 					{
-						$tagids = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ? AND id IN (" . join($tagids, ",") . ")")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
 							->execute('tl_news', $tag)
-							->fetchEach('id');
+							->fetchEach('tid');
 					}
 					else if ($first)
 					{
-						$tagids = $this->Database->prepare("SELECT id FROM tl_tag WHERE from_table = ? AND tag = ?")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
 							->execute('tl_news', $tag)
-							->fetchEach('id');
+							->fetchEach('tid');
 						$first = false;
 					}
 				}

@@ -52,12 +52,12 @@ class TagField extends \TextField
 		if (!$this->blnSubmitInput)
 		{
 			$this->import('Database');
-			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
+			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 				->execute($this->table, $this->activeRecord->id);
 			$tags = array_filter(trimsplit(",", $value), 'strlen');
 			foreach ($tags as $tag)
 			{
-				$this->Database->prepare("INSERT INTO tl_tag (id, tag, from_table) VALUES (?, ?, ?)")
+				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
 					->execute($this->activeRecord->id, $tag, $this->table);
 			}
 			return "";

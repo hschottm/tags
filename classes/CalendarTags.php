@@ -72,7 +72,7 @@ class CalendarTags extends \Calendar
 
 	private function getTagsForTableAndId($table, $id, $url = false)
 	{
-		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND id = ?")
+		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($table, $id)
 			->fetchAllAssoc();
 		$res = false;

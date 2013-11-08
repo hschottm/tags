@@ -44,6 +44,6 @@ class TagModel extends \Model
 	 */
 	public static function findByIdAndTable($id, $table)
 	{
-		return static::findBy(array('id=?','from_table=?'), array($id, $table), array('order'=>'tag ASC'));
+		return static::findBy(array('tid=?','from_table=?'), array($id, $table), array('order'=>'tag ASC'));
 	}
 }

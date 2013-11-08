@@ -68,26 +68,26 @@ class ModuleTagListByCategory extends \Module
 				{
 					if (count($tagids))
 					{
-						$found = $this->Database->prepare("SELECT id, from_table FROM tl_tag WHERE from_table = IN (" . implode(',', $marks) . ") AND tag = ? AND id IN (" . join($tagids, ",") . ")")
+						$found = $this->Database->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table = IN (" . implode(',', $marks) . ") AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
 							->execute(array_merge($this->sourcetables, array($tag)))
 							->fetchAllAssoc();
 						foreach ($found as $data)
 						{
-							array_push($tagids, $data['id']);
+							array_push($tagids, $data['tid']);
 							if (!array_key_exists($data['from_table'], $tagid_cats)) $tagid_cats[$data['from_table']] = array();
-							array_push($tagid_cats[$data['from_table']], $data['id']);
+							array_push($tagid_cats[$data['from_table']], $data['tid']);
 						}
 					}
 					else if ($first)
 					{
-						$found = $this->Database->prepare("SELECT id, from_table FROM tl_tag WHERE from_table IN (" . implode(',', $marks) . ") AND tag = ?")
+						$found = $this->Database->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table IN (" . implode(',', $marks) . ") AND tag = ?")
 							->execute(array_merge($this->sourcetables, array($tag)))
 							->fetchAllAssoc();
 						foreach ($found as $data)
 						{
-							array_push($tagids, $data['id']);
+							array_push($tagids, $data['tid']);
 							if (!array_key_exists($data['from_table'], $tagid_cats)) $tagid_cats[$data['from_table']] = array();
-							array_push($tagid_cats[$data['from_table']], $data['id']);
+							array_push($tagid_cats[$data['from_table']], $data['tid']);
 						}
 						$first = false;
 					}

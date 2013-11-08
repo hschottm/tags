@@ -4,13 +4,13 @@ class tl_article_tags extends tl_article
 {
 	public function removeArticle($dc)
 	{
-		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
+		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($dc->table, $dc->id);
 		$arrContentElements = $this->Database->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ?")
 			->execute($dc->id)->fetchEach('id');
 		foreach ($arrContentElements as $cte_id)
 		{
-			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
+			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 				->execute('tl_content', $cte_id);
 		}
 	}
@@ -26,10 +26,10 @@ class tl_article_tags extends tl_article
 				->execute($id)->fetchEach('id');
 			foreach ($arrContentElements as $cte_id)
 			{
-				$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
+				$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 					->execute('tl_content', $cte_id);
 			}
-			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND id = ?")
+			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 				->execute('tl_article', $id);
 		}
 	}
@@ -40,7 +40,7 @@ class tl_article_tags extends tl_article
 		{
 			foreach ($this->Session->get('tl_article_copy') as $data)
 			{
-				$this->Database->prepare("INSERT INTO tl_tag (id, tag, from_table) VALUES (?, ?, ?)")
+				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
 					->execute($dc->id, $data['tag'], $data['table']);
 			}
 		}
@@ -49,7 +49,7 @@ class tl_article_tags extends tl_article
 		{
 			return;
 		}
-		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE id = ? AND from_table = ?")
+		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")
 			->execute(\Input::get('id'), $dc->table);
 		$tags = array();
 		while ($objTags->next())

@@ -59,7 +59,7 @@ class ModuleArticle extends \Contao\ModuleArticle
 	{
 		$table = 'tl_article';
 		$id = $this->id;
-		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND id = ? ORDER BY tag ASC")
+		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
 			->execute($table, $id)
 			->fetchAllAssoc();
 		$res = false;
