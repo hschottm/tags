@@ -294,7 +294,7 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . str_replace(' ', '+', $tag)));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \System::urlencode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],

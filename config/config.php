@@ -72,7 +72,7 @@ if (array_key_exists('last_events', $GLOBALS['FE_MOD']['events']))
  * Content elements
 	*/
 $GLOBALS['TL_CTE']['texts']['headline'] = 'ContentHeadlineTags';
-	
+$GLOBALS['TL_CTE']['media']['gallery'] = 'ContentGalleryTags';
 	
 if (TL_MODE == 'BE')
 {
