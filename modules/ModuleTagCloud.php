@@ -136,7 +136,7 @@ class ModuleTagCloud extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . str_replace(' ', '+', $tag['tag_name'])));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \System::urlencode($tag['tag_name'])));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -191,7 +191,7 @@ class ModuleTagCloud extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . str_replace(' ', '+', \Input::get('tag')) . '/related/' . str_replace(' ', '+', join(array_merge($relatedlist, array($tag['tag_name'])), ','))));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \System::urlencode(\Input::get('tag')) . '/related/' . \System::urlencode(join(array_merge($relatedlist, array($tag['tag_name'])), ','))));
 			}
 			$this->arrRelated[$idx]['tag_url'] = $strUrl;
 		}
@@ -231,7 +231,7 @@ class ModuleTagCloud extends \Module
 				{
 					if (count($pageArr))
 					{
-						$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . str_replace(' ', '+', $tag['tag_name'])));
+						$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \System::urlencode($tag['tag_name'])));
 						if (strlen($strParams))
 						{
 							if (strpos($strUrl, '?') !== false)

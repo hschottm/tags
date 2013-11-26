@@ -103,7 +103,7 @@ class ModuleTagScope extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . str_replace(' ', '+', $tag)));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \System::urlencode($tag)));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -151,11 +151,11 @@ class ModuleTagScope extends \Module
 							array_push($newarr, $tagnew);
 						}
 					}
-					$tagpath = '/tag/' . str_replace(' ', '+', $newarr[0]);
+					$tagpath = '/tag/' . \System::urlencode($newarr[0]);
 					if (count($newarr) > 1)
 					{
 						$related = array_slice($newarr, 1);
-						$tagpath .= '/related/' . str_replace(' ', '+', join($related, ','));
+						$tagpath .= '/related/' . \System::urlencode(join($related, ','));
 					}
 					$strUrl = ampersand($this->generateFrontendUrl($pageArr, $tagpath));
 					if (strlen($strParams))
