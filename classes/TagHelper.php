@@ -252,6 +252,12 @@ class TagHelper extends \Backend
 			case 'tags_news':
 				return $this->getTagsForTableAndId('tl_news', $elements[1], false, $max_tags, $relevance, $target);
 				break;
+			case 'tags_file':
+				return $this->getTagsForTableAndId('tl_files', $elements[1], false, $max_tags, $relevance, $target);
+				break;
+			case 'tags_faq':
+				return $this->getTagsForTableAndId('tl_faq', $elements[1], false, $max_tags, $relevance, $target);
+				break;
 			case 'tags_event':
 				return $this->getTagsForTableAndId('tl_calendar_events', $elements[1], false, $max_tags, $relevance, $target);
 				break;
