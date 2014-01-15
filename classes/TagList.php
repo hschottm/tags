@@ -50,6 +50,7 @@ class TagList extends \System
 	protected $boolNamedClass = false;
 	protected $arrPages = array();
 	protected $arrArticles = array();
+	protected $intTopNumber = 10;
 	
 	function __construct($forTable = "") 
 	{
@@ -257,7 +258,7 @@ class TagList extends \System
 	{
 		$list = $this->getTagList();
 		usort($list, array($this, "tag_asort"));
-		if (count($list) > 10) $list = array_reverse(array_slice($list, -10, 10));
+		if (count($list) > $this->intTopNumber) $list = array_reverse(array_slice($list, -$this->intTopNumber, $this->intTopNumber));
 		return $list;
 	}
 
@@ -424,6 +425,9 @@ class TagList extends \System
 			case 'fortable':
 				$this->forTable = $varValue;
 				break;
+			case 'topnumber':
+				$this->intTopNumber = $varValue;
+				break;
 			case 'tagtable':
 				$this->strTagTable = ($this->Database->tableExists($varValue)) ? $varValue : 'tl_tag';
 				break;
@@ -465,6 +469,9 @@ class TagList extends \System
 				break;
 			case 'maxtags':
 				return $this->intMaxTags;
+				break;
+			case 'topnumber':
+				return $this->intTopNumber;
 				break;
 			case 'buckets':
 				return $this->intBuckets;
