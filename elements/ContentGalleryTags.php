@@ -94,7 +94,7 @@ class ContentGalleryTags extends ContentGallery
 			{
 				if ($this->objFiles->type == 'file')
 				{
-					if (in_array($this->objFiles->id, tagids)) array_push($newMultiSRC, $this->objFiles->uuid);
+					if (in_array($this->objFiles->id, $tagids)) array_push($newMultiSRC, $this->objFiles->uuid);
 				}
 				else
 				{
