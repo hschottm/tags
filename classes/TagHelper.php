@@ -42,7 +42,7 @@ class TagHelper extends \Backend
 	/**
 	 * Load the database object
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->import('Database');
@@ -133,10 +133,10 @@ class TagHelper extends \Backend
 	 * Read tags from database
 	 * @return string
 	 */
-	protected function getTags($id)
+	protected function getTags($id, $table)
 	{
 		return $this->Database->prepare("SELECT tag FROM tl_tag WHERE tid = ? AND from_table = ? ORDER BY tag ASC")
-			->execute($id, 'tl_news')
+			->execute($id, $table)
 			->fetchEach('tag');
 	}
 
@@ -296,7 +296,7 @@ class TagHelper extends \Backend
 				global $objPage;
 				$pageArr = $objPage->row();
 			}
-			$tags = $this->getTags($row['id']);
+			$tags = $this->getTags($row['id'], 'tl_news');
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
@@ -312,6 +312,39 @@ class TagHelper extends \Backend
 			$objTemplate->tags = $tags;
 			$objTemplate->taglist = $taglist;
 		}
+	}
+	
+	public function getTagsAndTaglistForIdAndTable($id, $table, $jumpto)
+	{
+		$pageArr = array();
+		if (strlen($jumpto))
+		{
+			$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
+				->limit(1)
+				->execute($jumpto);
+			$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
+		}
+		if (count($pageArr) == 0)
+		{
+			global $objPage;
+			$pageArr = $objPage->row();
+		}
+		$tags = $this->getTags($id, $table);
+		$taglist = array();
+		foreach ($tags as $id => $tag)
+		{
+			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \System::urlencode($tag)));
+			$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
+			$taglist[$id] = array(
+				'url' => $tags[$id],
+				'tag' => $tag,
+				'class' => TagList::_getTagNameClass($tag)
+			);
+		}
+		return array(
+			'tags' => $tags,
+			'taglist' => $taglist
+		);
 	}
 	
 	/**

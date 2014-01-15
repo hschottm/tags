@@ -3,7 +3,7 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (c) 2005-2013 Leo Feyer
+ * Copyright (c) 2005-2014 Leo Feyer
  *
  * @package Tags
  * @link    https://contao.org
@@ -44,6 +44,7 @@ ClassLoader::addClasses(array
 	// Modules
 	'Aurealis\ModuleArticle'         => 'system/modules/tags/modules/ModuleArticle.php',
 	'Contao\ModuleEventlistTags'     => 'system/modules/tags/modules/ModuleEventlistTags.php',
+	'Contao\ModuleEventReaderTags'   => 'system/modules/tags/modules/ModuleEventReaderTags.php',
 	'Contao\ModuleFaqListTags'       => 'system/modules/tags/modules/ModuleFaqListTags.php',
 	'Contao\ModuleGlobalArticlelist' => 'system/modules/tags/modules/ModuleGlobalArticlelist.php',
 	'Contao\ModuleLastEventsTags'    => 'system/modules/tags/modules/ModuleLastEventsTags.php',
@@ -63,6 +64,8 @@ ClassLoader::addClasses(array
 TemplateLoader::addFiles(array
 (
 	'event_default_tags'     => 'system/modules/tags/templates',
+	'event_full_tags'        => 'system/modules/tags/templates/events',
+	'event_list_tags'        => 'system/modules/tags/templates/events',
 	'mod_article_tags'       => 'system/modules/tags/templates',
 	'mod_global_articlelist' => 'system/modules/tags/templates',
 	'mod_tag_contentlist'    => 'system/modules/tags/templates',

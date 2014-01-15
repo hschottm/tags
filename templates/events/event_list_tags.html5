@@ -1,0 +1,30 @@
+
+<?php if ($this->header): ?>
+  <div class="header<?php echo $this->classHeader; ?>">
+    <time datetime="<?php echo $this->datetime; ?>" class="date"><?php echo $this->firstDate; ?></time><?php if ($this->firstDay): ?> <span class="day">(<?php echo $this->firstDay; ?>)</span><?php endif; ?>
+  </div>
+<?php endif; ?>
+
+<div class="event layout_list<?php echo $this->classList; ?>">
+
+  <h2><a href="<?php echo $this->href; ?>" title="<?php echo $this->title; ?> (<?php if ($this->day): echo $this->day; ?>, <?php endif; echo $this->date; if ($this->time): ?>, <?php echo $this->time; endif; ?>)"<?php echo $this->target; ?>><?php echo $this->link; ?></a></h2>
+
+  <?php if ($this->time || $this->span): ?>
+    <p class="time"><?php echo $this->time . $this->span; ?></p>
+  <?php endif; ?>
+
+  <div class="ce_text">
+    <?php echo $this->details; ?>
+  </div>
+
+	<?php if ($this->showTags): ?>
+
+	<?php if (count($this->taglist)): ?>
+	<ul class="tag-chain">
+	<?php $counter = 0; foreach ($this->taglist as $tag): ?>
+	<li class="tag-chain-item<?php if ($counter == 0) echo ' first'; ?><?php if ($counter == count($this->taglist)-1) echo ' last'; ?><?php if ($this->showTagClass) echo ' ' . $tag['class']; ?>"><?php echo $tag['url']; ?></li>
+	<?php $counter++; endforeach; ?>
+	</ul>
+	<?php endif; ?>
+	<?php endif; ?>
+</div>

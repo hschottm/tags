@@ -60,6 +60,7 @@ $GLOBALS['FE_MOD']['news']['newslist'] = 'ModuleNewsListTags';
 $GLOBALS['FE_MOD']['news']['newsarchive'] = 'ModuleNewsArchiveTags';
 $GLOBALS['FE_MOD']['news']['newsreader'] = 'ModuleNewsReaderTags';
 $GLOBALS['FE_MOD']['events']['eventlist'] = 'ModuleEventlistTags';
+$GLOBALS['FE_MOD']['events']['eventreader'] = 'ModuleEventReaderTags';
 $GLOBALS['FE_MOD']['faq']['faqlist'] = 'ModuleFaqListTags';
 
 if (array_key_exists('last_events', $GLOBALS['FE_MOD']['events']))

@@ -90,11 +90,14 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['taglistbycategory'] = '{title_legen
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']);
-$GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']);
+$GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']);
+$GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader'] = str_replace('{template_legend', '{showtags_legend},event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'tag_topten';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'news_showtags';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'event_showtags';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['tag_topten']    = 'tag_topten_number,tag_topten_expanded,tag_all_expanded';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['news_showtags']    = 'tag_jumpTo,tag_named_class';
+$GLOBALS['TL_DCA']['tl_module']['subpalettes']['event_showtags']    = 'tag_jumpTo,tag_named_class';
 
 /**
  * Add fields to tl_module
@@ -227,6 +230,14 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_all_expanded'] = array
 $GLOBALS['TL_DCA']['tl_module']['fields']['news_showtags'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['news_showtags'],
+	'inputType'               => 'checkbox',
+	'eval'                    => array('submitOnChange'=>true),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['event_showtags'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['event_showtags'],
 	'inputType'               => 'checkbox',
 	'eval'                    => array('submitOnChange'=>true),
 	'sql'                     => "char(1) NOT NULL default ''"

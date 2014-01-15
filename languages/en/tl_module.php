@@ -45,6 +45,7 @@ $GLOBALS['TL_LANG']['tl_module']['tag_topten_number']   = array('Number of Top T
 $GLOBALS['TL_LANG']['tl_module']['tag_all_expanded']    = array('Expand All Tags', 'Expand the \'All Tags\' tag cloud. All tags in this cloud are visible.');
 $GLOBALS['TL_LANG']['tl_module']['tag_related']         = array('Show related tags', 'Select this option to show all related tags of a previously selected tag.');
 $GLOBALS['TL_LANG']['tl_module']['news_showtags']       = array('Show news tags', 'Select this option to show all assigned tags below each news entry. This only works if you use a tag enabled news template, e.g. news_full_tags');
+$GLOBALS['TL_LANG']['tl_module']['event_showtags']       = array('Show event tags', 'Select this option to show all assigned tags below each event. This only works if you use a tag enabled event template, e.g. event_..._tags');
 $GLOBALS['TL_LANG']['tl_module']['tag_ignore']          = array('Ignore tags', 'Force this module to ignore tag related actions (e.g. only show news entries of a given tag)');
 $GLOBALS['TL_LANG']['tl_module']['keep_url_params']     = array('Keep URL parameters', 'Keep Contao specific URL parameters (e.g. date parameters of news archives) in the tag links');
 $GLOBALS['TL_LANG']['tl_module']['objecttype']          = array('Object type', 'Please select the type of object that should be shown in this list.');
