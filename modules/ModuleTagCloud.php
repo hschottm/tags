@@ -86,6 +86,7 @@ class ModuleTagCloud extends \Module
 		if (strlen($this->tag_tagtable)) $taglist->tagtable = $this->tag_tagtable;
 		if (strlen($this->tag_tagfield)) $taglist->tagfield = $this->tag_tagfield;
 		if (strlen($this->tag_sourcetables)) $taglist->fortable = deserialize($this->tag_sourcetables, TRUE);
+		if (strlen($this->tag_topten_number) && $this->tag_topten_number > 0) $taglist->topnumber = $this->tag_topten_number;
 		if (strlen($this->tag_maxtags)) $taglist->maxtags = $this->tag_maxtags;
 		if (strlen($this->tag_buckets) && $this->tag_buckets > 0) $taglist->buckets = $this->tag_buckets;
 		if (strlen($this->pagesource)) $taglist->pagesource = deserialize($this->pagesource, TRUE);
@@ -201,7 +202,7 @@ class ModuleTagCloud extends \Module
 		$this->Template->relatedtags = $this->arrRelated;
 		$this->Template->strRelatedTags = $GLOBALS['TL_LANG']['tl_module']['tag_relatedtags'];
 		$this->Template->strAllTags = $GLOBALS['TL_LANG']['tl_module']['tag_alltags'];
-		$this->Template->strTopTenTags = $GLOBALS['TL_LANG']['tl_module']['tag_topten'][0];
+		$this->Template->strTopTenTags = sprintf($GLOBALS['TL_LANG']['tl_module']['top_tags'], $this->tag_topten_number);
 		$this->Template->tagcount = count($this->arrTags);
 		$this->Template->selectedtags = (strlen(\Input::get('tag'))) ? (count($this->arrRelated)+1) : 0;
 		if ($this->tag_show_reset)

@@ -39,8 +39,9 @@ $GLOBALS['TL_LANG']['tl_module']['tag_maxtags']         = array('Maximum number 
 $GLOBALS['TL_LANG']['tl_module']['tag_buckets']         = array('Number of tag sizes', 'Please enter the number of tag sizes in the frontend. Every group of tags gets its own tag size in the frontend. The tag sizes will be give as CSS selectors size1, size2, size3 ... size<em>n</em>.');
 $GLOBALS['TL_LANG']['tl_module']['tag_named_class']     = array('Use tag classname', 'Adds an additional CSS class class for every tag which contains the tag name. Use this extra class name for additional styling of tags via CSS. Spaces in the tag names will be replaced with underscores in the CSS class names.');
 $GLOBALS['TL_LANG']['tl_module']['tag_on_page_class']   = array('Tag exists on page', 'Adds an additional CSS class (\'here\') for every tag that has been assigned to the actual page.');
-$GLOBALS['TL_LANG']['tl_module']['tag_topten']          = array('Top 10 Tags', 'Show the Top 10 Tags above the tag cloud.');
-$GLOBALS['TL_LANG']['tl_module']['tag_topten_expanded'] = array('Expand Top 10 Tags', 'Expand the Top 10 Tags tag cloud. All tags in this cloud are visible.');
+$GLOBALS['TL_LANG']['tl_module']['tag_topten']          = array('Top Tags', 'Show the Top Tags above the tag cloud.');
+$GLOBALS['TL_LANG']['tl_module']['tag_topten_expanded'] = array('Expand Top Tags', 'Expand the Top Tags tag cloud. All tags in this cloud are visible.');
+$GLOBALS['TL_LANG']['tl_module']['tag_topten_number']   = array('Number of Top Tags', 'Enter the maximum number that should be used for the Top Tags.');
 $GLOBALS['TL_LANG']['tl_module']['tag_all_expanded']    = array('Expand All Tags', 'Expand the \'All Tags\' tag cloud. All tags in this cloud are visible.');
 $GLOBALS['TL_LANG']['tl_module']['tag_related']         = array('Show related tags', 'Select this option to show all related tags of a previously selected tag.');
 $GLOBALS['TL_LANG']['tl_module']['news_showtags']       = array('Show news tags', 'Select this option to show all assigned tags below each news entry. This only works if you use a tag enabled news template, e.g. news_full_tags');
@@ -65,6 +66,7 @@ $GLOBALS['TL_LANG']['tl_module']['tag_clear_tags']      = "Clear selected tags";
 $GLOBALS['TL_LANG']['tl_module']['tl_calendar_events']  = "Events";
 $GLOBALS['TL_LANG']['tl_module']['tl_page']             = "Pages";
 $GLOBALS['TL_LANG']['tl_module']['tags']                = "Tags";
+$GLOBALS['TL_LANG']['tl_module']['top_tags']            = 'Top %s Tags';
 
 /**
  * Legends

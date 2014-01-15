@@ -33,10 +33,12 @@ $GLOBALS['TL_LANG']['tl_module']['tag_named_class']['0'] = "Auszeichnungs-Klasse
 $GLOBALS['TL_LANG']['tl_module']['tag_named_class']['1'] = "Fügt einen zusätzlichen CSS Klassennamen für jede Auszeichnung hinzu, der aus dem Namen der jeweiligen Auszeichnung besteht. Damit können einzelne Auszeichnungen individuell per CSS angepasst werden. Leerzeichen in den Auszeichnungsnamen werden für die CSS-Klassennamen in Unterstriche umgewandelt.";
 $GLOBALS['TL_LANG']['tl_module']['tag_on_page_class']['0'] = "Auszeichnung auf aktueller Seite";
 $GLOBALS['TL_LANG']['tl_module']['tag_on_page_class']['1'] = "Fügt einen zusätzlichen CSS Klassennamen ('here') für jede Auszeichnung hinzu, die auf der aktuellen Seite vergeben wurde.";
-$GLOBALS['TL_LANG']['tl_module']['tag_topten']['0'] = "Top 10 Auszeichnungen";
-$GLOBALS['TL_LANG']['tl_module']['tag_topten']['1'] = "Die Top 10 Auszeichnungen über der Tag Cloud ausgeben.";
-$GLOBALS['TL_LANG']['tl_module']['tag_topten_expanded']['0'] = "Top 10 Auszeichnungen sind aufgeklappt";
-$GLOBALS['TL_LANG']['tl_module']['tag_topten_expanded']['1'] = "Die Tag Cloud mit den Top 10 Auszeichnungen ist aufgeklappt, d.h. alle drin enthaltenen Auszeichnungen sind sichtbar.";
+$GLOBALS['TL_LANG']['tl_module']['tag_topten']['0'] = "Top Auszeichnungen";
+$GLOBALS['TL_LANG']['tl_module']['tag_topten']['1'] = "Die Top Auszeichnungen über der Tag Cloud ausgeben.";
+$GLOBALS['TL_LANG']['tl_module']['tag_topten_number']['0'] = "Anzahl der Top Auszeichnungen";
+$GLOBALS['TL_LANG']['tl_module']['tag_topten_number']['1'] = "Geben Sie an, welche maximale Anzahl der am häufigsten verwendeten Auszeichnungen ausgegeben werden soll.";
+$GLOBALS['TL_LANG']['tl_module']['tag_topten_expanded']['0'] = "Top Auszeichnungen sind aufgeklappt";
+$GLOBALS['TL_LANG']['tl_module']['tag_topten_expanded']['1'] = "Die Tag Cloud mit den Top Auszeichnungen ist aufgeklappt, d.h. alle drin enthaltenen Auszeichnungen sind sichtbar.";
 $GLOBALS['TL_LANG']['tl_module']['tag_all_expanded']['0'] = "Alle Auszeichnungen sind aufgeklappt";
 $GLOBALS['TL_LANG']['tl_module']['tag_all_expanded']['1'] = "Die Tag Cloud mit den allen Auszeichnungen ist aufgeklappt, d.h. alle drin enthaltenen Auszeichnungen sind sichtbar.";
 $GLOBALS['TL_LANG']['tl_module']['tag_related']['0'] = "Zugehörige Auszeichnungen";
@@ -82,5 +84,6 @@ $GLOBALS['TL_LANG']['tl_module']['tagscope_legend'] = "Einstellungen für verwen
 $GLOBALS['TL_LANG']['tl_module']['tag_clear_tags'] = "Ausgewählte Auszeichnungen zurücksetzen";
 $GLOBALS['TL_LANG']['tl_module']['object_selection_legend'] = "Objekttypen";
 $GLOBALS['TL_LANG']['tl_module']['tags'] = "Auszeichnungen";
+$GLOBALS['TL_LANG']['tl_module']['top_tags'] = 'Top %s Auszeichnungen';
 
 ?>

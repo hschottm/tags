@@ -93,7 +93,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']  = str_replace('{templat
 $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'tag_topten';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'news_showtags';
-$GLOBALS['TL_DCA']['tl_module']['subpalettes']['tag_topten']    = 'tag_topten_expanded,tag_all_expanded';
+$GLOBALS['TL_DCA']['tl_module']['subpalettes']['tag_topten']    = 'tag_topten_number,tag_topten_expanded,tag_all_expanded';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['news_showtags']    = 'tag_jumpTo,tag_named_class';
 
 /**
@@ -191,6 +191,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_topten'] = array
 	'inputType'               => 'checkbox',
 	'eval'                    => array('submitOnChange'=>true),
 	'sql'                     => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['tag_topten_number'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_topten_number'],
+	'default'                 => '10',
+	'inputType'               => 'text',
+	'eval'                    => array('maxlength'=>3, 'rgxp'=> 'digit', 'mandatory' => true, 'tl_class'=>'long'),
+	'sql'                     => "varchar(3) NOT NULL default '10'"
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tag_related'] = array
