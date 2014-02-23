@@ -157,10 +157,6 @@ class TagHelper extends \Backend
 		$res = false;
 		if (count($arrTags))
 		{
-			if ($max_tags > 0)
-			{
-				$arrTags = array_slice($arrTags,0,$max_tags);
-			}
 			$arrTagsWithCount = $this->Database->prepare("SELECT tag, COUNT(tag) as tagcount FROM tl_tag WHERE from_table = ? GROUP BY tag ORDER BY tag ASC")
 				->execute($table)
 				->fetchAllAssoc();
@@ -176,6 +172,10 @@ class TagHelper extends \Backend
 			if ($relevance == 1)
 			{
 				usort($arrTags, array($this, 'sortByRelevance'));
+			}
+			if ($max_tags > 0)
+			{
+				$arrTags = array_slice($arrTags,0,$max_tags);
 			}
 			if (strlen($target))
 			{
