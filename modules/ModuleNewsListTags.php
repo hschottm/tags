@@ -63,7 +63,6 @@ class ModuleNewsListTags extends \ModuleNewsList
 	{
 		$offset = intval($this->skipFirst);
 		$limit = null;
-		$this->Template->articles = array();
 
 		// Maximum number of items
 		if ($this->numberOfItems > 0)
@@ -85,12 +84,14 @@ class ModuleNewsListTags extends \ModuleNewsList
 			$blnFeatured = null;
 		}
 
+		$this->Template->articles = array();
+		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyList'];
+
 		// Get the total number of items
 		$intTotal = \TagsNewsModel::countPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured);
 
 		if ($intTotal < 1)
 		{
-			$this->Template->articles = array();
 			return;
 		}
 
@@ -124,15 +125,16 @@ class ModuleNewsListTags extends \ModuleNewsList
 			// Set limit and offset
 			$limit = $this->perPage;
 			$offset += (max($page, 1) - 1) * $this->perPage;
+			$skip = intval($this->skipFirst);
 
 			// Overall limit
-			if ($offset + $limit > $total)
+			if ($offset + $limit > $total + $skip)
 			{
-				$limit = $total - $offset;
+				$limit = $total + $skip - $offset;
 			}
 
 			// Add the pagination menu
-			$objPagination = new \Pagination($total, $this->perPage, 7, $id);
+			$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
 			$this->Template->pagination = $objPagination->generate("\n  ");
 		}
 
@@ -146,16 +148,14 @@ class ModuleNewsListTags extends \ModuleNewsList
 			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, 0, $offset);
 		}
 
-		// No items found
-		if ($objArticles === null)
-		{
-			$this->Template = new \FrontendTemplate('mod_newsarchive_empty');
-		}
-		else
+		// Add the articles
+		if ($objArticles !== null)
 		{
 			$this->Template->articles = $this->parseArticles($objArticles);
 		}
 
+		$this->Template->archives = $this->news_archives;
+		
 		// new code for tags
 		$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
 		$headlinetags = array();
