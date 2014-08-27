@@ -157,7 +157,7 @@ class TagField extends \TextField
 		}
 		$list .= '</ul></div>';
 		$value = (!$this->blnSubmitInput) ? $this->readTags() : $this->varValue;
-		return sprintf($list.'<input type="text" name="%s" id="ctrl_%s" class="tl_text%s" value="%s"%s onfocus="Backend.getScrollOffset();" />',
+		return $list.sprintf('<input type="text" name="%s" id="ctrl_%s" class="tl_text%s" value="%s"%s onfocus="Backend.getScrollOffset();" />',
 						$this->strName,
 						$this->strId,
 						(strlen($this->strClass) ? ' ' . $this->strClass : ''),
