@@ -340,7 +340,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 			$objTemplate->showTags = $this->event_showtags;
 			if ($this->event_showtags)
 			{
-				$helper = new TagHelper();
+				$helper = new \TagHelper();
 				$tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
 				$tags = $tagsandlist['tags'];
 				$taglist = $tagsandlist['taglist'];
