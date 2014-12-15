@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at http://www.gnu.org/licenses/.
@@ -51,36 +51,63 @@ class TagList extends \System
 	protected $arrPages = array();
 	protected $arrArticles = array();
 	protected $intTopNumber = 10;
-	
-	function __construct($forTable = "") 
+
+	function __construct($forTable = "")
 	{
 		parent::__construct();
 		$this->forTable = $forTable;
 		$this->import('Database');
 	}
-	
-	public function getRelatedTagList($for_tags)
+
+	public function getRelatedTagList($for_tags, $blnExcludeUnpublishedItems = true)
 	{
 		if (!is_array($for_tags)) return array();
 
 		$tagtable = (strlen($this->strTagTable)) ? $this->strTagTable : "tl_tag";
 		$tagfield = (strlen($this->strTagField)) ? $this->strTagField : "tag";
 
+		if (TL_MODE == 'BE')
+		{
+			$blnExcludeUnpublishedItems = false;
+		}
+
 		$ids = array();
 		if (is_array($this->forTable))
 		{
-			$keys = array();
-			$values = array();
-			foreach ($this->forTable as $table)
+			$arrForTable = $this->forTable;
+		}
+		elseif (strlen($this->forTable))
+		{
+			$arrForTable = (array) $this->forTable;
+		}
+
+		if (is_array($arrForTable))
+		{
+			$arrTableSql = array();
+			foreach ($arrForTable as $strTable)
 			{
-				array_push($keys, 'from_table = ?');
-				array_push($values, $table);
+				if ($blnExcludeUnpublishedItems && $this->Database->fieldExists('published', $strTable))
+				{
+					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') AND $tagfield = ?";
+				}
+				else
+				{
+					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable WHERE from_table='$strTable' AND $tagfield = ?";
+				}
 			}
+
 			$ids = array();
 			for ($i = 0; $i < count($for_tags); $i++)
 			{
-				$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE (" . join($keys, " OR ") . ") AND $tagfield = ? ORDER BY id ASC")
-					->execute(array_merge($values, array($for_tags[$i])))
+				$arrSql = array();
+				$values = array();
+				foreach ($arrTableSql as $sql)
+				{
+					$arrSql[] = $sql;
+					$values[] = $for_tags[$i];
+				}
+				$arr = $this->Database->prepare(implode(" UNION ", $arrSql))
+					->execute($values)
 					->fetchEach('tid');
 				if ($i == 0)
 				{
@@ -94,40 +121,26 @@ class TagList extends \System
 		}
 		else
 		{
-			if (strlen($this->forTable))
+			$ids = array();
+
+			$strCondPublished = '';
+			if ($blnExcludeUnpublishedItems && $this->Database->fieldExists('published', $tagtable))
 			{
-				$ids = array();
-				for ($i = 0; $i < count($for_tags); $i++)
-				{
-					$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE from_table = ? AND $tagfield = ? ORDER BY id ASC")
-						->execute(array($this->forTable, $for_tags[$i]))
-						->fetchEach('tid');
-					if ($i == 0)
-					{
-						$ids = $arr;
-					}
-					else
-					{
-						$ids = array_intersect($ids, $arr);
-					}
-				}
+				$strCondPublished = " AND published='1'";
 			}
-			else
+
+			for ($i = 0; $i < count($for_tags); $i++)
 			{
-				$ids = array();
-				for ($i = 0; $i < count($for_tags); $i++)
+				$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE $tagfield = ? $strCondPublished")
+					->execute($for_tags[$i])
+					->fetchEach('tid');
+				if ($i == 0)
 				{
-					$arr = $this->Database->prepare("SELECT DISTINCT tid FROM $tagtable WHERE $tagfield = ? ORDER BY id ASC")
-						->execute($for_tags[$i])
-						->fetchEach('tid');
-					if ($i == 0)
-					{
-						$ids = $arr;
-					}
-					else
-					{
-						$ids = array_intersect($ids, $arr);
-					}
+					$ids = $arr;
+				}
+				else
+				{
+					$ids = array_intersect($ids, $arr);
 				}
 			}
 		}
@@ -207,36 +220,65 @@ class TagList extends \System
 		return $arrCloudTags;
 	}
 
-	public function getTagList()
+	public function getTagList($blnExcludeUnpublishedItems = true)
 	{
 		if (count($this->arrCloudTags) == 0)
 		{
 			$tagtable = (strlen($this->strTagTable)) ? $this->strTagTable : "tl_tag";
 			$tagfield = (strlen($this->strTagField)) ? $this->strTagField : "tag";
+
+			if (TL_MODE == 'BE')
+			{
+				$blnExcludeUnpublishedItems = false;
+			}
+
+			$sql = '';
+			$arrSql = array();
+
 			if (is_array($this->forTable))
 			{
-				$keys = array();
-				$values = array();
-				for ($i = 0; $i < count($this->forTable); $i++)
-				{
-					array_push($keys, 'from_table = ?');
-				}
-				$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . join($keys, " OR ") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
-					->execute($this->forTable);
+				$arrForTable = $this->forTable;
 			}
-			else
+			elseif (strlen($this->forTable))
 			{
-				if (strlen($this->forTable))
+				$arrForTable = (array) $this->forTable;
+			}
+
+			if (is_array($arrForTable))
+			{
+				foreach ($arrForTable as $strTable)
 				{
-					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE from_table = ? GROUP BY $tagfield ORDER BY $tagfield ASC")
-						->execute($this->forTable);
+					if ($blnExcludeUnpublishedItems && $this->Database->fieldExists('published', $strTable))
+					{
+						$arrSql[] = "SELECT $tagfield, from_table, COUNT($tagfield) AS count FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') GROUP BY $tagfield";
+					}
+					else
+					{
+						$arrSql[] = "SELECT $tagfield, from_table, COUNT($tagfield) AS count FROM $tagtable	WHERE from_table='$strTable' GROUP BY $tagfield";
+					}
+				}
+				if (count($arrSql) > 1)
+				{
+					$sql = "SELECT $tagfield AS tag, from_table, SUM(count) AS count FROM (" . implode(" UNION ", $arrSql). ") temp GROUP BY tag";
 				}
 				else
 				{
-					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable GROUP BY $tagfield ORDER BY $tagfield ASC")
-						->execute();
+					$sql = $arrSql[0];
 				}
 			}
+			else
+			{
+				$strCondPublished = '';
+				if ($blnExcludeUnpublishedItems && $this->Database->fieldExists('published', $tagtable))
+				{
+					$strCondPublished = "WHERE published='1'";
+				}
+
+				$sql = "SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable $strCondPublished GROUP BY $tagfield ORDER BY $tagfield ASC";
+			}
+
+			$objTags = $this->Database->prepare($sql)->execute();
+
 			$list = "";
 			$tags = array();
 			if ($objTags->numRows)
@@ -253,7 +295,7 @@ class TagList extends \System
 		}
 		return $this->arrCloudTags;
 	}
-	
+
 	public function getTopTenTagList()
 	{
 		$list = $this->getTagList();
@@ -316,7 +358,7 @@ class TagList extends \System
 
 		return $tags;
 	}
-	
+
 	/**
 	 * Generate a class name from a tag name
 	 * @param string
