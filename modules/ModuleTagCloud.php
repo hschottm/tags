@@ -154,6 +154,10 @@ class ModuleTagCloud extends \Module
 			{
 				$this->arrTags[$idx]['tag_class'] .= ' active';
 			}
+			if (in_array($tag['tag_name'], (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array()))
+			{
+				$this->arrTags[$idx]['tag_class'] .= ' related';
+			}
 			if ($this->checkForArticleOnPage)
 			{
 				global $objPage;
