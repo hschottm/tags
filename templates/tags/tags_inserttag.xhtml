@@ -1,0 +1,5 @@
+<ul class="tagged">
+<?php foreach ($this->tags as $tag): ?>
+	<li><?php if (strlen($tag['url'])): ?><a href="<?php echo $tag['url']; ?>" alt="<?php echo htmlspecialchars($tag['tag']) . ' (' . $tag['tagcount'] . ')' ?>" title="<?php echo htmlspecialchars($tag['tag']) . ' (' . $tag['tagcount'] . ')' ?>"><?php endif; ?><?php echo $tag['tag']; ?><?php if (strlen($tag['url'])): ?></a><?php endif; ?></li>
+<?php endforeach; ?>
+</ul>

@@ -3,11 +3,9 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * Copyright (c) 2005-2015 Leo Feyer
  *
- * @package Tags
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license LGPL-3.0+
  */
 
 
@@ -63,18 +61,18 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
-	'event_default_tags'     => 'system/modules/tags/templates',
+	'event_default_tags'     => 'system/modules/tags/templates/events',
 	'event_full_tags'        => 'system/modules/tags/templates/events',
 	'event_list_tags'        => 'system/modules/tags/templates/events',
-	'mod_article_tags'       => 'system/modules/tags/templates',
-	'mod_global_articlelist' => 'system/modules/tags/templates',
-	'mod_tag_contentlist'    => 'system/modules/tags/templates',
-	'mod_tag_listbycategory' => 'system/modules/tags/templates',
-	'mod_tagcloud'           => 'system/modules/tags/templates',
-	'mod_tagscope'           => 'system/modules/tags/templates',
-	'news_full_tags'         => 'system/modules/tags/templates',
-	'taglist'                => 'system/modules/tags/templates',
-	'tags_feed'              => 'system/modules/tags/templates',
-	'tags_inserttag'         => 'system/modules/tags/templates',
-	'tags_used'              => 'system/modules/tags/templates',
+	'mod_article_tags'       => 'system/modules/tags/templates/modules',
+	'mod_global_articlelist' => 'system/modules/tags/templates/modules',
+	'mod_tag_contentlist'    => 'system/modules/tags/templates/modules',
+	'mod_tag_listbycategory' => 'system/modules/tags/templates/modules',
+	'mod_tagcloud'           => 'system/modules/tags/templates/modules',
+	'mod_tagscope'           => 'system/modules/tags/templates/modules',
+	'news_full_tags'         => 'system/modules/tags/templates/news',
+	'taglist'                => 'system/modules/tags/templates/tags',
+	'tags_feed'              => 'system/modules/tags/templates/tags',
+	'tags_inserttag'         => 'system/modules/tags/templates/tags',
+	'tags_used'              => 'system/modules/tags/templates/tags',
 ));

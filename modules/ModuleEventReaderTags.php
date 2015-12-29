@@ -30,6 +30,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 	 */
 	protected function compile()
 	{
+		/** @var \PageModel $objPage */
 		global $objPage;
 
 		$this->Template->event = '';
@@ -39,16 +40,11 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		// Get the current event
 		$objEvent = \CalendarEventsModel::findPublishedByParentAndIdOrAlias(\Input::get('events'), $this->cal_calendar);
 
-		if ($objEvent === null)
+		if (null === $objEvent)
 		{
-			// Do not index or cache the page
-			$objPage->noSearch = 1;
-			$objPage->cache = 0;
-
-			// Send a 404 header
-			header('HTTP/1.1 404 Not Found');
-			$this->Template->event = '<p class="error">' . sprintf($GLOBALS['TL_LANG']['MSC']['invalidPage'], \Input::get('events')) . '</p>';
-			return;
+			/** @var \PageError404 $objHandler */
+			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
+			$objHandler->generate($objPage->id);
 		}
 
 		// Overwrite the page title (see #2853 and #4955)
@@ -127,17 +123,18 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			$size = deserialize($this->imgSize);
 
-			if ($size[0] > 0 || $size[1] > 0)
+			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
 			{
 				$objEvent->size = $this->imgSize;
 			}
 		}
 
+		/** @var \FrontendTemplate|object $objTemplate */
 		$objTemplate = new \FrontendTemplate($this->cal_template);
 		$objTemplate->setData($objEvent->row());
 
 		$objTemplate->date = $date;
-		$objTemplate->start = $intStartTime;
+		$objTemplate->begin = $intStartTime;
 		$objTemplate->end = $intEndTime;
 		$objTemplate->class = ($objEvent->cssClass != '') ? ' ' . $objEvent->cssClass : '';
 		$objTemplate->recurring = $recurring;
@@ -151,7 +148,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			while ($objElement->next())
 			{
-				$objTemplate->details .= $this->getContentElement($objElement->id);
+				$objTemplate->details .= $this->getContentElement($objElement->current());
 			}
 		}
 
@@ -187,7 +184,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
 		}
 
-		////////// CHANGES BY ModuleEventlistTags
+		////////// CHANGES BY ModuleEventReaderTags
 		$objTemplate->showTags = $this->event_showtags;
 		if ($this->event_showtags)
 		{
@@ -199,7 +196,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$objTemplate->tags = $tags;
 			$objTemplate->taglist = $taglist;
 		}
-		////////// CHANGES BY ModuleEventlistTags
+		////////// CHANGES BY ModuleEventReaderTags
 
 		$this->Template->event = $objTemplate->parse();
 
@@ -207,9 +204,11 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		if ($objEvent->noComments || !in_array('comments', \ModuleLoader::getActive()))
 		{
 			$this->Template->allowComments = false;
+
 			return;
 		}
 
+		/** @var \CalendarModel $objCalendar */
 		$objCalendar = $objEvent->getRelated('pid');
 		$this->Template->allowComments = $objCalendar->allowComments;
 
@@ -235,6 +234,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		// Notify the author
 		if ($objCalendar->notify != 'notify_admin')
 		{
+			/** @var \UserModel $objAuthor */
 			if (($objAuthor = $objEvent->getRelated('author')) !== null && $objAuthor->email != '')
 			{
 				$arrNotifies[] = $objAuthor->email;

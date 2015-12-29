@@ -43,7 +43,7 @@ class ModuleFaqListTags extends \ModuleFaqList
 {
 
 	/**
-	 * Generate module
+	 * Generate the module
 	 */
 	protected function compile()
 	{
@@ -84,6 +84,7 @@ class ModuleFaqListTags extends \ModuleFaqList
 		if ($objFaq === null)
 		{
 			$this->Template->faq = array();
+
 			return;
 		}
 
@@ -93,12 +94,15 @@ class ModuleFaqListTags extends \ModuleFaqList
 		while ($objFaq->next())
 		{
 			$arrTemp = $objFaq->row();
-
 			$arrTemp['title'] = specialchars($objFaq->question, true);
 			$arrTemp['href'] = $this->generateFaqLink($objFaq);
 
+			/** @var \FaqCategoryModel $objPid */
+			$objPid = $objFaq->getRelated('pid');
+
 			$arrFaq[$objFaq->pid]['items'][] = $arrTemp;
-			$arrFaq[$objFaq->pid]['headline'] = $objFaq->getRelated('pid')->headline;
+			$arrFaq[$objFaq->pid]['headline'] = $objPid->headline;
+			$arrFaq[$objFaq->pid]['title'] = $objPid->title;
 		}
 
 		$arrFaq = array_values(array_filter($arrFaq));
@@ -122,6 +126,7 @@ class ModuleFaqListTags extends \ModuleFaqList
 
 		$this->Template->faq = $arrFaq;
 	}
+
 }
 
 ?>

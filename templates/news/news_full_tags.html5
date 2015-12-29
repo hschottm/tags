@@ -1,23 +1,22 @@
 
-<div class="event layout_full block<?= $this->class ?>">
+<div class="layout_full block<?= $this->class ?>">
 
-  <h1><?= $this->title ?></h1>
-  <p class="info"><?= $this->date ?></p>
+  <h1><?= $this->newsHeadline ?></h1>
 
-  <?php if ($this->recurring): ?>
-    <p class="recurring"><?= $this->recurring ?><?php if ($this->until) echo ' ' . $this->until; ?>.</p>
+  <?php if ($this->hasMetaFields): ?>
+    <p class="info"><time datetime="<?= $this->datetime ?>"><?= $this->date ?></time> <?= $this->author ?> <?= $this->commentCount ?></p>
   <?php endif; ?>
 
-  <?php if ($this->details): ?>
-    <?= $this->details ?>
+  <?php if ($this->hasSubHeadline): ?>
+    <h2><?= $this->subHeadline ?></h2>
+  <?php endif; ?>
+
+  <?php if ($this->text): ?>
+    <?= $this->text ?>
   <?php else: ?>
     <div class="ce_text block">
       <?= $this->teaser ?>
     </div>
-  <?php endif; ?>
-
-  <?php if ($this->location): ?>
-    <p class="location"><?= $this->locationLabel ?>: <?= $this->location ?></p>
   <?php endif; ?>
 
   <?php if ($this->enclosure): ?>

@@ -1,29 +1,28 @@
 
-<div class="event layout_full block<?= $this->class ?>">
+<div class="layout_full block<?= $this->class ?>">
 
-  <h1><?= $this->title ?></h1>
-  <p class="info"><?= $this->date ?></p>
+  <h1><?= $this->newsHeadline ?></h1>
 
-  <?php if ($this->recurring): ?>
-    <p class="recurring"><?= $this->recurring ?><?php if ($this->until) echo ' ' . $this->until; ?>.</p>
+  <?php if ($this->hasMetaFields): ?>
+    <p class="info"><?= $this->date ?> <?= $this->author ?> <?= $this->commentCount ?></p>
   <?php endif; ?>
 
-  <?php if ($this->details): ?>
-    <?= $this->details ?>
+  <?php if ($this->hasSubHeadline): ?>
+    <h2><?= $this->subHeadline ?></h2>
+  <?php endif; ?>
+
+  <?php if ($this->text): ?>
+    <?= $this->text ?>
   <?php else: ?>
     <div class="ce_text block">
       <?= $this->teaser ?>
     </div>
   <?php endif; ?>
 
-  <?php if ($this->location): ?>
-    <p class="location"><?= $this->locationLabel ?>: <?= $this->location ?></p>
-  <?php endif; ?>
-
   <?php if ($this->enclosure): ?>
     <div class="enclosure">
       <?php foreach ($this->enclosure as $enclosure): ?>
-        <p><img src="<?= $enclosure['icon'] ?>" width="18" height="18" alt="<?= $enclosure['mime'] ?>" class="mime_icon"> <a href="<?= $enclosure['href'] ?>" title="<?= $enclosure['title'] ?>"><?= $enclosure['link'] ?> <span class="size">(<?= $enclosure['filesize'] ?>)</span></a></p>
+        <p><img src="<?= $enclosure['icon'] ?>" width="18" height="18" alt="<?= $enclosure['mime'] ?>" class="mime_icon" /> <a href="<?= $enclosure['href'] ?>" title="<?= $enclosure['title'] ?>"><?= $enclosure['link'] ?> <span class="size">(<?= $enclosure['filesize'] ?>)</span></a></p>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>

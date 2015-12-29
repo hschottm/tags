@@ -94,8 +94,14 @@ class ModuleEventlistTags extends \ModuleEventlist
 	 */
 	protected function compile()
 	{
+		/** @var \PageModel $objPage */
 		global $objPage;
+
 		$blnClearInput = false;
+
+		$intYear = \Input::get('year');
+		$intMonth = \Input::get('month');
+		$intDay = \Input::get('day');
 
 		// Jump to the current period
 		if (!isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']))
@@ -103,15 +109,15 @@ class ModuleEventlistTags extends \ModuleEventlist
 			switch ($this->cal_format)
 			{
 				case 'cal_year':
-					\Input::setGet('year', date('Y'));
+					$intYear = date('Y');
 					break;
 
 				case 'cal_month':
-					\Input::setGet('month', date('Ym'));
+					$intMonth = date('Ym');
 					break;
 
 				case 'cal_day':
-					\Input::setGet('day', date('Ymd'));
+					$intDay = date('Ymd');
 					break;
 			}
 
@@ -120,31 +126,37 @@ class ModuleEventlistTags extends \ModuleEventlist
 
 		$blnDynamicFormat = (!$this->cal_ignoreDynamic && in_array($this->cal_format, array('cal_day', 'cal_month', 'cal_year')));
 
-		// Display year
-		if ($blnDynamicFormat && \Input::get('year'))
+		// Create the date object
+		try
 		{
-			$this->Date = new \Date(\Input::get('year'), 'Y');
-			$this->cal_format = 'cal_year';
-			$this->headline .= ' ' . date('Y', $this->Date->tstamp);
+			if ($blnDynamicFormat && $intYear)
+			{
+				$this->Date = new \Date($intYear, 'Y');
+				$this->cal_format = 'cal_year';
+				$this->headline .= ' ' . date('Y', $this->Date->tstamp);
+			}
+			elseif ($blnDynamicFormat && $intMonth)
+			{
+				$this->Date = new \Date($intMonth, 'Ym');
+				$this->cal_format = 'cal_month';
+				$this->headline .= ' ' . \Date::parse('F Y', $this->Date->tstamp);
+			}
+			elseif ($blnDynamicFormat && $intDay)
+			{
+				$this->Date = new \Date($intDay, 'Ymd');
+				$this->cal_format = 'cal_day';
+				$this->headline .= ' ' . \Date::parse($objPage->dateFormat, $this->Date->tstamp);
+			}
+			else
+			{
+				$this->Date = new \Date();
+			}
 		}
-		// Display month
-		elseif ($blnDynamicFormat && \Input::get('month'))
+		catch (\OutOfBoundsException $e)
 		{
-			$this->Date = new \Date(\Input::get('month'), 'Ym');
-			$this->cal_format = 'cal_month';
-			$this->headline .= ' ' . \Date::parse('F Y', $this->Date->tstamp);
-		}
-		// Display day
-		elseif ($blnDynamicFormat && \Input::get('day'))
-		{
-			$this->Date = new \Date(\Input::get('day'), 'Ymd');
-			$this->cal_format = 'cal_day';
-			$this->headline .= ' ' . \Date::parse($objPage->dateFormat, $this->Date->tstamp);
-		}
-		// Display all events or upcoming/past events
-		else
-		{
-			$this->Date = new \Date();
+			/** @var \PageError404 $objHandler */
+			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
+			$objHandler->generate($objPage->id);
 		}
 
 		list($strBegin, $strEnd, $strEmpty) = $this->getDatesFromFormat($this->Date, $this->cal_format);
@@ -203,24 +215,20 @@ class ModuleEventlistTags extends \ModuleEventlist
 		if ($this->perPage > 0)
 		{
 			$id = 'page_e' . $this->id;
-			$page = \Input::get($id) ?: 1;
+			$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
 
 			// Do not index or cache the page if the page number is outside the range
 			if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
 			{
-				global $objPage;
-				$objPage->noSearch = 1;
-				$objPage->cache = 0;
-
-				// Send a 404 header
-				header('HTTP/1.1 404 Not Found');
-				return;
+				/** @var \PageError404 $objHandler */
+				$objHandler = new $GLOBALS['TL_PTY']['error_404']();
+				$objHandler->generate($objPage->id);
 			}
 
 			$offset = ($page - 1) * $this->perPage;
 			$limit = min($this->perPage + $offset, $total);
 
-			$objPagination = new \Pagination($total, $this->perPage, $GLOBALS['TL_CONFIG']['maxPaginationLinks'], $id);
+			$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
 			$this->Template->pagination = $objPagination->generate("\n  ");
 		}
 
@@ -237,7 +245,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		{
 			$size = deserialize($this->imgSize);
 
-			if ($size[0] > 0 || $size[1] > 0)
+			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
 			{
 				$imgSize = $this->imgSize;
 			}
@@ -255,6 +263,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$blnIsLastEvent = true;
 			}
 
+			/** @var \FrontendTemplate|object $objTemplate */
 			$objTemplate = new \FrontendTemplate($this->cal_template);
 			$objTemplate->setData($event);
 
@@ -282,11 +291,12 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$objTemplate->details = $event['teaser'];
 			}
 
-			// Add template variables
+			// Add the template variables
 			$objTemplate->classList = $event['class'] . ((($headerCount % 2) == 0) ? ' even' : ' odd') . (($headerCount == 0) ? ' first' : '') . ($blnIsLastEvent ? ' last' : '') . ' cal_' . $event['parent'];
 			$objTemplate->classUpcoming = $event['class'] . ((($eventCount % 2) == 0) ? ' even' : ' odd') . (($eventCount == 0) ? ' first' : '') . ((($offset + $eventCount + 1) >= $limit) ? ' last' : '') . ' cal_' . $event['parent'];
 			$objTemplate->readMore = specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $event['title']));
 			$objTemplate->more = $GLOBALS['TL_LANG']['MSC']['more'];
+			$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
 
 			// Short view
 			if ($this->cal_noSpan)
@@ -405,30 +415,6 @@ class ModuleEventlistTags extends \ModuleEventlist
 		////////// CHANGES BY ModuleEventlistTags
 	}
 
-	/**
-	 * Read tags from database
-	 * @return string
-	 */
-	protected function getFilterTags()
-	{
-		if (strlen($this->tag_filter))
-		{
-			$tags = preg_split("/,/", $this->tag_filter);
-			$placeholders = array();
-			foreach ($tags as $tag)
-			{
-				array_push($placeholders, '?');
-			}
-			array_push($tags, 'tl_calendar_events');
-			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
-				->execute($tags)
-				->fetchEach('tid');
-		}
-		else
-		{
-			return array();
-		}
-	}
 }
 
 ?>
