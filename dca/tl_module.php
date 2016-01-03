@@ -133,8 +133,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_filter'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_filter'],
 	'inputType'               => 'text',
-	'eval'                    => array('maxlength'=>255, 'tl_class' => 'w50'),
-	'sql'                     => "varchar(255) NOT NULL default ''"
+	'eval'                    => array('maxlength'=>1000, 'tl_class' => 'w50'),
+	'sql'                     => "varchar(1000) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tag_tagfield'] = array
