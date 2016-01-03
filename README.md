@@ -117,3 +117,94 @@ The tags extension comes with default tag support for the following Contao eleme
 * Articles
 * Content elements
 * Calendar events
+
+### Using tag clouds to redirect to other Contao modules
+
+For a meaningful usage of a tag cloud you should enter a destination page in the redirect settings of the tag cloud module. The destination page should contain the tag cloud module (if you want to use the related tags) and one of the following Contao modules which have been modified by the tags extension:
+
+* Module News archive: Shows all news articles that are tagged with a selected tag. The heading of the news archive will be shown with the selected tag and the number of selections.
+* Module Newslist: Shows all news articles that are tagged with a selected tag. The heading of the news archive will be shown with the selected tag and the number of selections.
+* Module Global article list: Show a list of articles that are tagged with a selected tag. The heading of the article list will be shown with the selected tag and the number of selections.
+* Module Event list: Shows all events of a selected calenders that are tagged with a selected tag. The heading of the event list will be shown with the selected tag and the number of selections.
+* Module Tag object list: Shows lists of content elements (pages, articles, content elements) with given tags.
+
+### Showing the assigned tags in the frontend
+
+For news articles and articles you can show the assigned tags at the bottom of the content. Therefore you can check the Show article tags or Show news tags option in the particular module and select a destination page for the tag hyperlinks.
+
+The Ignore tags setting ignores all tag related URL parameters. This means that news lists or other modules using this settings cannot be filtered by tags. This is helpful if you have multiple lists on the same page and only want a specific list to be filtered by tags.
+
+These tag settings are available for the modules News reader, News archive, and Article list (Tags). Article list (Tags) is only available if you install the add-on extension tags_articles.
+
+![Tags settings for news objects](https://cloud.githubusercontent.com/assets/873113/12077870/4b6a902c-b1f9-11e5-87f1-32902be026d0.png)
+
+An additional tag list is only shown if you're using a template that is capable of evaluating the tag list template variables. You may check the template news_full_tags for further details. You can make any other template ready for this feature if you copy and paste the related code into the template:
+
+```php
+<?php if ($this->showTags): ?>
+ 
+<?php if (count($this->taglist)): ?>
+<ul class="tag-chain">
+<?php $counter = 0; foreach ($this->taglist as $tag): ?>
+<li class="tag-chain-item<?php if ($counter == 0) echo ' first'; ?>
+<?php if ($counter == count($this->taglist)-1) echo ' last'; ?>
+<?php if ($this->showTagClass) echo ' ' . $tag['class']; ?>"><?php echo $tag['url']; ?></li>
+<?php $counter++; endforeach; ?>
+</ul>
+<?php endif; ?>
+<?php endif; ?>
+```
+
+The CSS styles for this output are already defined in the example CSS files tags_orange.css and tags_oxygen.css. You might use these files as a basis for your own style definitions. A news entry with its assigned tags will look as follows:
+
+![Additional tags at the bottom of a news list entry](https://cloud.githubusercontent.com/assets/873113/12077872/58849b90-b1f9-11e5-9b49-b6e92f243b04.png)
+
+## Content elements
+
+The tags extension extends the Contao content element Heading and introduces an additional parameter Show with tags only into the expert settings. If you check this option Contao only shows the heading if one or more tags are used on the content page, e.g. if the page was opened from a tag cloud.
+
+![Checkbox 'Show with tags only' in the heading content element](https://cloud.githubusercontent.com/assets/873113/12077875/656687c4-b1f9-11e5-90e7-9279ec22195c.png)
+
+You can use this element in combination with the insert tag {{tags_used}} to show a tag specific heading for your content, e.g. Selected Participants {{tags_used}} => Selected Participants (Congress+October+New York)
+
+## Insert Tags
+
+tags adds the following Insert Tags to Contao:
+
+* {{tags_used}}: Will be replaced with a list of the used tags, e.g. (Contao+Extension+tags)
+* {{tags_news::news_id}}: Will be replaced with the list of tags that is assigned to the given news article, e.g. {{tags_news:1}} shows the tags of the news article with ID 1.
+* {{tags_event::event_id}}: Will be replaced with the list of tags that is assigned to the given calendar event, e.g. {{tags_event:1}} shows the tags of the calendar event with ID 1.
+* {{tags_article::article_id}}: Will be replaced with the list of tags that is assigned to the given article, e.g. {{tags_article:1}} shows the tags of the article with ID 1.
+* {{tags_article_url::article_id}}:Will be replaced with the list of linked tags that is assigned to the given article, e.g. {{tags_article_url:1}} shows the tags of the article with ID 1 and links every tag to the page that contains the article.
+* {{tags_content::content_id}}: Will be replaced with the list of tags that is assigned to the given content element, e.g. {{tags_content:1}} shows the tags of the content element with ID 1.
+
+## Additional Contao modules
+
+The tags extension comes with the following new Contao modules:
+
+### Globale article list
+
+The global article list shows a list of all available articles for a given selected tag.
+
+### Special settings for news modules
+
+The news modules Newsreader, News archive, and Newslist use an additional parameter to ignore all tag settings. This might be helpfull if you have multiple modules on a page and only one module should be able to filter its content by a selected tag. If you check the Ignore tags option in the Tag settings section, the modules will ignore any tag related actions.
+
+News modules also contain a Tag filter where you can add a comma separated list of tags. The content of the modules will be filtered by default using the entered tags. This might be helpful if you want to show only lists which are assigned with certain tags.
+
+### Tag object lists
+
+The frontend module Tag object lists can create lists of content elements filtered by given tags. The available object types are the three content element types Page, Article, and Content element. The Object type is the element that will be shown and linked in the generated list if a tag exists, e.g. an object type Pages creates a list URL's to Contao pages, an object type Articles shows links to Contao articles.
+
+The Tag source defines which tag sources are used to generate the list. If you choose tl_article for example, only article tags will be considered.
+
+The Pages selection is used to define a root page for the available content element links. Only links to this page its subpages will be considered for the list.
+
+Example:
+* Object type: Pages
+* Tag source: tl_article
+* Pages: Website root
+
+This creates a list of links to pages that is created from article tags. Only links to the selected website will be considered.
+
+![Tag object list settings](https://cloud.githubusercontent.com/assets/873113/12077878/70aa1f88-b1f9-11e5-8a3e-5773eef28869.png)
