@@ -59,6 +59,7 @@ array_insert($GLOBALS['FE_MOD']['tags'], 4, array
 $GLOBALS['FE_MOD']['news']['newslist'] = 'ModuleNewsListTags';
 $GLOBALS['FE_MOD']['news']['newsarchive'] = 'ModuleNewsArchiveTags';
 $GLOBALS['FE_MOD']['news']['newsreader'] = 'ModuleNewsReaderTags';
+$GLOBALS['FE_MOD']['events']['calendar'] = 'ModuleCalendarTags';
 $GLOBALS['FE_MOD']['events']['eventlist'] = 'ModuleEventlistTags';
 $GLOBALS['FE_MOD']['events']['eventreader'] = 'ModuleEventReaderTags';
 $GLOBALS['FE_MOD']['faq']['faqlist'] = 'ModuleFaqListTags';
