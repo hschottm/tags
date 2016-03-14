@@ -1,16 +1,11 @@
 <?php
 
 /**
- * @copyright  Helmut Schottmüller <contao@aurealis.de>
- * @author     Helmut Schottmüller <contao@aurealis.de>
- * @package    Backend
- * @license    LGPL
- * @filesource
- */
-
-
-/**
- * Table tl_files
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
 
 $disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);

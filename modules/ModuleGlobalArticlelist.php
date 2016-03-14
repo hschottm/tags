@@ -2,16 +2,14 @@
 
 namespace Contao;
 
-if (!defined('TL_ROOT')) die('You can not access this file directly!');
-
 /**
- * Class ModuleGlobalArticlelist
+ * Contao Open Source CMS - tags extension
  *
- * Front end module "article list".
- * @copyright  Helmut Schottmüller 2009
- * @author     Helmut Schottmüller <typolight@aurealis.de>
- * @package    Controller
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 class ModuleGlobalArticlelist extends \Module
 {
 
@@ -129,4 +127,3 @@ class ModuleGlobalArticlelist extends \Module
 	}
 }
 
-?>

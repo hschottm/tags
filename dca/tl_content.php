@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
+ */
+
 $disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
 if (!in_array('tl_content', $disabledObjects))
 {

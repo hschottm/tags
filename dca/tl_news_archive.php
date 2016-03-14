@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
+ */
+
 if (@class_exists("tl_news_archive"))
 {
 	if (is_array($GLOBALS['TL_DCA']['tl_news_archive']['config']['onload_callback']))

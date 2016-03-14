@@ -1,8 +1,13 @@
 <?php
 
 /**
- * Table tl_tag
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 $GLOBALS['TL_DCA']['tl_tag'] = array
 (
 

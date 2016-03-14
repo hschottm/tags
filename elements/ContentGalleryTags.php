@@ -3,13 +3,13 @@
 namespace Contao;
 
 /**
- * Class ContentGalleryTags
+ * Contao Open Source CMS - tags extension
  *
- * Provide methods to handle tag input fields.
- * @copyright  Helmut Schottmüller 2013
- * @author     Helmut Schottmüller <https://github.com/hschottm/>
- * @package    Controller
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 class ContentGalleryTags extends ContentGallery
 {
 	/**

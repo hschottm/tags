@@ -1,29 +1,15 @@
 <?php
 
 /**
- * Contao Open Source CMS
- * 
- * Copyright (C) 2005-2012 Leo Feyer
- * 
- * @package tags
- * @link    http://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
 
-
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Contao;
 
-
-/**
- * Reads and writes calendars
- * 
- * @package   Models
- * @author    Helmut Schottmüller <https://github.com/hschottm>
- * @copyright Helmut Schottmüller 2012
- */
 class TagModel extends \Model
 {
 

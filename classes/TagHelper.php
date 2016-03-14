@@ -1,41 +1,14 @@
 <?php
 
-/**
- * TYPOlight webCMS
- * Copyright (C) 2005 Leo Feyer
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at http://www.gnu.org/licenses/.
- *
- * PHP version 5
- * @copyright  Helmut Schottmüller 2008-2010
- * @author     Helmut Schottmüller <contao@aurealis.de>
- * @package    memberextensions
- * @license    LGPL
- * @filesource
- */
-
-/**
- * Class TagHelper
- *
- * Helper class for tags
- * @copyright  Helmut Schottmüller 2008-2010
- * @author     Helmut Schottmüller <contao@aurealis.de>
- * @package    Controller
- */
-
 namespace Contao;
+
+/**
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
+ */
 
 class TagHelper extends \Backend
 {
@@ -46,6 +19,11 @@ class TagHelper extends \Backend
 	{
 		parent::__construct();
 		$this->import('Database');
+	}
+
+	public function getAllEvents($arrEvents, $arrCalendars, $intStart, $intEnd, $caller)
+	{
+		return $arrEvents;
 	}
 
 	/*
@@ -334,6 +312,7 @@ class TagHelper extends \Backend
 		foreach ($tags as $id => $tag)
 		{
 			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \System::urlencode($tag)));
+			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 			$taglist[$id] = array(
 				'url' => $tags[$id],
@@ -392,4 +371,3 @@ class TagHelper extends \Backend
 	}
 }
 
-?>

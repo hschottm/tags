@@ -1,30 +1,15 @@
 <?php
 
-/**
- * Contao Open Source CMS
- * 
- * Copyright (C) 2005-2012 Leo Feyer
- * 
- * @package Core
- * @link    http://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
- */
-
-
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Aurealis;
 
-
 /**
- * Class ModuleArticle
+ * Contao Open Source CMS - tags extension
  *
- * Provides methodes to handle articles.
- * @copyright  Helmut Schottmüller 2012
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @package    Tags
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 class ModuleArticle extends \Contao\ModuleArticle
 {
 	/**

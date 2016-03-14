@@ -1,27 +1,15 @@
 <?php
 
-/**
- * @package Calendar
- * @copyright  Helmut Schottmüller 2009-2013
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
- */
-
-
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Contao;
 
-
 /**
- * Class ModuleEventReaderTags
+ * Contao Open Source CMS - tags extension
  *
- * Front end module "event reader".
- * @copyright  Helmut Schottmüller 2009-2013
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @package    Calendar
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 class ModuleEventReaderTags extends \ModuleEventReader
 {
 

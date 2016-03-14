@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Class tl_module_tags
+ * Contao Open Source CMS - tags extension
  *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Helmut Schottmüller 2008-2013
- * @author     Helmut Schottmüller <http://www.github.com/hschottm>
- * @package    Controller
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 class tl_module_tags extends tl_module
 {
 	/**
@@ -91,6 +91,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']  = str_replace('{templ
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']);
+$GLOBALS['TL_DCA']['tl_module']['palettes']['calendar']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader'] = str_replace('{template_legend', '{showtags_legend},event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader']);
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'tag_topten';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'news_showtags';

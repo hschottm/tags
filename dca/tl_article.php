@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Contao Open Source CMS - tags extension
+ *
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
+ */
+
 class tl_article_tags extends tl_article
 {
 	public function removeArticle($dc)

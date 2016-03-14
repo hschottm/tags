@@ -1,25 +1,15 @@
 <?php
 
-/**
- * @copyright  Helmut Schottmüller 2009
- * @author     Helmut Schottmüller <typolight@aurealis.de>
- * @package    News
- * @license    LGPL
- * @filesource
- */
-
 namespace Contao;
 
-if (!defined('TL_ROOT')) die('You can not access this file directly!');
-
 /**
- * Class ModuleNewsListTags
+ * Contao Open Source CMS - tags extension
  *
- * Front end module "news list".
- * @copyright  Helmut Schottmüller 2009
- * @author     Helmut Schottmüller <typolight@aurealis.de>
- * @package    Controller
+ * Copyright (c) 2008-2016 Helmut Schottmüller
+ *
+ * @license LGPL-3.0+
  */
+
 class ModuleNewsListTags extends \ModuleNewsList
 {
 	/**
@@ -232,4 +222,3 @@ class ModuleNewsListTags extends \ModuleNewsList
 	}
 }
 
-?>
