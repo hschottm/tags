@@ -125,7 +125,8 @@ For a meaningful usage of a tag cloud you should enter a destination page in the
 * Module News archive: Shows all news articles that are tagged with a selected tag. The heading of the news archive will be shown with the selected tag and the number of selections.
 * Module Newslist: Shows all news articles that are tagged with a selected tag. The heading of the news archive will be shown with the selected tag and the number of selections.
 * Module Global article list: Show a list of articles that are tagged with a selected tag. The heading of the article list will be shown with the selected tag and the number of selections.
-* Module Event list: Shows all events of a selected calenders that are tagged with a selected tag. The heading of the event list will be shown with the selected tag and the number of selections.
+* Module Event list: Shows all events of selected calenders that are tagged with a selected tag. The heading of the event list will be shown with the selected tag and the number of selections.
+* Module Calendar: Shows all events that are tagged with a selected tag. Output the tags of an event when you change the default calendar template.
 * Module Tag object list: Shows lists of content elements (pages, articles, content elements) with given tags.
 
 ### Showing the assigned tags in the frontend
@@ -158,6 +159,48 @@ An additional tag list is only shown if you're using a template that is capable 
 The CSS styles for this output are already defined in the example CSS files tags_orange.css and tags_oxygen.css. You might use these files as a basis for your own style definitions. A news entry with its assigned tags will look as follows:
 
 ![Additional tags at the bottom of a news list entry](https://cloud.githubusercontent.com/assets/873113/12077872/58849b90-b1f9-11e5-9b49-b6e92f243b04.png)
+
+For **calendar modules** it's up to you if you want to show the tags of an event in the calendar. To do so, you need to modify the default calendar template `cal_default` or you create your own `cal_default` based template. To show the tags you can access the `tags` or `taglist` fields of the respective events, e.g.
+
+```php
+          <?php foreach ($day['events'] as $event): ?>
+            <div class="event cal_<?= $event['parent'] ?><?= $event['class'] ?>">
+              <a href="<?= $event['href'] ?>" title="<?= $event['title'] ?> (<?php if ($event['day']) echo $event['day'] . ', '; ?><?= $event['date'] ?><?php if ($event['time']) echo ', ' .  $event['time']; ?>)"<?= $event['target'] ?>><?= $event['link'] ?></a>
+              <div>
+              	<?php foreach ($event['taglist'] as $tagdata): ?>
+              		<div class="<?= $tagdata['class'] ?>"><?= $tagdata['url'] ?></div>
+              	<?php endforeach; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+```
+
+The `tags` field contains an array with all available tags for an event, e.g.
+
+```php
+Array(
+  [0] => conference
+  [1] => meeting
+)
+```
+
+The `taglist` field contains an array of arrays which contain the URL for the tag, the tag name and the tag class, e.g.
+
+```php
+Array(
+  [0] => Array(
+    [url] => <a href=".../tags/conference.html">conference</a>
+    [tag] => conference
+    [class] => conference
+  )
+  [1] => Array(
+    [url] => <a href=".../tags/meeting.html">meeting</a>
+    [tag] => meeting
+    [class] => meeting
+  )
+)
+```
+
 
 ## Content elements
 
