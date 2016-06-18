@@ -32,4 +32,14 @@
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
+<?php if (count($this->other_pages)): ?>
+<h3><?php echo $this->lngOtherPages; ?></h3>
+<ul>
+<?php foreach ($this->other_pages as $url): ?>
+  <li>
+    <?php echo $url; ?>
+  </li>
+<?php endforeach; ?>
+</ul>
+<?php endif; ?>
 </div>
