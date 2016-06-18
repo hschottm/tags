@@ -115,7 +115,7 @@ class ModuleTagListByCategory extends \Module
 							$arrTagTemplates = array();
 							foreach ($GLOBALS['TL_HOOKS']['tagSourceTable'] as $type => $callback) {
 								$this->import($callback[0]);
-								$arrTagTemplates[] = $this->$callback[0]->$callback[1]($sourcetable,$tagid_cats[$sourcetable]);
+								$arrTagTemplates = array_merge($arrTagTemplates,$this->$callback[0]->$callback[1]($sourcetable,$tagid_cats[$sourcetable]));
 							}
 							$this->Template->other_pages = $arrTagTemplates;
 						}
