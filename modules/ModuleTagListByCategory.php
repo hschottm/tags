@@ -117,7 +117,6 @@ class ModuleTagListByCategory extends \Module
 								$this->import($callback[0]);
 								$arrTagTemplates[] = $this->$callback[0]->$callback[1]($sourcetable,$tagid_cats[$sourcetable]);
 							}
-							print_r($arrTagTemplates);
 							$this->Template->other_pages = $arrTagTemplates;
 						}
 						break;
