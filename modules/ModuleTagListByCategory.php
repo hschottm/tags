@@ -110,6 +110,17 @@ class ModuleTagListByCategory extends \Module
 						$this->Template->articles = $this->getArticlesForArticleTags($tagid_cats[$sourcetable]);
 						$pages = array_merge($pages, $this->getPagesForArticleTags($tagid_cats[$sourcetable]));
 						break;
+					default:
+						if (isset($GLOBALS['TL_HOOKS']['tagSourceTable']) && is_array($GLOBALS['TL_HOOKS']['tagSourceTable'])) {
+							$arrTagTemplates = array();
+							foreach ($GLOBALS['TL_HOOKS']['tagSourceTable'] as $type => $callback) {
+								$this->import($callback[0]);
+								$arrTagTemplates[] = $this->$callback[0]->$callback[1]($sourcetable,$tagid_cats[$sourcetable]);
+							}
+							print_r($arrTagTemplates);
+							$this->Template->other_pages = $arrTagTemplates;
+						}
+						break;
 				}
 			}
 			$uniquepages = array();
