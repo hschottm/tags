@@ -66,7 +66,7 @@ class ModuleTagListByCategory extends \Module
 				{
 					if (count($tagids))
 					{
-						$found = $this->Database->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table = IN (" . implode(',', $marks) . ") AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+						$found = $this->Database->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table IN (" . implode(',', $marks) . ") AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
 							->execute(array_merge($this->sourcetables, array($tag)))
 							->fetchAllAssoc();
 						foreach ($found as $data)
