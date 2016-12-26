@@ -83,7 +83,6 @@ class ModuleTagCloud extends \Module
 	 */
 	protected function compile()
 	{
-		$this->import('String');
 		$this->showTags();
 	}
 
