@@ -92,11 +92,14 @@ class ContentGalleryTags extends ContentGallery
       {
         $found = \TagModel::findByIdAndTable($arrItem['id'], 'tl_files');
         $tags = array();
-        while ($found->next())
+        if ($found && $found->count())
         {
-          array_push($tags, $found->tag);
+          while ($found->next())
+          {
+            array_push($tags, $found->tag);
+          }
+          $objTemplate->tags = $tags;
         }
-        $objTemplate->tags = $tags;
       }
   }
 
