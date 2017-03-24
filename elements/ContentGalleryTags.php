@@ -22,7 +22,7 @@ class ContentGalleryTags extends ContentGallery
 		if ((strlen(\Input::get('tag')) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
-			
+
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
 			$alltags = array_merge(array(\Input::get('tag')), $relatedlist);
 			$first = true;
@@ -84,7 +84,22 @@ class ContentGalleryTags extends ContentGallery
 		}
 		parent::compile();
 	}
-	
+
+  public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null)
+  {
+      \Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId);
+      if (TL_MODE == 'FE')
+      {
+        $found = \TagModel::findByIdAndTable($arrItem['id'], 'tl_files');
+        $tags = array();
+        while ($found->next())
+        {
+          array_push($tags, $found->tag);
+        }
+        $objTemplate->tags = $tags;
+      }
+  }
+
 	protected function getFilterTags()
 	{
 		if (strlen($this->tag_filter))
@@ -105,5 +120,5 @@ class ContentGalleryTags extends ContentGallery
 			return array();
 		}
 	}
-	
+
 }
