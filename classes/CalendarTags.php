@@ -19,7 +19,7 @@ class CalendarTags extends \Calendar
 	 * @param string
 	 * @param string
 	 */
-	protected function addEvent($objEvent, $intStart, $intEnd, $strUrl, $strLink)
+  protected function addEvent($objEvent, $intStart, $intEnd, $strUrl, $strBase='')
 	{
 		parent::addEvent($objEvent, $intStart, $intEnd, $strUrl, $strLink);
 		if ($GLOBALS['tags']['showInFeeds'])
