@@ -155,7 +155,7 @@ class ModuleTagListByCategory extends \Module
 					$objPath = \FilesModel::findByUuid($object['singleSRC']);
 					$objects[$i]['imageUrl'] = $objPath->path;
 				}
-
+				$i++;
 			}
 
 			return $objects;
