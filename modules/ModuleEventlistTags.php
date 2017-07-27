@@ -19,7 +19,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (($this->tag_ignore) && !strlen($this->tag_filter)) return $arrAllEvents;
-	
+
 		if (strlen(\Input::get('tag')) || strlen($this->tag_filter))
 		{
 			$limit = null;
@@ -75,265 +75,267 @@ class ModuleEventlistTags extends \ModuleEventlist
 		}
 		return $arrAllEvents;
 	}
-	
+
 	/**
 	 * Generate the module
 	 */
-	protected function compile()
-	{
-		/** @var \PageModel $objPage */
-		global $objPage;
+   protected function compile()
+ 	{
+ 		/** @var \PageModel $objPage */
+ 		global $objPage;
 
-		$blnClearInput = false;
+ 		$blnClearInput = false;
 
-		$intYear = \Input::get('year');
-		$intMonth = \Input::get('month');
-		$intDay = \Input::get('day');
+ 		$intYear = \Input::get('year');
+ 		$intMonth = \Input::get('month');
+ 		$intDay = \Input::get('day');
 
-		// Jump to the current period
-		if (!isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']))
-		{
-			switch ($this->cal_format)
-			{
-				case 'cal_year':
-					$intYear = date('Y');
-					break;
+ 		// Jump to the current period
+ 		if (!isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']))
+ 		{
+ 			switch ($this->cal_format)
+ 			{
+ 				case 'cal_year':
+ 					$intYear = date('Y');
+ 					break;
 
-				case 'cal_month':
-					$intMonth = date('Ym');
-					break;
+ 				case 'cal_month':
+ 					$intMonth = date('Ym');
+ 					break;
 
-				case 'cal_day':
-					$intDay = date('Ymd');
-					break;
-			}
+ 				case 'cal_day':
+ 					$intDay = date('Ymd');
+ 					break;
+ 			}
 
-			$blnClearInput = true;
-		}
+ 			$blnClearInput = true;
+ 		}
 
-		$blnDynamicFormat = (!$this->cal_ignoreDynamic && in_array($this->cal_format, array('cal_day', 'cal_month', 'cal_year')));
+ 		$blnDynamicFormat = (!$this->cal_ignoreDynamic && in_array($this->cal_format, array('cal_day', 'cal_month', 'cal_year')));
 
-		// Create the date object
-		try
-		{
-			if ($blnDynamicFormat && $intYear)
-			{
-				$this->Date = new \Date($intYear, 'Y');
-				$this->cal_format = 'cal_year';
-				$this->headline .= ' ' . date('Y', $this->Date->tstamp);
-			}
-			elseif ($blnDynamicFormat && $intMonth)
-			{
-				$this->Date = new \Date($intMonth, 'Ym');
-				$this->cal_format = 'cal_month';
-				$this->headline .= ' ' . \Date::parse('F Y', $this->Date->tstamp);
-			}
-			elseif ($blnDynamicFormat && $intDay)
-			{
-				$this->Date = new \Date($intDay, 'Ymd');
-				$this->cal_format = 'cal_day';
-				$this->headline .= ' ' . \Date::parse($objPage->dateFormat, $this->Date->tstamp);
-			}
-			else
-			{
-				$this->Date = new \Date();
-			}
-		}
-		catch (\OutOfBoundsException $e)
-		{
-			/** @var \PageError404 $objHandler */
-			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-			$objHandler->generate($objPage->id);
-		}
+ 		// Create the date object
+ 		try
+ 		{
+ 			if ($blnDynamicFormat && $intYear)
+ 			{
+ 				$this->Date = new \Date($intYear, 'Y');
+ 				$this->cal_format = 'cal_year';
+ 				$this->headline .= ' ' . date('Y', $this->Date->tstamp);
+ 			}
+ 			elseif ($blnDynamicFormat && $intMonth)
+ 			{
+ 				$this->Date = new \Date($intMonth, 'Ym');
+ 				$this->cal_format = 'cal_month';
+ 				$this->headline .= ' ' . \Date::parse('F Y', $this->Date->tstamp);
+ 			}
+ 			elseif ($blnDynamicFormat && $intDay)
+ 			{
+ 				$this->Date = new \Date($intDay, 'Ymd');
+ 				$this->cal_format = 'cal_day';
+ 				$this->headline .= ' ' . \Date::parse($objPage->dateFormat, $this->Date->tstamp);
+ 			}
+ 			else
+ 			{
+ 				$this->Date = new \Date();
+ 			}
+ 		}
+ 		catch (\OutOfBoundsException $e)
+ 		{
+ 			/** @var \PageError404 $objHandler */
+ 			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
+ 			$objHandler->generate($objPage->id);
+ 		}
 
-		list($strBegin, $strEnd, $strEmpty) = $this->getDatesFromFormat($this->Date, $this->cal_format);
+ 		list($intStart, $intEnd, $strEmpty) = $this->getDatesFromFormat($this->Date, $this->cal_format);
 
-		// Get all events
-		$arrAllEvents = $this->getAllEvents($this->cal_calendar, $strBegin, $strEnd);
-		$sort = ($this->cal_order == 'descending') ? 'krsort' : 'ksort';
+ 		// Get all events
+ 		$arrAllEvents = $this->getAllEvents($this->cal_calendar, $intStart, $intEnd);
+ 		$sort = ($this->cal_order == 'descending') ? 'krsort' : 'ksort';
 
-		// Sort the days
-		$sort($arrAllEvents);
+ 		// Sort the days
+ 		$sort($arrAllEvents);
 
-		// Sort the events
-		foreach (array_keys($arrAllEvents) as $key)
-		{
-			$sort($arrAllEvents[$key]);
-		}
+ 		// Sort the events
+ 		foreach (array_keys($arrAllEvents) as $key)
+ 		{
+ 			$sort($arrAllEvents[$key]);
+ 		}
 
-		$arrEvents = array();
-		$dateBegin = date('Ymd', $strBegin);
-		$dateEnd = date('Ymd', $strEnd);
+ 		$arrEvents = array();
 
-		// Remove events outside the scope
-		foreach ($arrAllEvents as $key=>$days)
-		{
-			if ($key < $dateBegin || $key > $dateEnd)
-			{
-				continue;
-			}
+ 		// Remove events outside the scope
+ 		foreach ($arrAllEvents as $key=>$days)
+ 		{
+ 			foreach ($days as $day=>$events)
+ 			{
+ 				foreach ($events as $event)
+ 				{
+ 					// Use repeatEnd if > 0 (see #8447)
+ 					if (($event['repeatEnd'] ?: $event['endTime']) < $intStart || $event['startTime'] > $intEnd)
+ 					{
+ 						continue;
+ 					}
 
-			foreach ($days as $day=>$events)
-			{
-				foreach ($events as $event)
-				{
-					$event['firstDay'] = $GLOBALS['TL_LANG']['DAYS'][date('w', $day)];
-					$event['firstDate'] = \Date::parse($objPage->dateFormat, $day);
-					$event['datetime'] = date('Y-m-d', $day);
+ 					// Skip occurrences in the past but show running events (see #8497)
+ 					if ($event['repeatEnd'] && $event['end'] < $intStart)
+ 					{
+ 						continue;
+ 					}
 
-					$arrEvents[] = $event;
-				}
-			}
-		}
+ 					$event['firstDay'] = $GLOBALS['TL_LANG']['DAYS'][date('w', $day)];
+ 					$event['firstDate'] = \Date::parse($objPage->dateFormat, $day);
 
-		unset($arrAllEvents);
-		$total = count($arrEvents);
-		$limit = $total;
-		$offset = 0;
+ 					$arrEvents[] = $event;
+ 				}
+ 			}
+ 		}
 
-		// Overall limit
-		if ($this->cal_limit > 0)
-		{
-			$total = min($this->cal_limit, $total);
-			$limit = $total;
-		}
+ 		unset($arrAllEvents);
+ 		$total = count($arrEvents);
+ 		$limit = $total;
+ 		$offset = 0;
 
-		// Pagination
-		if ($this->perPage > 0)
-		{
-			$id = 'page_e' . $this->id;
-			$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
+ 		// Overall limit
+ 		if ($this->cal_limit > 0)
+ 		{
+ 			$total = min($this->cal_limit, $total);
+ 			$limit = $total;
+ 		}
 
-			// Do not index or cache the page if the page number is outside the range
-			if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
-			{
-				/** @var \PageError404 $objHandler */
-				$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-				$objHandler->generate($objPage->id);
-			}
+ 		// Pagination
+ 		if ($this->perPage > 0)
+ 		{
+ 			$id = 'page_e' . $this->id;
+ 			$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
 
-			$offset = ($page - 1) * $this->perPage;
-			$limit = min($this->perPage + $offset, $total);
+ 			// Do not index or cache the page if the page number is outside the range
+ 			if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
+ 			{
+ 				/** @var \PageError404 $objHandler */
+ 				$objHandler = new $GLOBALS['TL_PTY']['error_404']();
+ 				$objHandler->generate($objPage->id);
+ 			}
 
-			$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
-			$this->Template->pagination = $objPagination->generate("\n  ");
-		}
+ 			$offset = ($page - 1) * $this->perPage;
+ 			$limit = min($this->perPage + $offset, $total);
 
-		$strMonth = '';
-		$strDate = '';
-		$strEvents = '';
-		$dayCount = 0;
-		$eventCount = 0;
-		$headerCount = 0;
-		$imgSize = false;
+ 			$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
+ 			$this->Template->pagination = $objPagination->generate("\n  ");
+ 		}
 
-		// Override the default image size
-		if ($this->imgSize != '')
-		{
-			$size = deserialize($this->imgSize);
+ 		$strMonth = '';
+ 		$strDate = '';
+ 		$strEvents = '';
+ 		$dayCount = 0;
+ 		$eventCount = 0;
+ 		$headerCount = 0;
+ 		$imgSize = false;
 
-			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
-			{
-				$imgSize = $this->imgSize;
-			}
-		}
+ 		// Override the default image size
+ 		if ($this->imgSize != '')
+ 		{
+ 			$size = deserialize($this->imgSize);
 
-		// Parse events
-		for ($i=$offset; $i<$limit; $i++)
-		{
-			$event = $arrEvents[$i];
-			$blnIsLastEvent = false;
+ 			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
+ 			{
+ 				$imgSize = $this->imgSize;
+ 			}
+ 		}
 
-			// Last event on the current day
-			if (($i+1) == $limit || !isset($arrEvents[($i+1)]['firstDate']) || $event['firstDate'] != $arrEvents[($i+1)]['firstDate'])
-			{
-				$blnIsLastEvent = true;
-			}
+ 		// Parse events
+ 		for ($i=$offset; $i<$limit; $i++)
+ 		{
+ 			$event = $arrEvents[$i];
+ 			$blnIsLastEvent = false;
 
-			/** @var \FrontendTemplate|object $objTemplate */
-			$objTemplate = new \FrontendTemplate($this->cal_template);
-			$objTemplate->setData($event);
+ 			// Last event on the current day
+ 			if (($i+1) == $limit || !isset($arrEvents[($i+1)]['firstDate']) || $event['firstDate'] != $arrEvents[($i+1)]['firstDate'])
+ 			{
+ 				$blnIsLastEvent = true;
+ 			}
 
-			// Month header
-			if ($strMonth != $event['month'])
-			{
-				$objTemplate->newMonth = true;
-				$strMonth = $event['month'];
-			}
+ 			/** @var \FrontendTemplate|object $objTemplate */
+ 			$objTemplate = new \FrontendTemplate($this->cal_template);
+ 			$objTemplate->setData($event);
 
-			// Day header
-			if ($strDate != $event['firstDate'])
-			{
-				$headerCount = 0;
-				$objTemplate->header = true;
-				$objTemplate->classHeader = ((($dayCount % 2) == 0) ? ' even' : ' odd') . (($dayCount == 0) ? ' first' : '') . (($event['firstDate'] == $arrEvents[($limit-1)]['firstDate']) ? ' last' : '');
-				$strDate = $event['firstDate'];
+ 			// Month header
+ 			if ($strMonth != $event['month'])
+ 			{
+ 				$objTemplate->newMonth = true;
+ 				$strMonth = $event['month'];
+ 			}
 
-				++$dayCount;
-			}
+ 			// Day header
+ 			if ($strDate != $event['firstDate'])
+ 			{
+ 				$headerCount = 0;
+ 				$objTemplate->header = true;
+ 				$objTemplate->classHeader = ((($dayCount % 2) == 0) ? ' even' : ' odd') . (($dayCount == 0) ? ' first' : '') . (($event['firstDate'] == $arrEvents[($limit-1)]['firstDate']) ? ' last' : '');
+ 				$strDate = $event['firstDate'];
 
-			// Show the teaser text of redirect events (see #6315)
-			if (is_bool($event['details']))
-			{
-				$objTemplate->details = $event['teaser'];
-			}
+ 				++$dayCount;
+ 			}
 
-			// Add the template variables
-			$objTemplate->classList = $event['class'] . ((($headerCount % 2) == 0) ? ' even' : ' odd') . (($headerCount == 0) ? ' first' : '') . ($blnIsLastEvent ? ' last' : '') . ' cal_' . $event['parent'];
-			$objTemplate->classUpcoming = $event['class'] . ((($eventCount % 2) == 0) ? ' even' : ' odd') . (($eventCount == 0) ? ' first' : '') . ((($offset + $eventCount + 1) >= $limit) ? ' last' : '') . ' cal_' . $event['parent'];
-			$objTemplate->readMore = specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $event['title']));
-			$objTemplate->more = $GLOBALS['TL_LANG']['MSC']['more'];
-			$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
+ 			// Show the teaser text of redirect events (see #6315)
+ 			if (is_bool($event['details']))
+ 			{
+ 				$objTemplate->hasDetails = false;
+ 			}
 
-			// Short view
-			if ($this->cal_noSpan)
-			{
-				$objTemplate->day = $event['day'];
-				$objTemplate->date = $event['date'];
-				$objTemplate->span = ($event['time'] == '' && $event['day'] == '') ? $event['date'] : '';
-			}
-			else
-			{
-				$objTemplate->day = $event['firstDay'];
-				$objTemplate->date = $event['firstDate'];
-				$objTemplate->span = '';
-			}
+ 			// Add the template variables
+ 			$objTemplate->classList = $event['class'] . ((($headerCount % 2) == 0) ? ' even' : ' odd') . (($headerCount == 0) ? ' first' : '') . ($blnIsLastEvent ? ' last' : '') . ' cal_' . $event['parent'];
+ 			$objTemplate->classUpcoming = $event['class'] . ((($eventCount % 2) == 0) ? ' even' : ' odd') . (($eventCount == 0) ? ' first' : '') . ((($offset + $eventCount + 1) >= $limit) ? ' last' : '') . ' cal_' . $event['parent'];
+ 			$objTemplate->readMore = specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $event['title']));
+ 			$objTemplate->more = $GLOBALS['TL_LANG']['MSC']['more'];
+ 			$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
 
-			$objTemplate->addImage = false;
+ 			// Short view
+ 			if ($this->cal_noSpan)
+ 			{
+ 				$objTemplate->day = $event['day'];
+ 				$objTemplate->date = $event['date'];
+ 			}
+ 			else
+ 			{
+ 				$objTemplate->day = $event['firstDay'];
+ 				$objTemplate->date = $event['firstDate'];
+ 			}
 
-			// Add an image
-			if ($event['addImage'] && $event['singleSRC'] != '')
-			{
-				$objModel = \FilesModel::findByUuid($event['singleSRC']);
+ 			$objTemplate->addImage = false;
 
-				if ($objModel === null)
-				{
-					if (!\Validator::isUuid($event['singleSRC']))
-					{
-						$objTemplate->text = '<p class="error">'.$GLOBALS['TL_LANG']['ERR']['version2format'].'</p>';
-					}
-				}
-				elseif (is_file(TL_ROOT . '/' . $objModel->path))
-				{
-					if ($imgSize)
-					{
-						$event['size'] = $imgSize;
-					}
+ 			// Add an image
+ 			if ($event['addImage'] && $event['singleSRC'] != '')
+ 			{
+ 				$objModel = \FilesModel::findByUuid($event['singleSRC']);
 
-					$event['singleSRC'] = $objModel->path;
-					$this->addImageToTemplate($objTemplate, $event);
-				}
-			}
+ 				if ($objModel === null)
+ 				{
+ 					if (!\Validator::isUuid($event['singleSRC']))
+ 					{
+ 						$objTemplate->text = '<p class="error">'.$GLOBALS['TL_LANG']['ERR']['version2format'].'</p>';
+ 					}
+ 				}
+ 				elseif (is_file(TL_ROOT . '/' . $objModel->path))
+ 				{
+ 					if ($imgSize)
+ 					{
+ 						$event['size'] = $imgSize;
+ 					}
 
-			$objTemplate->enclosure = array();
+ 					$event['singleSRC'] = $objModel->path;
+ 					$this->addImageToTemplate($objTemplate, $event);
+ 				}
+ 			}
 
-			// Add enclosure
-			if ($event['addEnclosure'])
-			{
-				$this->addEnclosuresToTemplate($objTemplate, $event);
-			}
+ 			$objTemplate->enclosure = array();
 
-			////////// CHANGES BY ModuleEventlistTags
+ 			// Add enclosure
+ 			if ($event['addEnclosure'])
+ 			{
+ 				$this->addEnclosuresToTemplate($objTemplate, $event);
+ 			}
+
+      ////////// CHANGES BY ModuleEventlistTags
 			$objTemplate->showTags = $this->event_showtags;
 			if ($this->event_showtags)
 			{
@@ -347,31 +349,31 @@ class ModuleEventlistTags extends \ModuleEventlist
 			}
 			////////// CHANGES BY ModuleEventlistTags
 
-			$strEvents .= $objTemplate->parse();
+ 			$strEvents .= $objTemplate->parse();
 
-			++$eventCount;
-			++$headerCount;
-		}
+ 			++$eventCount;
+ 			++$headerCount;
+ 		}
 
-		// No events found
-		if ($strEvents == '')
-		{
-			$strEvents = "\n" . '<div class="empty">' . $strEmpty . '</div>' . "\n";
-		}
+ 		// No events found
+ 		if ($strEvents == '')
+ 		{
+ 			$strEvents = "\n" . '<div class="empty">' . $strEmpty . '</div>' . "\n";
+ 		}
 
-		// See #3672
-		$this->Template->headline = $this->headline;
-		$this->Template->events = $strEvents;
+ 		// See #3672
+ 		$this->Template->headline = $this->headline;
+ 		$this->Template->events = $strEvents;
 
-		// Clear the $_GET array (see #2445)
-		if ($blnClearInput)
-		{
-			\Input::setGet('year', null);
-			\Input::setGet('month', null);
-			\Input::setGet('day', null);
-		}
+ 		// Clear the $_GET array (see #2445)
+ 		if ($blnClearInput)
+ 		{
+ 			\Input::setGet('year', null);
+ 			\Input::setGet('month', null);
+ 			\Input::setGet('day', null);
+ 		}
 
-		////////// CHANGES BY ModuleEventlistTags
+    ////////// CHANGES BY ModuleEventlistTags
 		$headlinetags = array();
 		if ((strlen(\Input::get('tag')) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
@@ -400,32 +402,5 @@ class ModuleEventlistTags extends \ModuleEventlist
 		}
 		$this->Template->tags_activetags = $headlinetags;
 		////////// CHANGES BY ModuleEventlistTags
-	}
-
-	/**
-	 * Read tags from database
-	 * @return string
-	 */
-	protected function getFilterTags()
-	{
-		if (strlen($this->tag_filter))
-		{
-			$tags = preg_split("/,/", $this->tag_filter);
-			$placeholders = array();
-			foreach ($tags as $tag)
-			{
-				array_push($placeholders, '?');
-			}
-			array_push($tags, 'tl_calendar_events');
-			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
-				->execute($tags)
-				->fetchEach('tid');
-		}
-		else
-		{
-			return array();
-		}
-	}
-
+ 	}
 }
-
