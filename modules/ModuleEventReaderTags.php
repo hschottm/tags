@@ -12,8 +12,7 @@ namespace Contao;
 
 class ModuleEventReaderTags extends \ModuleEventReader
 {
-
-	/**
+  /**
 	 * Generate the module
 	 */
 	protected function compile()
@@ -56,38 +55,39 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			$arrRange = deserialize($objEvent->repeatEach);
 
-			while ($intStartTime < time() && $intEndTime < $objEvent->repeatEnd)
+			if (is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
 			{
-				$intStartTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intStartTime);
-				$intEndTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intEndTime);
+				while ($intStartTime < time() && $intEndTime < $objEvent->repeatEnd)
+				{
+					$intStartTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intStartTime);
+					$intEndTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intEndTime);
+				}
 			}
 		}
 
-		if ($objPage->outputFormat == 'xhtml')
-		{
-			$strTimeStart = '';
-			$strTimeEnd = '';
-			$strTimeClose = '';
-		}
-		else
-		{
-			$strTimeStart = '<time datetime="' . date('Y-m-d\TH:i:sP', $intStartTime) . '">';
-			$strTimeEnd = '<time datetime="' . date('Y-m-d\TH:i:sP', $intEndTime) . '">';
-			$strTimeClose = '</time>';
-		}
+		$strDate = \Date::parse($objPage->dateFormat, $intStartTime);
 
-		// Get date
 		if ($span > 0)
 		{
-			$date = $strTimeStart . \Date::parse(($objEvent->addTime ? $objPage->datimFormat : $objPage->dateFormat), $intStartTime) . $strTimeClose . ' - ' . $strTimeEnd . \Date::parse(($objEvent->addTime ? $objPage->datimFormat : $objPage->dateFormat), $intEndTime) . $strTimeClose;
+			$strDate = \Date::parse($objPage->dateFormat, $intStartTime) . ' – ' . \Date::parse($objPage->dateFormat, $intEndTime);
 		}
-		elseif ($intStartTime == $intEndTime)
+
+		$strTime = '';
+
+		if ($objEvent->addTime)
 		{
-			$date = $strTimeStart . \Date::parse($objPage->dateFormat, $intStartTime) . ($objEvent->addTime ? ' (' . \Date::parse($objPage->timeFormat, $intStartTime) . ')' : '') . $strTimeClose;
-		}
-		else
-		{
-			$date = $strTimeStart . \Date::parse($objPage->dateFormat, $intStartTime) . ($objEvent->addTime ? ' (' . \Date::parse($objPage->timeFormat, $intStartTime) . $strTimeClose . ' - ' . $strTimeEnd . \Date::parse($objPage->timeFormat, $intEndTime) . ')' : '') . $strTimeClose;
+			if ($span > 0)
+			{
+				$strDate = \Date::parse($objPage->datimFormat, $intStartTime) . ' – ' . \Date::parse($objPage->datimFormat, $intEndTime);
+			}
+			elseif ($intStartTime == $intEndTime)
+			{
+				$strTime = \Date::parse($objPage->timeFormat, $intStartTime);
+			}
+			else
+			{
+				$strTime = \Date::parse($objPage->timeFormat, $intStartTime) . ' – ' . \Date::parse($objPage->timeFormat, $intEndTime);
+			}
 		}
 
 		$until = '';
@@ -97,23 +97,16 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		if ($objEvent->recurring)
 		{
 			$arrRange = deserialize($objEvent->repeatEach);
-			$strKey = 'cal_' . $arrRange['unit'];
-			$recurring = sprintf($GLOBALS['TL_LANG']['MSC'][$strKey], $arrRange['value']);
 
-			if ($objEvent->recurrences > 0)
+			if (is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
 			{
-				$until = sprintf($GLOBALS['TL_LANG']['MSC']['cal_until'], \Date::parse($objPage->dateFormat, $objEvent->repeatEnd));
-			}
-		}
+				$strKey = 'cal_' . $arrRange['unit'];
+				$recurring = sprintf($GLOBALS['TL_LANG']['MSC'][$strKey], $arrRange['value']);
 
-		// Override the default image size
-		if ($this->imgSize != '')
-		{
-			$size = deserialize($this->imgSize);
-
-			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
-			{
-				$objEvent->size = $this->imgSize;
+				if ($objEvent->recurrences > 0)
+				{
+					$until = sprintf($GLOBALS['TL_LANG']['MSC']['cal_until'], \Date::parse($objPage->dateFormat, $objEvent->repeatEnd));
+				}
 			}
 		}
 
@@ -121,23 +114,68 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$objTemplate = new \FrontendTemplate($this->cal_template);
 		$objTemplate->setData($objEvent->row());
 
-		$objTemplate->date = $date;
+		$objTemplate->date = $strDate;
+		$objTemplate->time = $strTime;
+		$objTemplate->datetime = $objEvent->addTime ? date('Y-m-d\TH:i:sP', $intStartTime) : date('Y-m-d', $intStartTime);
 		$objTemplate->begin = $intStartTime;
 		$objTemplate->end = $intEndTime;
 		$objTemplate->class = ($objEvent->cssClass != '') ? ' ' . $objEvent->cssClass : '';
 		$objTemplate->recurring = $recurring;
 		$objTemplate->until = $until;
 		$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
-
 		$objTemplate->details = '';
-		$objElement = \ContentModel::findPublishedByPidAndTable($objEvent->id, 'tl_calendar_events');
+		$objTemplate->hasDetails = false;
+		$objTemplate->hasTeaser = false;
 
-		if ($objElement !== null)
+		// Clean the RTE output
+		if ($objEvent->teaser != '')
 		{
-			while ($objElement->next())
+			$objTemplate->hasTeaser = true;
+
+			if ($objPage->outputFormat == 'xhtml')
 			{
-				$objTemplate->details .= $this->getContentElement($objElement->current());
+				$objTemplate->teaser = \StringUtil::toXhtml($objEvent->teaser);
 			}
+			else
+			{
+				$objTemplate->teaser = \StringUtil::toHtml5($objEvent->teaser);
+			}
+
+			$objTemplate->teaser = \StringUtil::encodeEmail($objTemplate->teaser);
+		}
+
+		// Display the "read more" button for external/article links
+		if ($objEvent->source != 'default')
+		{
+			$objTemplate->details = true;
+			$objTemplate->hasDetails = true;
+		}
+
+		// Compile the event text
+		else
+		{
+			$id = $objEvent->id;
+
+			$objTemplate->details = function () use ($id)
+			{
+				$strDetails = '';
+				$objElement = \ContentModel::findPublishedByPidAndTable($id, 'tl_calendar_events');
+
+				if ($objElement !== null)
+				{
+					while ($objElement->next())
+					{
+						$strDetails .= $this->getContentElement($objElement->current());
+					}
+				}
+
+				return $strDetails;
+			};
+
+			$objTemplate->hasDetails = function () use ($id)
+			{
+				return \ContentModel::countPublishedByPidAndTable($id, 'tl_calendar_events') > 0;
+			};
 		}
 
 		$objTemplate->addImage = false;
@@ -158,8 +196,19 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			{
 				// Do not override the field now that we have a model registry (see #6303)
 				$arrEvent = $objEvent->row();
-				$arrEvent['singleSRC'] = $objModel->path;
 
+				// Override the default image size
+				if ($this->imgSize != '')
+				{
+					$size = deserialize($this->imgSize);
+
+					if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
+					{
+						$arrEvent['size'] = $this->imgSize;
+					}
+				}
+
+				$arrEvent['singleSRC'] = $objModel->path;
 				$this->addImageToTemplate($objTemplate, $arrEvent);
 			}
 		}
@@ -172,19 +221,19 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
 		}
 
-		////////// CHANGES BY ModuleEventReaderTags
-		$objTemplate->showTags = $this->event_showtags;
-		if ($this->event_showtags)
-		{
-			$helper = new \TagHelper();
-			$tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
-			$tags = $tagsandlist['tags'];
-			$taglist = $tagsandlist['taglist'];
-			$objTemplate->showTagClass = $this->tag_named_class;
-			$objTemplate->tags = $tags;
-			$objTemplate->taglist = $taglist;
-		}
-		////////// CHANGES BY ModuleEventReaderTags
+    ////////// CHANGES BY ModuleEventReaderTags
+    $objTemplate->showTags = $this->event_showtags;
+    if ($this->event_showtags)
+    {
+      $helper = new \TagHelper();
+      $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
+      $tags = $tagsandlist['tags'];
+      $taglist = $tagsandlist['taglist'];
+      $objTemplate->showTagClass = $this->tag_named_class;
+      $objTemplate->tags = $tags;
+      $objTemplate->taglist = $taglist;
+    }
+    ////////// CHANGES BY ModuleEventReaderTags
 
 		$this->Template->event = $objTemplate->parse();
 
