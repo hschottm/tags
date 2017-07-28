@@ -403,4 +403,30 @@ class ModuleEventlistTags extends \ModuleEventlist
 		$this->Template->tags_activetags = $headlinetags;
 		////////// CHANGES BY ModuleEventlistTags
  	}
+
+  /**
+	 * Read tags from database
+	 * @return string
+	 */
+	protected function getFilterTags()
+	{
+		if (strlen($this->tag_filter))
+		{
+			$tags = preg_split("/,/", $this->tag_filter);
+			$placeholders = array();
+			foreach ($tags as $tag)
+			{
+				array_push($placeholders, '?');
+			}
+			array_push($tags, 'tl_calendar_events');
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+				->execute($tags)
+				->fetchEach('tid');
+		}
+		else
+		{
+			return array();
+		}
+	}
+
 }
