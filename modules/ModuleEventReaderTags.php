@@ -15,12 +15,9 @@ class ModuleEventReaderTags extends \ModuleEventReader
   /**
 	 * Generate the module
 	 */
-   /**
- 	 * Generate the module
- 	 */
- 	protected function compile()
+   protected function compile()
  	{
- 		/** @var \PageModel $objPage */
+ 		/** @var PageModel $objPage */
  		global $objPage;
 
  		$this->Template->event = '';
@@ -32,15 +29,13 @@ class ModuleEventReaderTags extends \ModuleEventReader
 
  		if (null === $objEvent)
  		{
- 			/** @var \PageError404 $objHandler */
- 			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
- 			$objHandler->generate($objPage->id);
+ 			throw new PageNotFoundException('Page not found: ' . \Environment::get('uri'));
  		}
 
  		// Overwrite the page title (see #2853 and #4955)
  		if ($objEvent->title != '')
  		{
- 			$objPage->pageTitle = strip_tags(strip_insert_tags($objEvent->title));
+ 			$objPage->pageTitle = strip_tags(\StringUtil::stripInsertTags($objEvent->title));
  		}
 
  		// Overwrite the page description
@@ -56,7 +51,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  		// Do not show dates in the past if the event is recurring (see #923)
  		if ($objEvent->recurring)
  		{
- 			$arrRange = deserialize($objEvent->repeatEach);
+ 			$arrRange = \StringUtil::deserialize($objEvent->repeatEach);
 
  			if (is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
  			{
@@ -72,7 +67,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 
  		if ($span > 0)
  		{
- 			$strDate = \Date::parse($objPage->dateFormat, $intStartTime) . ' – ' . \Date::parse($objPage->dateFormat, $intEndTime);
+ 			$strDate = \Date::parse($objPage->dateFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . \Date::parse($objPage->dateFormat, $intEndTime);
  		}
 
  		$strTime = '';
@@ -81,7 +76,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  		{
  			if ($span > 0)
  			{
- 				$strDate = \Date::parse($objPage->datimFormat, $intStartTime) . ' – ' . \Date::parse($objPage->datimFormat, $intEndTime);
+ 				$strDate = \Date::parse($objPage->datimFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . \Date::parse($objPage->datimFormat, $intEndTime);
  			}
  			elseif ($intStartTime == $intEndTime)
  			{
@@ -89,7 +84,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  			}
  			else
  			{
- 				$strTime = \Date::parse($objPage->timeFormat, $intStartTime) . ' – ' . \Date::parse($objPage->timeFormat, $intEndTime);
+ 				$strTime = \Date::parse($objPage->timeFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . \Date::parse($objPage->timeFormat, $intEndTime);
  			}
  		}
 
@@ -99,7 +94,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  		// Recurring event
  		if ($objEvent->recurring)
  		{
- 			$arrRange = deserialize($objEvent->repeatEach);
+ 			$arrRange = \StringUtil::deserialize($objEvent->repeatEach);
 
  			if (is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
  			{
@@ -113,7 +108,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  			}
  		}
 
- 		/** @var \FrontendTemplate|object $objTemplate */
+ 		/** @var FrontendTemplate|object $objTemplate */
  		$objTemplate = new \FrontendTemplate($this->cal_template);
  		$objTemplate->setData($objEvent->row());
 
@@ -134,16 +129,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  		if ($objEvent->teaser != '')
  		{
  			$objTemplate->hasTeaser = true;
-
- 			if ($objPage->outputFormat == 'xhtml')
- 			{
- 				$objTemplate->teaser = \StringUtil::toXhtml($objEvent->teaser);
- 			}
- 			else
- 			{
- 				$objTemplate->teaser = \StringUtil::toHtml5($objEvent->teaser);
- 			}
-
+ 			$objTemplate->teaser = \StringUtil::toHtml5($objEvent->teaser);
  			$objTemplate->teaser = \StringUtil::encodeEmail($objTemplate->teaser);
  		}
 
@@ -188,14 +174,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  		{
  			$objModel = \FilesModel::findByUuid($objEvent->singleSRC);
 
- 			if ($objModel === null)
- 			{
- 				if (!\Validator::isUuid($objEvent->singleSRC))
- 				{
- 					$objTemplate->text = '<p class="error">'.$GLOBALS['TL_LANG']['ERR']['version2format'].'</p>';
- 				}
- 			}
- 			elseif (is_file(TL_ROOT . '/' . $objModel->path))
+ 			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path))
  			{
  				// Do not override the field now that we have a model registry (see #6303)
  				$arrEvent = $objEvent->row();
@@ -203,7 +182,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  				// Override the default image size
  				if ($this->imgSize != '')
  				{
- 					$size = deserialize($this->imgSize);
+ 					$size = \StringUtil::deserialize($this->imgSize);
 
  					if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
  					{
@@ -212,7 +191,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
  				}
 
  				$arrEvent['singleSRC'] = $objModel->path;
- 				$this->addImageToTemplate($objTemplate, $arrEvent);
+ 				$this->addImageToTemplate($objTemplate, $arrEvent, null, null, $objModel);
  			}
  		}
 
@@ -240,15 +219,17 @@ class ModuleEventReaderTags extends \ModuleEventReader
 
  		$this->Template->event = $objTemplate->parse();
 
+ 		$bundles = \System::getContainer()->getParameter('kernel.bundles');
+
  		// HOOK: comments extension required
- 		if ($objEvent->noComments || !in_array('comments', \ModuleLoader::getActive()))
+ 		if ($objEvent->noComments || !isset($bundles['ContaoCommentsBundle']))
  		{
  			$this->Template->allowComments = false;
 
  			return;
  		}
 
- 		/** @var \CalendarModel $objCalendar */
+ 		/** @var CalendarModel $objCalendar */
  		$objCalendar = $objEvent->getRelated('pid');
  		$this->Template->allowComments = $objCalendar->allowComments;
 
@@ -274,8 +255,8 @@ class ModuleEventReaderTags extends \ModuleEventReader
  		// Notify the author
  		if ($objCalendar->notify != 'notify_admin')
  		{
- 			/** @var \UserModel $objAuthor */
- 			if (($objAuthor = $objEvent->getRelated('author')) !== null && $objAuthor->email != '')
+ 			/** @var UserModel $objAuthor */
+ 			if (($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email != '')
  			{
  				$arrNotifies[] = $objAuthor->email;
  			}
