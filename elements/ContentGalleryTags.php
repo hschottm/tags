@@ -85,9 +85,9 @@ class ContentGalleryTags extends ContentGallery
 		parent::compile();
 	}
 
-  public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null)
+  public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null, FilesModel $objModel=null)
   {
-      \Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId);
+      \Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId, $objModel);
       if (TL_MODE == 'FE')
       {
         $found = \TagModel::findByIdAndTable($arrItem['id'], 'tl_files');
