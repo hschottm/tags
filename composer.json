@@ -1,5 +1,5 @@
 {
-  "name":"hschottm/contao-tags",
+  "name":"hschottm/tags",
   "description":"tags is a Contao extension that provides an architecture to tag any Contao element.",
   "keywords":["contao", "module", "extension", "tagcloud", "tags"],
   "type":"contao-module",
@@ -7,7 +7,7 @@
   "authors":[
     {
       "name":"Helmut Schottmüller",
-      "homepage":"http://www.aurealis.de"
+      "homepage":"https://github.com/hschottm"
     }
   ],
   "require":{
