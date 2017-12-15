@@ -108,7 +108,7 @@ $GLOBALS['TL_DCA']['tl_module']['subpalettes']['event_showtags']    = 'tag_jumpT
  (
  	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_filter'],
  	'inputType'               => 'text',
- 	'eval'                    => array('tl_class' => 'w50'),
+ 	'eval'                    => array('maxlength'=>1000, 'tl_class' => 'w50'),
  	'sql'                     => "varchar(1000) NOT NULL default ''"
  );
 
@@ -124,7 +124,7 @@ $GLOBALS['TL_DCA']['tl_module']['subpalettes']['event_showtags']    = 'tag_jumpT
  (
  	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['news_showtags'],
  	'inputType'               => 'checkbox',
- 	'eval'                    => array('submitOnChange'=>true),
+ 	'eval'                    => array('submitOnChange'=>true, 'tl_class' => 'clr'),
  	'sql'                     => "char(1) NOT NULL default ''"
  );
 
