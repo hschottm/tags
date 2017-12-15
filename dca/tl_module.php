@@ -29,7 +29,7 @@ class tl_module_tags extends tl_module
 		}
 		return $tables;
 	}
-	
+
 	public function getObjectTypes()
 	{
 		return array(
@@ -38,7 +38,7 @@ class tl_module_tags extends tl_module
 			'tl_page' => $GLOBALS['TL_LANG']['tl_module']['tl_page']
 		);
 	}
-	
+
 	public function getContentObjectTagTables()
 	{
 		return array(
@@ -104,6 +104,30 @@ $GLOBALS['TL_DCA']['tl_module']['subpalettes']['event_showtags']    = 'tag_jumpT
  * Add fields to tl_module
  */
 
+ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_filter'] = array
+ (
+ 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_filter'],
+ 	'inputType'               => 'text',
+ 	'eval'                    => array('tl_class' => 'w50'),
+ 	'sql'                     => "varchar(1000) NOT NULL default ''"
+ );
+
+ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_ignore'] = array
+ (
+ 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_ignore'],
+ 	'inputType'               => 'checkbox',
+ 	'eval'                    => array('tl_class' => 'w50 m12'),
+ 	'sql'                     => "char(1) NOT NULL default ''"
+ );
+
+ $GLOBALS['TL_DCA']['tl_module']['fields']['news_showtags'] = array
+ (
+ 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['news_showtags'],
+ 	'inputType'               => 'checkbox',
+ 	'eval'                    => array('submitOnChange'=>true),
+ 	'sql'                     => "char(1) NOT NULL default ''"
+ );
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['tag_sourcetables'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_forTable'],
@@ -128,14 +152,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_tagtable'] = array
 	'inputType'               => 'text',
 	'eval'                    => array('maxlength'=>100),
 	'sql'                     => "varchar(100) NOT NULL default ''"
-);
-
-$GLOBALS['TL_DCA']['tl_module']['fields']['tag_filter'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_filter'],
-	'inputType'               => 'text',
-	'eval'                    => array('maxlength'=>1000, 'tl_class' => 'w50'),
-	'sql'                     => "varchar(1000) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tag_tagfield'] = array
@@ -228,14 +244,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_all_expanded'] = array
 	'sql'                     => "char(1) NOT NULL default ''"
 );
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['news_showtags'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['news_showtags'],
-	'inputType'               => 'checkbox',
-	'eval'                    => array('submitOnChange'=>true),
-	'sql'                     => "char(1) NOT NULL default ''"
-);
-
 $GLOBALS['TL_DCA']['tl_module']['fields']['event_showtags'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['event_showtags'],
@@ -251,14 +259,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_jumpTo'] = array
 	'explanation'             => 'jumpTo',
 	'eval'                    => array('fieldType'=>'radio', 'helpwizard'=>true),
 	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
-);
-
-$GLOBALS['TL_DCA']['tl_module']['fields']['tag_ignore'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_ignore'],
-	'inputType'               => 'checkbox',
-	'eval'                    => array('tl_class' => 'w50'),
-	'sql'                     => "char(1) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['objecttype'] = array
@@ -346,4 +346,3 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_show_reset'] = array
 	'eval'                    => array('tl_class' => 'w50 m12'),
 	'sql'                     => "char(1) NOT NULL default ''"
 );
-
