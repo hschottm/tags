@@ -2,6 +2,8 @@
 
 namespace Contao;
 
+use Contao\CoreBundle\Exception\PageNotFoundException;
+
 /**
  * Contao Open Source CMS - tags extension
  *
