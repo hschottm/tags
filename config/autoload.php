@@ -30,6 +30,13 @@ ClassLoader::addClasses(array
 	'Contao\TagField'                => 'system/modules/tags/classes/TagField.php',
 	'Contao\TagHelper'               => 'system/modules/tags/classes/TagHelper.php',
 	'Contao\TagList'                 => 'system/modules/tags/classes/TagList.php',
+  'Contao\TagListArticles'         => 'system/modules/tags/classes/TagListArticles.php',
+  'Contao\TagListContentElements'  => 'system/modules/tags/classes/TagListContentElements.php',
+  'Contao\TagListEvents'           => 'system/modules/tags/classes/TagListEvents.php',
+  'Contao\TagFieldMemberFrontend'  => 'system/modules/tags/classes/TagFieldMemberFrontend.php',
+	'Contao\TagListMembers'          => 'system/modules/tags/classes/TagListMembers.php',
+	'Contao\TagMemberHelper'         => 'system/modules/tags/classes/TagMemberHelper.php',
+  'Contao\TagListNews'             => 'system/modules/tags/classes/TagListNews.php',
 
 	// Elements
 	'Contao\ContentGalleryTags'      => 'system/modules/tags/elements/ContentGalleryTags.php',
@@ -51,9 +58,15 @@ ClassLoader::addClasses(array
 	'Contao\ModuleNewsListTags'      => 'system/modules/tags/modules/ModuleNewsListTags.php',
 	'Contao\ModuleNewsReaderTags'    => 'system/modules/tags/modules/ModuleNewsReaderTags.php',
 	'Contao\ModuleTagCloud'          => 'system/modules/tags/modules/ModuleTagCloud.php',
+  'Contao\ModuleTagCloudArticles'  => 'system/modules/tags/modules/ModuleTagCloudArticles.php',
+	'Contao\ModuleTaggedArticleList' => 'system/modules/tags/modules/ModuleTaggedArticleList.php',
 	'Contao\ModuleTagContentList'    => 'system/modules/tags/modules/ModuleTagContentList.php',
 	'Contao\ModuleTagListByCategory' => 'system/modules/tags/modules/ModuleTagListByCategory.php',
 	'Contao\ModuleTagScope'          => 'system/modules/tags/modules/ModuleTagScope.php',
+  'Contao\ModuleTagCloudContent'   => 'system/modules/tags/modules/ModuleTagCloudContent.php',
+  'Contao\ModuleTagCloudEvents'    => 'system/modules/tags/modules/ModuleTagCloudEvents.php',
+  'Contao\ModuleTagCloudMembers'   => 'system/modules/tags/modules/ModuleTagCloudMembers.php',
+  'Contao\ModuleTagCloudNews'      => 'system/modules/tags/modules/ModuleTagCloudNews.php',
 ));
 
 

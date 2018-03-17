@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at http://www.gnu.org/licenses/.
@@ -78,5 +78,32 @@ $GLOBALS['TL_LANG']['tl_module']['size_legend']         = 'Number and size setti
 $GLOBALS['TL_LANG']['tl_module']['tagextension_legend'] = 'Additional tag lists';
 $GLOBALS['TL_LANG']['tl_module']['datasource_legend'] = 'Datasource settings';
 $GLOBALS['TL_LANG']['tl_module']['object_selection_legend'] = "Object types";
+
+// articles
+
+$GLOBALS['TL_LANG']['tl_module']['tag_articles']   = array('Articles', 'Please select the pages theirs articles are used to build the tag cloud. If you check a page which contains subpages, the articles of all subpages will be used too.');
+$GLOBALS['TL_LANG']['tl_module']['show_in_column'] = array('Restrict to specific column', 'Restrict the output of the article list to a specific column of the page template.');
+$GLOBALS['TL_LANG']['tl_module']['linktoarticles'] = array('Article list links to articles', 'Check to create an article list with links to the article or uncheck to create an article list with links to the containing page.');
+$GLOBALS['TL_LANG']['tl_module']['restrict_to_column'] = array('Restrict to specific column', 'Restrict the tag cloud to tags of articles from a specific column of the page template.');
+$GLOBALS['TL_LANG']['tl_module']['articlelist_tpl'] = array('Article list template', 'Here you can select the article list template.');
+$GLOBALS['TL_LANG']['tl_module']['article_showtags']       = array('Show article tags', 'Select this option to show all assigned tags below each article. This only works if you use a tag enabled article template, e.g. mod_global_articlelist');
+$GLOBALS['TL_LANG']['tl_module']['articlelist_firstorder'] = array('First sort criteria', 'Select the first sort criteria for the resulting article list.');
+$GLOBALS['TL_LANG']['tl_module']['articlelist_secondorder'] = array('Second sort criteria', 'Select the second sort criteria for the resulting article list.');
+
+// content
+
+$GLOBALS['TL_LANG']['tl_module']['tag_content_pages']   = array('Pages', 'Please select the pages theirs content elements are used to build the tag cloud. If you select a page which contains subpages, the content elements of all subpages will be used too.');
+
+// events
+
+$GLOBALS['TL_LANG']['tl_module']['tag_calendars']   = array('Calendars', 'Please select the calendars which are used to build the tag cloud.');
+
+// members
+
+$GLOBALS['TL_LANG']['tl_module']['tag_membergroups']   = array('Member groups', 'Please select one or more member groups to build the member tag cloud.');
+
+// news
+
+$GLOBALS['TL_LANG']['tl_module']['tag_news_archives']   = array('News archives', 'Please select the news archives which are used to build the tag cloud.');
 
 ?>

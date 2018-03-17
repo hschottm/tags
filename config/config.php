@@ -18,23 +18,20 @@ $GLOBALS['BE_FFL']['tag'] = 'TagField';
  */
 array_insert($GLOBALS['FE_MOD']['tags'], 1, array
 (
-	'tagcloud'    => 'ModuleTagCloud'
-));
-array_insert($GLOBALS['FE_MOD']['tags'], 2, array
-(
-	'tagscope'    => 'ModuleTagScope'
+	'tagcloud'            => 'ModuleTagCloud',
+  'tagcloudarticles'    => 'ModuleTagCloudArticles',
+	'taggedArticleList'   => 'ModuleTaggedArticleList',
+  'tagscope'            => 'ModuleTagScope',
+  'tagcontentlist'      => 'ModuleTagContentList',
+  'taglistbycategory'   => 'ModuleTagListByCategory',
+  'tagcloudcontent'     => 'ModuleTagCloudContent',
+  'tagcloudevents'      => 'ModuleTagCloudEvents',
+  'tagcloudmembers'     => 'ModuleTagCloudMembers',
+  'tagcloudnews'        => 'ModuleTagCloudNews'
 ));
 array_insert($GLOBALS['FE_MOD']['miscellaneous'], 3, array
 (
 	'globalArticleList'    => 'ModuleGlobalArticlelist'
-));
-array_insert($GLOBALS['FE_MOD']['tags'], 3, array
-(
-	'tagcontentlist'    => 'ModuleTagContentList'
-));
-array_insert($GLOBALS['FE_MOD']['tags'], 4, array
-(
-	'taglistbycategory'    => 'ModuleTagListByCategory'
 ));
 
 $GLOBALS['FE_MOD']['news']['newslist'] = 'ModuleNewsListTags';
@@ -56,7 +53,7 @@ if (array_key_exists('last_events', $GLOBALS['FE_MOD']['events']))
 	*/
 $GLOBALS['TL_CTE']['texts']['headline'] = 'ContentHeadlineTags';
 $GLOBALS['TL_CTE']['media']['gallery'] = 'ContentGalleryTags';
-	
+
 if (TL_MODE == 'BE')
 {
 	/**
@@ -92,6 +89,7 @@ $GLOBALS['TL_HOOKS']['reviseTable'][] = array('TagHelper', 'deleteIncompleteReco
 $GLOBALS['TL_HOOKS']['reviseTable'][] = array('TagHelper', 'deleteUnusedTagsForTable');
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('TagHelper', 'replaceTagInsertTags');
 $GLOBALS['TL_HOOKS']['parseArticles'][] = array('TagHelper', 'parseArticlesHook');
+$GLOBALS['TL_HOOKS']['setMemberlistOptions'][] = array('TagMemberHelper', 'setMemberlistOptions');
 
 /**
 * source tables that have tags enabled
@@ -100,12 +98,16 @@ $GLOBALS['tags_extension']['sourcetable'][] = 'tl_article';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_calendar_events';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_content';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_news';
+$GLOBALS['tags_extension']['sourcetable'][] = 'tl_member';
 
 /**
 * Add 'tag' to the URL keywords to prevent problems with URL manipulating modules like folderurl
 */
 $GLOBALS['TL_CONFIG']['urlKeywords'] .= (strlen(trim($GLOBALS['TL_CONFIG']['urlKeywords'])) ? ',' : '') . 'tag';
 $GLOBALS['tags']['showInFeeds'] = true;
+
+$GLOBALS['TL_FFL']['tag'] = 'TagFieldMemberFrontend';
+
 
 
 if (is_array($GLOBALS['TL_CRON']['daily']))
@@ -124,4 +126,3 @@ if (is_array($GLOBALS['TL_CRON']['daily']))
 		}
 	}
 }
-
