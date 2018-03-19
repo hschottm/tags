@@ -16,10 +16,15 @@ class TagListArticles extends TagList
 	protected $arrPages = array();
 	protected $inColumn = "";
 
-	public function getRelatedTagList($for_tags)
+  public function getRelatedTagList($for_tags, $blnExcludeUnpublishedItems = true)
 	{
 		if (!is_array($for_tags)) return array();
 		if (!count($this->arrArticles)) return array();
+
+    if (TL_MODE == 'BE')
+		{
+			$blnExcludeUnpublishedItems = false;
+		}
 
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
@@ -65,7 +70,7 @@ class TagListArticles extends TagList
 		return $arrCloudTags;
 	}
 
-	public function getTagList()
+  public function getTagList($blnExcludeUnpublishedItems = true)
 	{
 		if (count($this->arrCloudTags) == 0)
 		{

@@ -16,15 +16,20 @@ class TagListContentElements extends TagList
 	protected $arrPages = array();
 	protected $inColumn = "";
 
-	public function getRelatedTagList($for_tags)
+  public function getRelatedTagList($for_tags, $blnExcludeUnpublishedItems = true)
 	{
 		if (!is_array($for_tags)) return array();
 		if (!count($this->arrContentElements)) return array();
 
+    if (TL_MODE == 'BE')
+		{
+			$blnExcludeUnpublishedItems = false;
+		}
+
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
 		{
-			$arr = $this->Database->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . join($this->arrContentElements, ',') . ") AND tag = ? ORDER BY tl_tag.tid ASC")
+			$arr = $this->Database->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . join($this->arrContentElements, ',') . ") AND tag = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY tl_tag.tid ASC")
 				->execute(array('tl_content', $for_tags[$i]))
 				->fetchEach('tid');
 			if ($i == 0)
@@ -40,7 +45,7 @@ class TagListContentElements extends TagList
 		$arrCloudTags = array();
 		if (count($ids))
 		{
-			$objTags = $this->Database->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . join($ids, ",") . ") GROUP BY tag ORDER BY tag ASC")
+			$objTags = $this->Database->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " AND tl_tag.tid IN (" . join($ids, ",") . ") GROUP BY tag ORDER BY tag ASC")
 				->execute('tl_content');
 			$list = "";
 			$tags = array();
@@ -50,7 +55,7 @@ class TagListContentElements extends TagList
 				{
 					if (!in_array($objTags->tag, $for_tags))
 					{
-						$count = count($this->Database->prepare("SELECT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND tag = ? AND from_table = ? AND tl_tag.tid IN (" . join($ids, ",") . ")")
+						$count = count($this->Database->prepare("SELECT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND tag = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " AND from_table = ? AND tl_tag.tid IN (" . join($ids, ",") . ")")
 							->execute($objTags->tag, 'tl_content')
 							->fetchAllAssoc());
 						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
@@ -65,13 +70,13 @@ class TagListContentElements extends TagList
 		return $arrCloudTags;
 	}
 
-	public function getTagList()
+  public function getTagList($blnExcludeUnpublishedItems = true)
 	{
 		if (count($this->arrCloudTags) == 0)
 		{
 			if (count($this->arrContentElements))
 			{
-				$objTags = $this->Database->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ? AND tl_tag.tid IN (" . join($this->arrContentElements, ',') . ") GROUP BY tag ORDER BY tag ASC")
+				$objTags = $this->Database->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " AND tl_tag.tid IN (" . join($this->arrContentElements, ',') . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_content');
 				$list = "";
 				$tags = array();

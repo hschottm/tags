@@ -22,10 +22,15 @@ class TagListMembers extends TagList
 {
 	protected $arrMembergroups = array();
 
-	public function getRelatedTagList($for_tags)
+  public function getRelatedTagList($for_tags, $blnExcludeUnpublishedItems = true)
 	{
 		if (!is_array($for_tags)) return array();
 		if (!count($this->arrMembergroups)) return array();
+
+    if (TL_MODE == 'BE')
+		{
+			$blnExcludeUnpublishedItems = false;
+		}
 
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
@@ -71,7 +76,7 @@ class TagListMembers extends TagList
 		return $arrCloudTags;
 	}
 
-	public function getTagList()
+  public function getTagList($blnExcludeUnpublishedItems = true)
 	{
 		if (count($this->arrCloudTags) == 0)
 		{
