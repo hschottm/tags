@@ -64,12 +64,23 @@ or with activated Top 10 Tags and related tags:
 
 If more than one tag cloud (Top 10 and all tags) are shown, Contao adds a JavaScript that allows you to expand of collapse the tag clouds. Without JavaScript support the tags are always expanded. To make the JavaScript work you must use the CSS style definitions from the example CSS files tags_oxygen.css or tags_orange.css.
 
+Besides the general tag cloud module, tags comes with five more specialized tag cloud modules:
+
+* Tag Cloud (Articles)
+* Tag Cloud (News)
+* Tag Cloud (Events)
+* Tag Cloud (Members)
+* Tag Cloud (Content Elements)
+
+In Tag Cloud (Events) for instance you can filter the tags by using only selected calendars for the tag cloud generation.
+
 The tags extension comes with default tag support for the following Contao elements:
 
 * News articles
 * Articles
 * Content elements
 * Calendar events
+* Members
 
 ### Using tag clouds to redirect to other Contao modules
 
