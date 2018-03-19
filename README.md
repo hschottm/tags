@@ -1,7 +1,7 @@
-tags
-====
+Contao tags extension
+=====================
 
-# Module tags
+# tags extension
 
 tags is a Contao extension that provides an architecture to tag any Contao element. It comes with a generalized database structure to save the tags and it can be used to visualize existing tags. tags also comes with ready-to-use tag support for Contao articles, news articles and calendar events.
 
@@ -12,53 +12,6 @@ Developers may use the tags architecture to add tag support for their components
 The screenshot shows that the HTML title attribute of the tag URL contains the name of the tag and the number of the tagged entities, e.g. Logging (2) means that the tag logging has been used two times for the selected object type (in this case news articles).
 
 Please note that you can only use one tag input field in a data container because the tag widget uses the data source of the parent data container.
-
-## Hints for extension developers
-
-Users who just want to use the tags extension can skip the following paragraph.
-
-### Adding tag support for Contao data containers
-
-To add tag support in the Contao backend, you need to complete the following steps:
-
-1. To show a tag input field, you must create a database field for the data container. You only need a small database field because the tags are saved in a separate table but you need the field to embedd the input field in the data container. All tags will be saved in the database table tl_tag which is provided by the tags extension.
-2. You need to embed the input field in the DCA configuration array of your module
-
-The database field can be created in *config/database.sql* of your module, e.g.
-
-```sql
-CREATE TABLE `tl_literature` (
-  `tags` CHAR(1) NOT NULL DEFAULT ''
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-```
-
-To add the tag field to the DCA configuration array, you must integrate it in one of the palettes of the configuration array and add a field definition, e.g.
-
-```php
-'' Palettes
-'palettes' => array(
-  'default' => 'title,author,description,tags,content'
-),
-'' Fields
-'fields' => array(
-  'tags' => array(
-    'label'     => &$GLOBALS['TL_LANG']['MSC']['tags'],
-    'inputType' => 'tag'
-  )
-),
-```
-
-The tags extension already provides the language variable `$GLOBALS['TL_LANG']['MSC']['tags']` as a default identifier for tag fields. You may change this of course to another value.
-
-During the validation in the save process the tags module automatically saves the entered tags in the database table tl_tag. For every tag it stores the ID of the actual data container (table field "id"), the name of the data container (table field "from_table"), and the tag value (table field "tag").
-
-### Options of the eval array of a tag widget
-
-| Key        | Value           | Description  |
-| ---------- |-------------| -----|
-| table      | Source table `string` | Name of the source table of the tag data. Default is the name of the actual DCA data container. |
-| isTag      | true/false `boolean`      |   If true (default) the tags will be saved in a separate tag table (tl_tags). If false, the content of the tag field will be saved in the associated database field of the data container. In this case you'll need more than a char(1) database field. |
-| isTag      | Count `integer`      |    The maximum number of tags that should be shown above the input field. This may be helpful if you have a large number of tags. If the maximum number is lower than the number of all tags, the component takes the tags with the most selections first and hides tags which are used rarely. |
 
 ## Using tags in the Contao front end
 
@@ -251,3 +204,42 @@ Example:
 This creates a list of links to pages that is created from article tags. Only links to the selected website will be considered.
 
 ![Tag object list settings](https://cloud.githubusercontent.com/assets/873113/12077878/70aa1f88-b1f9-11e5-8a3e-5773eef28869.png)
+
+## Hints for extension developers
+
+Users who just want to use the tags extension can skip the following paragraph.
+
+### Adding tag support for Contao data containers
+
+To add tag support in the Contao backend, you need to complete the following steps:
+
+1. To show a tag input field, you must create a database field for the data container. You only need a small database field because the tags are saved in a separate table but you need the field to embedd the input field in the data container. All tags will be saved in the database table tl_tag which is provided by the tags extension.
+2. You need to embed the input field in the DCA configuration array of your module
+
+```php
+$GLOBALS['TL_DCA']['tl_literature']['palettes']['default'] = 'title,author,description,tags,content';
+```
+
+```php
+$GLOBALS['TL_DCA']['tl_literature']['fields']['tags'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
+	'inputType'               => 'tag',
+	'eval'                    => array('tl_class'=>'clr long'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+```
+
+The tags extension already provides the language variable `$GLOBALS['TL_LANG']['MSC']['tags']` as a default identifier for tag fields. You may change this of course to another value.
+
+During the validation in the save process the tags module automatically saves the entered tags in the database table tl_tag. For every tag it stores the ID of the actual data container (table field "id"), the name of the data container (table field "from_table"), and the tag value (table field "tag").
+
+### Options of the eval array of a tag widget
+
+| Key        | Value           | Description  |
+| ---------- |-------------| -----|
+| table      | Source table `string` | Name of the source table of the tag data. Default is the name of the actual DCA data container. |
+| isTag      | true/false `boolean`      |   If true (default) the tags will be saved in a separate tag table (tl_tags). If false, the content of the tag field will be saved in the associated database field of the data container. In this case you'll need more than a char(1) database field. |
+| isTag      | Count `integer`      |    The maximum number of tags that should be shown above the input field. This may be helpful if you have a large number of tags. If the maximum number is lower than the number of all tags, the component takes the tags with the most selections first and hides tags which are used rarely. |
+
+
