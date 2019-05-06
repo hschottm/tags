@@ -27,7 +27,7 @@
         <?php $counter++; endforeach; ?>
         </ul>
       <?php endif; ?>
-    </div>
+      </div>
     <?php endif; ?>
   <?php $this->endblock(); ?>
 
@@ -72,7 +72,6 @@
         <?php endif; ?>
         </div>
       <?php endif; ?>
-
     <?php $this->endblock(); ?>
 
     <?php if ($this->backlink): ?>
