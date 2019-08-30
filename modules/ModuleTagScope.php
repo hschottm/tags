@@ -40,9 +40,9 @@ class ModuleTagScope extends \Module
 
 		$this->strTemplate = (strlen($this->scope_template)) ? $this->scope_template : $this->strTemplate;
 		$this->arrTags = array();
-		if (strlen(\Input::get('tag')))
+		if (strlen(\Input::get('tag', true)))
 		{
-			array_push($this->arrTags, \Input::get('tag'));
+			array_push($this->arrTags, \Input::get('tag', true));
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
 			$this->arrTags = array_merge($this->arrTags, $relatedlist);
 		}

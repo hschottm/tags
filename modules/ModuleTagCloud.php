@@ -65,10 +65,10 @@ class ModuleTagCloud extends \Module
 		if (strlen($this->pagesource)) $taglist->pagesource = deserialize($this->pagesource, TRUE);
 		$this->arrTags = $taglist->getTagList();
 		if ($this->tag_topten) $this->arrTopTenTags = $taglist->getTopTenTagList();
-		if (strlen(\Input::get('tag')) && $this->tag_related)
+		if (strlen(\Input::get('tag', true)) && $this->tag_related)
 		{
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$this->arrRelated = $taglist->getRelatedTagList(array_merge(array(\Input::get('tag')), $relatedlist));
+			$this->arrRelated = $taglist->getRelatedTagList(array_merge(array(\Input::get('tag', true)), $relatedlist));
 		}
 		if (count($this->arrTags) < 1)
 		{
@@ -123,7 +123,7 @@ class ModuleTagCloud extends \Module
 				}
 			}
 			$this->arrTags[$idx]['tag_url'] = $strUrl;
-			if ($tag['tag_name'] == \Input::get('tag'))
+			if ($tag['tag_name'] == \Input::get('tag', true))
 			{
 				$this->arrTags[$idx]['tag_class'] .= ' active';
 			}
@@ -164,7 +164,7 @@ class ModuleTagCloud extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \System::urlencode(\Input::get('tag')) . '/related/' . \System::urlencode(join(array_merge($relatedlist, array($tag['tag_name'])), ','))));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \System::urlencode(\Input::get('tag', true)) . '/related/' . \System::urlencode(join(array_merge($relatedlist, array($tag['tag_name'])), ','))));
 			}
 			$this->arrRelated[$idx]['tag_url'] = $strUrl;
 		}
@@ -176,7 +176,7 @@ class ModuleTagCloud extends \Module
 		$this->Template->strAllTags = $GLOBALS['TL_LANG']['tl_module']['tag_alltags'];
 		$this->Template->strTopTenTags = sprintf($GLOBALS['TL_LANG']['tl_module']['top_tags'], $this->tag_topten_number);
 		$this->Template->tagcount = count($this->arrTags);
-		$this->Template->selectedtags = (strlen(\Input::get('tag'))) ? (count($this->arrRelated)+1) : 0;
+		$this->Template->selectedtags = (strlen(\Input::get('tag', true))) ? (count($this->arrRelated)+1) : 0;
 		if ($this->tag_show_reset)
 		{
 			$strEmptyUrl = ampersand($this->generateFrontendUrl($pageArr, ''));

@@ -47,7 +47,7 @@ class TagHelper extends \Backend
 			}
 		}
 	}
-	
+
 	public static function getSavedURLParams($objInput)
 	{
 		$strParams = '';
@@ -70,7 +70,7 @@ class TagHelper extends \Backend
 		}
 		return $strParams;
 	}
-	
+
 	/*
 	* Cleanup all tags that are associated to no longer existing TYPOlight objects
 	*/
@@ -106,7 +106,7 @@ class TagHelper extends \Backend
 			}
 		}
 	}
-	
+
 	/**
 	 * Read tags from database
 	 * @return string
@@ -120,12 +120,12 @@ class TagHelper extends \Backend
 
 	public function sortByRelevance($a, $b)
 	{
-		if ($a['tagcount'] == $b['tagcount']) 
+		if ($a['tagcount'] == $b['tagcount'])
 		{
 			return 0;
 		}
 		return ($a['tagcount'] < $b['tagcount']) ? 1 : -1;
-	} 
+	}
 
 	private function getTagsForTableAndId($table, $id, $url = false, $max_tags = 0, $relevance = 0, $target = 0)
 	{
@@ -199,16 +199,16 @@ class TagHelper extends \Backend
 		}
 		return $res;
 	}
-	
+
 	public function replaceTagInsertTags($strTag)
 	{
 		if ($strTag == 'tags_used')
 		{
 			$headlinetags = array();
 			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			if (strlen($this->Input->get('tag')))
+			if (strlen($this->Input->get('tag', true)))
 			{
-				$headlinetags = array_merge($headlinetags, array($this->Input->get('tag')));
+				$headlinetags = array_merge($headlinetags, array($this->Input->get('tag', true)));
 				if (count($relatedlist))
 				{
 					$headlinetags = array_merge($headlinetags, $relatedlist);
@@ -291,7 +291,7 @@ class TagHelper extends \Backend
 			$objTemplate->taglist = $taglist;
 		}
 	}
-	
+
 	public function getTagsAndTaglistForIdAndTable($id, $table, $jumpto)
 	{
 		$pageArr = array();
@@ -325,7 +325,7 @@ class TagHelper extends \Backend
 			'taglist' => $taglist
 		);
 	}
-	
+
 	/**
 	 * Check for modified calendar feeds and update the XML files if necessary
 	 */

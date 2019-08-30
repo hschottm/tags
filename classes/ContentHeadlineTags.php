@@ -18,7 +18,7 @@ class ContentHeadlineTags extends \ContentHeadline
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'FE') if ($this->tagsonly) if (!strlen(\Input::get('tag'))) return;
+		if (TL_MODE == 'FE') if ($this->tagsonly) if (!strlen(\Input::get('tag', true))) return;
 		return parent::generate();
 	}
 }

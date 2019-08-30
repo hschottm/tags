@@ -39,7 +39,7 @@ class ModuleTagContentList extends \Module
 		$this->getTags();
 		return parent::generate();
 	}
-	
+
 	protected function getArticlesForTagSource($sourcetable)
 	{
 		$articles = array();
@@ -54,13 +54,13 @@ class ModuleTagContentList extends \Module
 			->execute($time, $time);
 
 		$tagids = array();
-		if (strlen(\Input::get('tag')))
+		if (strlen(\Input::get('tag', true)))
 		{
 			$limit = null;
 			$offset = 0;
-			
+
 			$objIds = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute('tl_article', \Input::get('tag'));
+				->execute('tl_article', \Input::get('tag', true));
 			if ($objIds->numRows)
 			{
 				while ($objIds->next())
@@ -96,7 +96,7 @@ class ModuleTagContentList extends \Module
 			}
 		}
 		$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-		$headlinetags = array_merge(array(\Input::get('tag')), $relatedlist);
+		$headlinetags = array_merge(array(\Input::get('tag', true)), $relatedlist);
 		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->articles = $articles;
 		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyarticles'];
@@ -116,7 +116,7 @@ class ModuleTagContentList extends \Module
 		}
 		return $pages;
 	}
-	
+
 	protected function getArticles()
 	{
 		$articles = array();
@@ -146,18 +146,18 @@ class ModuleTagContentList extends \Module
 		}
 		return $ctes;
 	}
-	
+
 	protected function getTags()
 	{
 		$this->arrTags = array();
-		if (strlen(\Input::get('tag')))
+		if (strlen(\Input::get('tag', true)))
 		{
 			$this->arrTags = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute($this->tagsource, \Input::get('tag'))
+				->execute($this->tagsource, \Input::get('tag', true))
 				->fetchEach('tid');
 		}
 	}
-	
+
 	protected function getRelevantPages($page_id)
 	{
 		$objPageWithId = $this->Database->prepare("SELECT id, published, start, stop FROM tl_page WHERE pid=? ORDER BY sorting")

@@ -193,7 +193,7 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 		$tagids = array();
 
 		$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-		$alltags = array_merge(array($this->Input->get('tag')), $relatedlist);
+		$alltags = array_merge(array($this->Input->get('tag', true)), $relatedlist);
 		$first = true;
 		foreach ($alltags as $tag)
 		{
@@ -266,10 +266,10 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 		}
 
 		$headlinetags = array();
-		if (strlen($this->Input->get('tag')))
+		if (strlen($this->Input->get('tag', true)))
 		{
 			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			$headlinetags = array_merge(array($this->Input->get('tag')), $relatedlist);
+			$headlinetags = array_merge(array($this->Input->get('tag', true)), $relatedlist);
 		}
 		$this->Template->showTags = $this->article_showtags;
 		$this->Template->tags_activetags = $headlinetags;

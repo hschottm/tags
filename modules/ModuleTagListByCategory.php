@@ -42,18 +42,18 @@ class ModuleTagListByCategory extends \Module
 //		$this->getTags();
 		return parent::generate();
 	}
-	
+
  	/**
 	 * Generate module
 	 */
 	protected function compile()
 	{
-		if (strlen(\Input::get('tag')) && count($this->sourcetables) > 0)
+		if (strlen(\Input::get('tag', true)) && count($this->sourcetables) > 0)
 		{
 			$tagids = array();
 			$tagid_cats = array();
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag')), $relatedlist);
+			$alltags = array_merge(array(\Input::get('tag', true)), $relatedlist);
 			$first = true;
 			$marks = array();
 			foreach ($this->sourcetables as $table)
