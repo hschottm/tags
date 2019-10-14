@@ -19,12 +19,12 @@ class ContentGalleryTags extends ContentGallery
 	{
 		$newMultiSRC = array();
 
-		if ((strlen(\Input::get('tag', true)) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
+		if ((strlen(urldecode(\Input::get('tag', true))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
 
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$alltags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 			$first = true;
 			if (strlen($this->tag_filter))
 			{

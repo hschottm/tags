@@ -54,13 +54,13 @@ class ModuleTagContentList extends \Module
 			->execute($time, $time);
 
 		$tagids = array();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$limit = null;
 			$offset = 0;
 
 			$objIds = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute('tl_article', \Input::get('tag', true));
+				->execute('tl_article', urldecode(\Input::get('tag', true)));
 			if ($objIds->numRows)
 			{
 				while ($objIds->next())
@@ -96,7 +96,7 @@ class ModuleTagContentList extends \Module
 			}
 		}
 		$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-		$headlinetags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+		$headlinetags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->articles = $articles;
 		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyarticles'];
@@ -150,10 +150,10 @@ class ModuleTagContentList extends \Module
 	protected function getTags()
 	{
 		$this->arrTags = array();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$this->arrTags = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute($this->tagsource, \Input::get('tag', true))
+				->execute($this->tagsource, urldecode(\Input::get('tag', true)))
 				->fetchEach('tid');
 		}
 	}

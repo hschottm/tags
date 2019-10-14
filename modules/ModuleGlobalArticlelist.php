@@ -65,13 +65,13 @@ class ModuleGlobalArticlelist extends \Module
 			->execute($time, $time);
 
 		$tagids = array();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$limit = null;
 			$offset = 0;
 
 			$objIds = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute('tl_article', \Input::get('tag', true));
+				->execute('tl_article', urldecode(\Input::get('tag', true)));
 			if ($objIds->numRows)
 			{
 				while ($objIds->next())
@@ -115,10 +115,10 @@ class ModuleGlobalArticlelist extends \Module
 			}
 		}
 		$headlinetags = array();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$headlinetags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$headlinetags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 		}
 		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->articles = $articles;

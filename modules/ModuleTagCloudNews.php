@@ -44,10 +44,10 @@ class ModuleTagCloudNews extends \ModuleTagCloud
 		$this->arrTags = $taglist->getTagList();
 		if ($this->tag_topten) $this->arrTopTenTags = $taglist->getTopTenTagList();
 		if (strlen($this->tag_topten_number) && $this->tag_topten_number > 0) $taglist->topnumber = $this->tag_topten_number;
-		if (strlen($this->Input->get('tag', true)) && $this->tag_related)
+		if (strlen(urldecode($this->Input->get('tag', true))) && $this->tag_related)
 		{
 			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			$this->arrRelated = $taglist->getRelatedTagList(array_merge(array($this->Input->get('tag', true)), $relatedlist));
+			$this->arrRelated = $taglist->getRelatedTagList(array_merge(array(urldecode($this->Input->get('tag', true))), $relatedlist));
 		}
 		if (count($this->arrTags) < 1)
 		{

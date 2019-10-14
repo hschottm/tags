@@ -19,10 +19,10 @@ class ModuleFaqListTags extends \ModuleFaqList
 	protected function compile()
 	{
 		$tagids = array();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$alltags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 			$first = true;
 			foreach ($alltags as $tag)
 			{

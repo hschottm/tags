@@ -147,9 +147,9 @@ class ModuleNewsListTags extends \ModuleNewsList
 		// new code for tags
 		$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
 		$headlinetags = array();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
-			$headlinetags = array_merge($headlinetags, array(\Input::get('tag', true)));
+			$headlinetags = array_merge($headlinetags, array(urldecode(\Input::get('tag', true))));
 			if (count($relatedlist))
 			{
 				$headlinetags = array_merge($headlinetags, $relatedlist);
@@ -167,12 +167,12 @@ class ModuleNewsListTags extends \ModuleNewsList
 		$this->Session->set('news_showtags', $this->news_showtags);
 		$this->Session->set('news_jumpto', $this->tag_jumpTo);
 		$this->Session->set('news_tag_named_class', $this->tag_named_class);
-		if ((strlen(\Input::get('tag', true)) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
+		if ((strlen(urldecode(\Input::get('tag', true))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
 
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$alltags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 			$first = true;
 			if (strlen($this->tag_filter))
 			{

@@ -18,14 +18,14 @@ class ModuleLastEventsTags extends \ModuleLastEvents
 	protected function getAllEvents($arrCalendars, $intStart, $intEnd)
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$limit = null;
 			$offset = 0;
 			$tagids = array();
 
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$alltags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 			foreach ($alltags as $tag)
 			{
 				if (count($tagids))
@@ -68,14 +68,14 @@ class ModuleLastEventsTags extends \ModuleLastEvents
 	protected function compile()
 	{
 		parent::compile();
-		if (strlen(\Input::get('tag', true)))
+		if (strlen(urldecode(\Input::get('tag', true))))
 		{
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$this->Template->tags_activetags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$this->Template->tags_activetags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 		}
 		if (strlen($this->Template->events) == 0)
 		{
-			$this->Template->tags_activetags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$this->Template->tags_activetags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 			$this->Template->events = $GLOBALS['TL_LANG']['MSC']['emptyevents'];
 		}
 	}

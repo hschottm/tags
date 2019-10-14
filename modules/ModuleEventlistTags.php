@@ -22,7 +22,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (($this->tag_ignore) && !strlen($this->tag_filter)) return $arrAllEvents;
 
-		if (strlen(\Input::get('tag', true)) || strlen($this->tag_filter))
+		if (strlen(urldecode(\Input::get('tag', true))) || strlen($this->tag_filter))
 		{
 			$limit = null;
 			$offset = 0;
@@ -30,7 +30,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 			if (strlen($this->tag_filter)) $tagids = $this->getFilterTags();
 
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$tagArray = (strlen(\Input::get('tag', true))) ? array(\Input::get('tag', true)) : array();
+			$tagArray = (strlen(urldecode(\Input::get('tag', true)))) ? array(urldecode(\Input::get('tag', true))) : array();
 			$alltags = array_merge($tagArray, $relatedlist);
 			foreach ($alltags as $tag)
 			{
@@ -373,7 +373,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 
      ////////// CHANGES BY ModuleEventlistTags
  		$headlinetags = array();
- 		if ((strlen(\Input::get('tag', true)) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
+ 		if ((strlen(urldecode(\Input::get('tag', true))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
  		{
  			if (strlen($this->tag_filter))
  			{
@@ -386,7 +386,7 @@ class ModuleEventlistTags extends \ModuleEventlist
  				$headlinetags = array();
  			}
  			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
- 			$tagArray = (strlen(\Input::get('tag', true))) ? array(\Input::get('tag', true)) : array();
+ 			$tagArray = (strlen(urldecode(\Input::get('tag', true)))) ? array(urldecode(\Input::get('tag', true))) : array();
  			$headlinetags = array_merge($headlinetags, $tagArray);
  			if (count($relatedlist))
  			{
@@ -395,7 +395,7 @@ class ModuleEventlistTags extends \ModuleEventlist
  		}
  		if (strlen($this->Template->events) == 0)
  		{
- 			$headlinetags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+ 			$headlinetags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
  			$this->Template->events = $GLOBALS['TL_LANG']['MSC']['emptyevents'];
  		}
  		$this->Template->tags_activetags = $headlinetags;

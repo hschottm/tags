@@ -48,12 +48,12 @@ class ModuleTagListByCategory extends \Module
 	 */
 	protected function compile()
 	{
-		if (strlen(\Input::get('tag', true)) && count($this->sourcetables) > 0)
+		if (strlen(urldecode(\Input::get('tag', true))) && count($this->sourcetables) > 0)
 		{
 			$tagids = array();
 			$tagid_cats = array();
 			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag', true)), $relatedlist);
+			$alltags = array_merge(array(urldecode(\Input::get('tag', true))), $relatedlist);
 			$first = true;
 			$marks = array();
 			foreach ($this->sourcetables as $table)

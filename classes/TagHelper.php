@@ -206,9 +206,9 @@ class TagHelper extends \Backend
 		{
 			$headlinetags = array();
 			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			if (strlen($this->Input->get('tag', true)))
+			if (strlen(urldecode($this->Input->get('tag', true))))
 			{
-				$headlinetags = array_merge($headlinetags, array($this->Input->get('tag', true)));
+				$headlinetags = array_merge($headlinetags, array(urldecode($this->Input->get('tag', true))));
 				if (count($relatedlist))
 				{
 					$headlinetags = array_merge($headlinetags, $relatedlist);
