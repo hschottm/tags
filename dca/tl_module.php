@@ -55,7 +55,7 @@ class tl_module_tags extends tl_module
 	 */
 	public function getArticleListTemplates(DataContainer $dc)
 	{
-		return $this->getTemplateGroup('mod_global_', $dc->activeRecord->pid);
+		return $this->getTemplateGroup('mod_global_');
 	}
 
 	/**
@@ -65,7 +65,7 @@ class tl_module_tags extends tl_module
 	 */
 	public function getTagCloudTemplates(DataContainer $dc)
 	{
-		return $this->getTemplateGroup('mod_tagcloud', $dc->activeRecord->pid);
+		return $this->getTemplateGroup('mod_tagcloud');
 	}
 
 	/**
@@ -75,7 +75,7 @@ class tl_module_tags extends tl_module
 	 */
 	public function getTagScopeTemplates(DataContainer $dc)
 	{
-		return $this->getTemplateGroup('mod_tagscope', $dc->activeRecord->pid);
+		return $this->getTemplateGroup('mod_tagscope');
 	}
 }
 
@@ -83,14 +83,7 @@ class tl_module_tags_articles extends tl_module
 {
 	public function getArticlelistTemplates(DataContainer $dc)
 	{
-		if (version_compare(VERSION.BUILD, '2.9.0', '>='))
-		{
-			return $this->getTemplateGroup('mod_', $dc->activeRecord->pid);
-		}
-		else
-		{
-			return $this->getTemplateGroup('mod_');
-		}
+		return $this->getTemplateGroup('mod_');
 	}
 
 	public function getArticlelistOrder(DataContainer $dc)
