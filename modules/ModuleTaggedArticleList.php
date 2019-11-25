@@ -246,7 +246,7 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 						$tags = $this->getTags($arrArticle['id']);
 						foreach ($tags as $id => $tag)
 						{
-							$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \System::urlencode($tag)));
+							$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . $tag));
 							$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 						}
 						$objTemplate->tags = $tags;

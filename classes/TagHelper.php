@@ -337,7 +337,7 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \System::urlencode($tag)));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . $tag));
 				$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -370,7 +370,7 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \System::urlencode($tag)));
+			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . $tag));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 			$taglist[$id] = array(
