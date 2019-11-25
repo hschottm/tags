@@ -3,7 +3,7 @@
 /**
  * PHP version 5
  * @copyright  Helmut Schottmüller 2010
- * @author     Helmut Schottmüller <contao@aurealis.de>
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    memberextensions
  * @license    LGPL
  * @filesource

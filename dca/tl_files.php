@@ -29,8 +29,8 @@ $GLOBALS['TL_DCA']['tl_files']['fields']['tags'] = array
  * Class tl_files_tags
  *
  * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Helmut Schottmüller <contao@aurealis.de>
- * @author     Helmut Schottmüller <contao@aurealis.de>
+ * @copyright  Helmut Schottmüller <https://github.com/hschottm>
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
 class tl_files_tags extends tl_files

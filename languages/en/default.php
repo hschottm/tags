@@ -20,7 +20,7 @@
  *
  * PHP version 5
  * @copyright  Helmut Schottmüller 2008
- * @author     Helmut Schottmüller <helmut.schottmueller@aurealis.de>
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    memberextensions
  * @license    LGPL
  * @filesource

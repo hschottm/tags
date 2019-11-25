@@ -2,7 +2,7 @@
 
 /**
  * @copyright  Helmut Schottmüller 2009
- * @author     Helmut Schottmüller <typolight@aurealis.de>
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    tags
  * @license    LGPL
  * @filesource

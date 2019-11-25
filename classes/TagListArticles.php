@@ -7,7 +7,7 @@ namespace Contao;
  *
  * Provide methods to handle tag input fields.
  * @copyright  Helmut Schottmüller 2009
- * @author     Helmut Schottmüller <typolight@aurealis.de>
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
 class TagListArticles extends TagList

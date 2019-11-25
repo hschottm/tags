@@ -65,7 +65,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['tag_ignore'] = array
  *
  * Provide miscellaneous methods that are used by the data configuration array.
  * @copyright  Helmut Schottmüller 2009
- * @author     Helmut Schottmüller <typolight@aurealis.de>
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
 class tl_content_tags extends tl_content

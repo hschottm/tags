@@ -10,15 +10,6 @@
 
 
 /**
- * Register the namespaces
- */
-ClassLoader::addNamespaces(array
-(
-	'Aurealis',
-));
-
-
-/**
  * Register the classes
  */
 ClassLoader::addClasses(array
@@ -47,7 +38,6 @@ ClassLoader::addClasses(array
 	'Contao\TagsNewsModel'           => 'system/modules/tags/models/TagsNewsModel.php',
 
 	// Modules
-	'Aurealis\ModuleArticle'         => 'system/modules/tags/modules/ModuleArticle.php',
 	'Contao\ModuleCalendarTags'      => 'system/modules/tags/modules/ModuleCalendarTags.php',
 	'Contao\ModuleEventlistTags'     => 'system/modules/tags/modules/ModuleEventlistTags.php',
 	'Contao\ModuleEventReaderTags'   => 'system/modules/tags/modules/ModuleEventReaderTags.php',
@@ -58,7 +48,7 @@ ClassLoader::addClasses(array
 	'Contao\ModuleNewsListTags'      => 'system/modules/tags/modules/ModuleNewsListTags.php',
 	'Contao\ModuleNewsReaderTags'    => 'system/modules/tags/modules/ModuleNewsReaderTags.php',
 	'Contao\ModuleTagCloud'          => 'system/modules/tags/modules/ModuleTagCloud.php',
-  'Contao\ModuleTagCloudArticles'  => 'system/modules/tags/modules/ModuleTagCloudArticles.php',
+  'Contao\ModuleTagCloudArticles'    => 'system/modules/tags/modules/ModuleTagCloudArticles.php',
 	'Contao\ModuleTaggedArticleList' => 'system/modules/tags/modules/ModuleTaggedArticleList.php',
 	'Contao\ModuleTagContentList'    => 'system/modules/tags/modules/ModuleTagContentList.php',
 	'Contao\ModuleTagListByCategory' => 'system/modules/tags/modules/ModuleTagListByCategory.php',

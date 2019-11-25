@@ -252,6 +252,65 @@ class TagHelper extends \Backend
 		return false;
 	}
 
+	public function compileArticleHook($objTemplate, $arrDate, $moduleArticle)
+	{
+		$objTemplate->show_tags = $moduleArticle->tags_showtags;
+		if ($moduleArticle->tags_showtags)
+		{
+			$objTemplate->tags = $this->getTagsForArticle($moduleArticle, $moduleArticle->tags_max_tags, $moduleArticle->tags_relevance, $moduleArticlehis->tags_jumpto);
+		}
+	}
+
+	private function getTagsForArticle($moduleArticle, $max_tags = 0, $relevance = 0, $target = 0)
+	{
+		$table = 'tl_article';
+		$id = $moduleArticle->id;
+		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
+			->execute($table, $id)
+			->fetchAllAssoc();
+		$res = false;
+		if (count($arrTags))
+		{
+			if ($max_tags > 0)
+			{
+				$arrTags = array_slice($arrTags,0,$max_tags);
+			}
+			$arrTagsWithCount = $this->Database->prepare("SELECT tag, COUNT(tag) as tagcount FROM tl_tag WHERE from_table = ? GROUP BY tag ORDER BY tag ASC")
+				->execute($table)
+				->fetchAllAssoc();
+			$countarray = array();
+			foreach ($arrTagsWithCount as $data)
+			{
+				$countarray[$data['tag']] = $data['tagcount'];
+			}
+			foreach ($arrTags as $idx => $tag)
+			{
+				$arrTags[$idx]['tagcount'] = $countarray[$tag['tag']];
+				$arrTags[$idx]['tag_class'] = \Contao\TagList::_getTagNameClass($tag['tag']);
+			}
+			if ($relevance == 1)
+			{
+				usort($arrTags, array($this, 'sortByRelevance'));
+			}
+			if (strlen($target))
+			{
+				$pageArr = array();
+				$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=? OR alias=?")
+					->limit(1)
+					->execute(array($target, $target));
+				$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
+				if (count($pageArr))
+				{
+					foreach ($arrTags as $idx => $tag)
+					{
+						$arrTags[$idx]['url'] = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . $tag['tag']));
+					}
+				}
+			}
+		}
+		return $arrTags;
+	}
+
 	public function parseArticlesHook($objTemplate, $row)
 	{
 		$this->import('Session');

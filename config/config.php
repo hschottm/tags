@@ -89,6 +89,7 @@ $GLOBALS['TL_HOOKS']['reviseTable'][] = array('TagHelper', 'deleteIncompleteReco
 $GLOBALS['TL_HOOKS']['reviseTable'][] = array('TagHelper', 'deleteUnusedTagsForTable');
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('TagHelper', 'replaceTagInsertTags');
 $GLOBALS['TL_HOOKS']['parseArticles'][] = array('TagHelper', 'parseArticlesHook');
+$GLOBALS['TL_HOOKS']['compileArticle'][] = array('TagHelper', 'compileArticleHook');
 $GLOBALS['TL_HOOKS']['setMemberlistOptions'][] = array('TagMemberHelper', 'setMemberlistOptions');
 
 /**
