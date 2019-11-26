@@ -15,28 +15,6 @@ class NewsTags extends \News
 	private $savedArticleId;
 	
 	/**
-	 * Convert relative URLs to absolute URLs
-	 * @param string
-	 * @param string
-	 * @param boolean
-	 * @return string
-	 */
-	/* TODO: No longer possible in Contao 3
-	protected function convertRelativeUrls($strContent, $strBase='', $blnHrefOnly=false)
-	{
-		$content = \Controller::convertRelativeURLs($strContent, $strBase, $blnHrefOnly);
-		if ($GLOBALS['tags']['showInFeeds'])
-		{
-			$tags = $this->getTagsForTableAndId('tl_news', $this->savedArticleId);
-			if (strlen($tags))
-			{
-				$content .= $tags;
-			}
-		}
-		return $content;
-	}
-	*/
-	/**
 	 * Return the link of a news article
 	 * @param object
 	 * @param string
