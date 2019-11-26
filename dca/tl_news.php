@@ -66,8 +66,6 @@ if (!in_array('tl_news', $disabledObjects))
 	$GLOBALS['TL_DCA']['tl_news']['config']['ondelete_callback'][] = array('tl_news_tags', 'deleteNews');
 	$GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'][] = array('tl_news_tags', 'onCopy');
 	$GLOBALS['TL_DCA']['tl_news']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_news']['palettes']['default']);
-	$GLOBALS['TL_DCA']['tl_news']['palettes']['internal'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_news']['palettes']['internal']);
-	$GLOBALS['TL_DCA']['tl_news']['palettes']['external'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_news']['palettes']['external']);
 }
 
 $GLOBALS['TL_DCA']['tl_news']['fields']['tags'] = array
