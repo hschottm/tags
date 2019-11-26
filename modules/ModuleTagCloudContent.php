@@ -45,10 +45,10 @@ class ModuleTagCloudContent extends \ModuleTagCloud
 		if (strlen($this->tag_content_pages)) $taglist->content_pages = deserialize($this->tag_content_pages, TRUE);
 		$this->arrTags = $taglist->getTagList();
 		if ($this->tag_topten) $this->arrTopTenTags = $taglist->getTopTenTagList();
-		if (strlen($this->Input->get('tag')) && $this->tag_related)
+		if (strlen(\TagHelper::decode(\Input::get('tag'))) && $this->tag_related)
 		{
-			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			$this->arrRelated = $taglist->getRelatedTagList(array_merge(array($this->Input->get('tag')), $relatedlist));
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			$this->arrRelated = $taglist->getRelatedTagList(array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist));
 		}
 		if (count($this->arrTags) < 1)
 		{

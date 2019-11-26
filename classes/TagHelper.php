@@ -21,6 +21,16 @@ class TagHelper extends \Backend
 		$this->import('Database');
 	}
 
+	public function encode($tag)
+	{
+		return str_replace('/', 'x2F', $tag);
+	}
+
+	public function decode($tag)
+	{
+		return str_replace('x2F', '/', $tag);
+	}
+
 	public function getAllEvents($arrEvents, $arrCalendars, $intStart, $intEnd, $caller)
 	{
 		return $arrEvents;
@@ -205,8 +215,8 @@ class TagHelper extends \Backend
 		if ($strTag == 'tags_used')
 		{
 			$headlinetags = array();
-			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			if (strlen($this->Input->get('tag')))
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			if (strlen(\TagHelper::decode(\Input::get('tag'))))
 			{
 				$headlinetags = array_merge($headlinetags, array($this->Input->get('tag')));
 				if (count($relatedlist))
@@ -303,7 +313,7 @@ class TagHelper extends \Backend
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode($tag['tag'])));
 					}
 				}
 			}
@@ -337,7 +347,7 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . $tag));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \TagHelper::encode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -370,7 +380,7 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . $tag));
+			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 			$taglist[$id] = array(

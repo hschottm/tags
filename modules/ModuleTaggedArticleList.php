@@ -192,8 +192,8 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 
 		$tagids = array();
 
-		$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-		$alltags = array_merge(array($this->Input->get('tag')), $relatedlist);
+		$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+		$alltags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
 		$first = true;
 		foreach ($alltags as $tag)
 		{
@@ -246,7 +246,7 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 						$tags = $this->getTags($arrArticle['id']);
 						foreach ($tags as $id => $tag)
 						{
-							$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . $tag));
+							$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \TagHelper::encode($tag)));
 							$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
 						}
 						$objTemplate->tags = $tags;
@@ -266,10 +266,10 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 		}
 
 		$headlinetags = array();
-		if (strlen($this->Input->get('tag')))
+		if (strlen(\TagHelper::decode(\Input::get('tag'))))
 		{
-			$relatedlist = (strlen($this->Input->get('related'))) ? preg_split("/,/", $this->Input->get('related')) : array();
-			$headlinetags = array_merge(array($this->Input->get('tag')), $relatedlist);
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			$headlinetags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
 		}
 		$this->Template->showTags = $this->article_showtags;
 		$this->Template->tags_activetags = $headlinetags;

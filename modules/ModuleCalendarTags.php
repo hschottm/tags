@@ -26,14 +26,14 @@ class ModuleCalendarTags extends \ModuleCalendar
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (($this->tag_ignore) && !strlen($this->tag_filter)) return $arrAllEvents;
-		if (strlen(\Input::get('tag')) || strlen($this->tag_filter))
+		if (strlen(\TagHelper::decode(\Input::get('tag'))) || strlen($this->tag_filter))
 		{
 			$limit = null;
 			$offset = 0;
 			$tagids = array();
 			if (strlen($this->tag_filter)) $tagids = $this->getFilterTags();
-			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$tagArray = (strlen(\Input::get('tag'))) ? array(\Input::get('tag')) : array();
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			$tagArray = (strlen(\TagHelper::decode(\Input::get('tag')))) ? array(\TagHelper::decode(\Input::get('tag'))) : array();
 			$alltags = array_merge($tagArray, $relatedlist);
 			foreach ($alltags as $tag)
 			{

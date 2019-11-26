@@ -166,9 +166,9 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 
 		$headlinetags = array();
 
-		if (strlen(\Input::get('tag')))
+		if (strlen(\TagHelper::decode(\Input::get('tag'))))
 		{
-			$headlinetags = array_merge($headlinetags, array(\Input::get('tag')));
+			$headlinetags = array_merge($headlinetags, array(\TagHelper::decode(\Input::get('tag'))));
 			if (count($relatedlist))
 			{
 				$headlinetags = array_merge($headlinetags, $relatedlist);
@@ -189,12 +189,12 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 		$this->Session->set('news_showtags', $this->news_showtags);
 		$this->Session->set('news_jumpto', $this->tag_jumpTo);
 		$this->Session->set('news_tag_named_class', $this->tag_named_class);
-		if ((strlen(\Input::get('tag')) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
+		if ((strlen(\TagHelper::decode(\Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
 			
-			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag')), $relatedlist);
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			$alltags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
 			$first = true;
 			if (strlen($this->tag_filter))
 			{

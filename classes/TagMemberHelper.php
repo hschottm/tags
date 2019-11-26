@@ -21,10 +21,10 @@ class TagMemberHelper extends \Backend
 {
 	public function setMemberlistOptions($moduleMemberList)
 	{
-		if (strlen(\Input::get('tag')))
+		if (strlen(\TagHelper::decode(\Input::get('tag'))))
 		{
-			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
-			$alltags = array_merge(array(\Input::get('tag')), $relatedlist);
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			$alltags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
 			$tagids = array();
 			$first = true;
 			foreach ($alltags as $tag)

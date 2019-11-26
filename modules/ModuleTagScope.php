@@ -40,10 +40,10 @@ class ModuleTagScope extends \Module
 
 		$this->strTemplate = (strlen($this->scope_template)) ? $this->scope_template : $this->strTemplate;
 		$this->arrTags = array();
-		if (strlen(\Input::get('tag')))
+		if (strlen(\TagHelper::decode(\Input::get('tag'))))
 		{
-			array_push($this->arrTags, \Input::get('tag'));
-			$relatedlist = (strlen(\Input::get('related'))) ? preg_split("/,/", \Input::get('related')) : array();
+			array_push($this->arrTags, \TagHelper::decode(\Input::get('tag')));
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
 			$this->arrTags = array_merge($this->arrTags, $relatedlist);
 		}
 		if (count($this->arrTags) < 1 && $this->show_empty_scope == false)
@@ -76,7 +76,7 @@ class ModuleTagScope extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . $tag));
+				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode($tag)));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
