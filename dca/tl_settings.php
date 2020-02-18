@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['disabledTagObjects'] = array
 	'eval'                    => array('multiple'=>true)
 );
 
-class tl_settings_tags extends tl_settings
+class tl_settings_tags extends Contao\Backend
 {
 	/**
 	 * Return available tag tables
