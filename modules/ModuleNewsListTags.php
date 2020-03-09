@@ -127,14 +127,45 @@ class ModuleNewsListTags extends \ModuleNewsList
 			$this->Template->pagination = $objPagination->generate("\n  ");
 		}
 
+        // Determine sorting
+        $t = NewsModel::getTable();
+        $order = '';
+
+        if ($this->news_featured == 'featured_first')
+        {
+            $order .= "$t.featured DESC, ";
+        }
+
+        switch ($this->news_order)
+        {
+            case 'order_headline_asc':
+                $order .= "$t.headline";
+                break;
+
+            case 'order_headline_desc':
+                $order .= "$t.headline DESC";
+                break;
+
+            case 'order_random':
+                $order .= "RAND()";
+                break;
+
+            case 'order_date_asc':
+                $order .= "$t.date";
+                break;
+
+            default:
+                $order .= "$t.date DESC";
+        }
+
 		// Get the items
 		if (isset($limit))
 		{
-			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, $limit, $offset);
+			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, $limit, $offset, array('order'=>$order));
 		}
 		else
 		{
-			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, 0, $offset);
+			$objArticles = \TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, 0, $offset, array('order'=>$order));
 		}
 
 		// Add the articles
