@@ -411,7 +411,7 @@ class TagHelper extends \Backend
 
 		foreach ($session as $id)
 		{
-			$this->CalendarTags->generateFeed($id);
+			$this->CalendarTags->generateFeedsByCalendar($id);
 		}
 
 		$this->Session->set('calendar_feed_updater', null);
@@ -433,7 +433,7 @@ class TagHelper extends \Backend
 
 		foreach ($session as $id)
 		{
-			$this->NewsTags->generateFeed($id);
+			$this->NewsTags->generateFeedsByArchive($id);
 		}
 
 		$this->Session->set('news_feed_updater', null);
