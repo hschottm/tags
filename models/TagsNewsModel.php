@@ -58,7 +58,7 @@ class TagsNewsModel extends \NewsModel
 	 * 
 	 * @return \Model\Collection|null A collection of models or null if there are no news
 	 */
-	public static function findPublishedByPidsAndIds($arrPids, $arrIds, $blnFeatured=null, $intLimit=0, $intOffset=0)
+	public static function findPublishedByPidsAndIds($arrPids, $arrIds, $blnFeatured=null, $intLimit=0, $intOffset=0, array $arrOptions=array())
 	{
 		if (!is_array($arrPids) || empty($arrPids))
 		{
@@ -85,12 +85,13 @@ class TagsNewsModel extends \NewsModel
 			$arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
 		}
 
-		$arrOptions = array
-		(
-			'order'  => "$t.date DESC",
-			'limit'  => $intLimit,
-			'offset' => $intOffset
-		);
+        if (!isset($arrOptions['order']))
+        {
+            $arrOptions['order']  = "$t.date DESC";
+        }
+
+        $arrOptions['limit']  = $intLimit;
+        $arrOptions['offset'] = $intOffset;
 
 		return static::findBy($arrColumns, null, $arrOptions);
 	}
@@ -135,7 +136,7 @@ class TagsNewsModel extends \NewsModel
 	 * 
 	 * @return \Model\Collection|null A collection of models or null if there are no news
 	 */
-	public static function findPublishedFromToByPidsAndIds($intFrom, $intTo, $arrPids, $arrIds, $intLimit=0, $intOffset=0)
+	public static function findPublishedFromToByPidsAndIds($intFrom, $intTo, $arrPids, $arrIds, $intLimit=0, $intOffset=0, array $arrOptions=array())
 	{
 		if (!is_array($arrPids) || empty($arrPids))
 		{
@@ -152,12 +153,13 @@ class TagsNewsModel extends \NewsModel
 			$arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
 		}
 
-		$arrOptions = array
-		(
-			'order'  => "$t.date DESC",
-			'limit'  => $intLimit,
-			'offset' => $intOffset
-		);
+        if (!isset($arrOptions['order']))
+        {
+            $arrOptions['order']  = "$t.date DESC";
+        }
+
+        $arrOptions['limit']  = $intLimit;
+        $arrOptions['offset'] = $intOffset;
 
 		return static::findBy($arrColumns, array($intFrom, $intTo), $arrOptions);
 	}
