@@ -19,35 +19,26 @@ class ContentGalleryTags extends ContentGallery
 	{
 		$newMultiSRC = array();
 
-		if ((strlen(\TagHelper::decode(\Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
-		{
+		if ((strlen(\TagHelper::decode(Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter))) {
 			$tagids = array();
 
-			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
-			$alltags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
+			$relatedlist = (strlen(\TagHelper::decode(Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(Input::get('related'))) : array();
+			$alltags = array_merge(array(\TagHelper::decode(Input::get('tag'))), $relatedlist);
 			$first = true;
-			if (strlen($this->tag_filter))
-			{
+			if (strlen($this->tag_filter)) {
 				$headlinetags = preg_split("/,/", $this->tag_filter);
 				$tagids = $this->getFilterTags();
 				$first = false;
-			}
-			else
-			{
+			} else {
 				$headlinetags = array();
 			}
-			foreach ($alltags as $tag)
-			{
-				if (strlen(trim($tag)))
-				{
-					if (count($tagids))
-					{
+			foreach ($alltags as $tag) {
+				if (strlen(trim($tag))) {
+					if (count($tagids)) {
 						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
 							->execute('tl_files', $tag)
 							->fetchEach('tid');
-					}
-					else if ($first)
-					{
+					} else if ($first) {
 						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
 							->execute('tl_files', $tag)
 							->fetchEach('tid');
@@ -55,73 +46,67 @@ class ContentGalleryTags extends ContentGallery
 					}
 				}
 			}
-			while ($this->objFiles->next())
-			{
-				if ($this->objFiles->type == 'file')
-				{
+			while ($this->objFiles->next()) {
+				if ($this->objFiles->type == 'file') {
 					if (in_array($this->objFiles->id, $tagids)) array_push($newMultiSRC, $this->objFiles->uuid);
-				}
-				else
-				{
-					$objSubfiles = \FilesModel::findByPid($this->objFiles->uuid);
-					if ($objSubfiles === null)
-					{
+				} else {
+					$objSubfiles = FilesModel::findByPid($this->objFiles->uuid);
+					if ($objSubfiles === null) {
 						continue;
 					}
 
-					while ($objSubfiles->next())
-					{
+					while ($objSubfiles->next()) {
 						if (in_array($objSubfiles->id, $tagids)) array_push($newMultiSRC, $objSubfiles->uuid);
 					}
 				}
 			}
 			$this->multiSRC = $newMultiSRC;
-			$this->objFiles = \FilesModel::findMultipleByUuids($this->multiSRC);
-			if ($this->objFiles === null)
-			{
+			$this->objFiles = FilesModel::findMultipleByUuids($this->multiSRC);
+			if ($this->objFiles === null) {
 				return '';
 			}
 		}
 		parent::compile();
 	}
 
-  public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null, FilesModel $objModel=null)
-  {
-      \Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId, $objModel);
-      if (TL_MODE == 'FE')
-      {
-        $found = \TagModel::findByIdAndTable($arrItem['id'], 'tl_files');
-        $tags = array();
-        if ($found && $found->count())
-        {
-          while ($found->next())
-          {
-            array_push($tags, $found->tag);
-          }
-          $objTemplate->tags = $tags;
-        }
-      }
-  }
+	/**
+	 * Add an image to a template
+	 *
+	 * @param object          $template                The template object to add the image to
+	 * @param array           $rowData                 The element or module as array
+	 * @param integer|null    $maxWidth                An optional maximum width of the image
+	 * @param string|null     $lightboxGroupIdentifier An optional lightbox group identifier
+	 * @param FilesModel|null $filesModel              An optional files model
+	 */
+	public static function addImageToTemplate($template, array $rowData, $maxWidth = null, $lightboxGroupIdentifier = null, FilesModel $filesModel = null): void
+	{
+		Controller::addImageToTemplate($template, $rowData, $maxWidth, $lightboxGroupIdentifier, $filesModel);
+		if (TL_MODE == 'FE') {
+			$found = \TagModel::findByIdAndTable($rowData['id'], 'tl_files');
+			$tags = array();
+			if ($found && $found->count()) {
+				while ($found->next()) {
+					array_push($tags, $found->tag);
+				}
+				$template->tags = $tags;
+			}
+		}
+	}
 
 	protected function getFilterTags()
 	{
-		if (strlen($this->tag_filter))
-		{
+		if (strlen($this->tag_filter)) {
 			$tags = preg_split("/,/", $this->tag_filter);
 			$placeholders = array();
-			foreach ($tags as $tag)
-			{
+			foreach ($tags as $tag) {
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_files');
 			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');
-		}
-		else
-		{
+		} else {
 			return array();
 		}
 	}
-
 }
