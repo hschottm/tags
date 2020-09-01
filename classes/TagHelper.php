@@ -139,6 +139,7 @@ class TagHelper extends \Backend
 
 	private function getTagsForTableAndId($table, $id, $url = false, $max_tags = 0, $relevance = 0, $target = 0)
 	{
+		global $objPage;
 		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
 			->execute($table, $id)
 			->fetchAllAssoc();
@@ -176,7 +177,7 @@ class TagHelper extends \Backend
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . $tag['tag']));
 					}
 				}
 			}
@@ -196,9 +197,9 @@ class TagHelper extends \Backend
 						{
 							foreach ($arrTags as $idx => $tag)
 							{
-								$arrTags[$idx]['url'] = $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+								$arrTags[$idx]['url'] = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 							}
-							$objTemplate->url = $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+							$objTemplate->url = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 						}
 						break;
 				}
@@ -273,6 +274,8 @@ class TagHelper extends \Backend
 
 	private function getTagsForArticle($moduleArticle, $max_tags = 0, $relevance = 0, $target = 0)
 	{
+		global $objPage;
+
 		$table = 'tl_article';
 		$id = $moduleArticle->id;
 		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
@@ -313,7 +316,7 @@ class TagHelper extends \Backend
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode($tag['tag'])));
+						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag'])));
 					}
 				}
 			}
@@ -323,6 +326,7 @@ class TagHelper extends \Backend
 
 	public function parseArticlesHook($objTemplate, $row)
 	{
+		global $objPage;
 		$this->import('Session');
 		$news_showtags = $this->Session->get('news_showtags');
 		$news_jumpto = $this->Session->get('news_jumpto');
@@ -347,8 +351,8 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \TagHelper::encode($tag)));
-				$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
+				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+				$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
 					'tag' => $tag,
@@ -380,9 +384,9 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
-			$tags[$id] = '<a href="' . $strUrl . '">' . specialchars($tag) . '</a>';
+			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
 				'url' => $tags[$id],
 				'tag' => $tag,
