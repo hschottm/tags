@@ -28,6 +28,7 @@ class NewsTags extends \News
 	
 	private function getTagsForTableAndId($table, $id, $url = false)
 	{
+		global $objPage;
 		$arrTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($table, $id)
 			->fetchAllAssoc();
@@ -49,7 +50,7 @@ class NewsTags extends \News
 						}
 						else
 						{
-							$strUrl = $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+							$strUrl = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 						}
 						break;
 				}
