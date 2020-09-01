@@ -92,7 +92,7 @@ class ModuleTagCloud extends \Module
 	protected function showTags()
 	{
 		$this->loadLanguageFile('tl_module');
-		$strUrl = ampersand(\Environment::get('request'));
+		$strUrl = StringUtil::ampersand(\Environment::get('request'));
 		// Get target page
 		$objPageObject = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
 			->limit(1)
@@ -101,15 +101,17 @@ class ModuleTagCloud extends \Module
 		$default = ($objPage != null) ? $objPage->row() : array();
 		$pageArr = ($objPageObject->numRows) ? $objPageObject->fetchAssoc() : $default;
 		$strParams = '';
+
 		if ($this->keep_url_params)
 		{
 			$strParams = \TagHelper::getSavedURLParams($this->Input);
 		}
+
 		foreach ($this->arrTags as $idx => $tag)
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode($tag['tag_name'])));
+				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -165,7 +167,7 @@ class ModuleTagCloud extends \Module
 			if (count($pageArr))
 			{
 				$allrelated = array_merge($relatedlist, array($tag['tag_name']));
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(join($allrelated, ','))));
+				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(join($allrelated, ','))));
 			}
 			$this->arrRelated[$idx]['tag_url'] = $strUrl;
 		}
@@ -180,7 +182,7 @@ class ModuleTagCloud extends \Module
 		$this->Template->selectedtags = (strlen(\TagHelper::decode(\Input::get('tag')))) ? (count($this->arrRelated)+1) : 0;
 		if ($this->tag_show_reset)
 		{
-			$strEmptyUrl = ampersand($this->generateFrontendUrl($pageArr, ''));
+			$strEmptyUrl = StringUtil::ampersand($objPage->getFrontendUrl(''));
 			if (strlen($strParams))
 			{
 				if (strpos($strUrl, '?') !== false)
@@ -205,7 +207,7 @@ class ModuleTagCloud extends \Module
 				{
 					if (count($pageArr))
 					{
-						$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode($tag['tag_name'])));
+						$strUrl = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
 						if (strlen($strParams))
 						{
 							if (strpos($strUrl, '?') !== false)
