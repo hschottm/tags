@@ -388,7 +388,7 @@ class ModuleEventlistTags extends \ModuleEventlist
  			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
  			$tagArray = (strlen(\TagHelper::decode(\Input::get('tag')))) ? array(\TagHelper::decode(\Input::get('tag'))) : array();
  			$headlinetags = array_merge($headlinetags, $tagArray);
- 			if (count($relatedlist))
+ 			if (!empty($relatedlist))
  			{
  				$headlinetags = array_merge($headlinetags, $relatedlist);
  			}
