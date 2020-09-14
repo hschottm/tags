@@ -29,7 +29,8 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		// Get the current event
 		$objEvent = \CalendarEventsModel::findPublishedByParentAndIdOrAlias(\Input::get('events'), $this->cal_calendar);
 
-		if (null === $objEvent)
+		// The event does not exist or has an external target (see #33)
+		if (null === $objEvent || $objEvent->source != 'default')
 		{
 			throw new PageNotFoundException('Page not found: ' . \Environment::get('uri'));
 		}
@@ -110,10 +111,8 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			}
 		}
 
-		/** @var FrontendTemplate|object $objTemplate */
 		$objTemplate = new \FrontendTemplate($this->cal_template);
 		$objTemplate->setData($objEvent->row());
-
 		$objTemplate->date = $strDate;
 		$objTemplate->time = $strTime;
 		$objTemplate->datetime = $objEvent->addTime ? date('Y-m-d\TH:i:sP', $intStartTime) : date('Y-m-d', $intStartTime);
@@ -123,9 +122,19 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$objTemplate->recurring = $recurring;
 		$objTemplate->until = $until;
 		$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
+		$objTemplate->calendar = $objEvent->getRelated('pid');
 		$objTemplate->details = '';
 		$objTemplate->hasDetails = false;
 		$objTemplate->hasTeaser = false;
+
+		// Tag the response
+		if (System::getContainer()->has('fos_http_cache.http.symfony_response_tagger'))
+		{
+			/** @var ResponseTagger $responseTagger */
+			$responseTagger = System::getContainer()->get('fos_http_cache.http.symfony_response_tagger');
+			$responseTagger->addTags(array('contao.db.tl_calendar_events.' . $objEvent->id));
+			$responseTagger->addTags(array('contao.db.tl_calendar.' . $objEvent->pid));
+		}
 
 		// Clean the RTE output
 		if ($objEvent->teaser != '')
@@ -205,20 +214,19 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
 		}
 
-		     ////////// CHANGES BY ModuleEventReaderTags
-			 $objTemplate->showTags = $this->event_showtags;
-			 if ($this->event_showtags)
-			 {
-			   $helper = new \TagHelper();
-			   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
-			   $tags = $tagsandlist['tags'];
-			   $taglist = $tagsandlist['taglist'];
-			   $objTemplate->showTagClass = $this->tag_named_class;
-			   $objTemplate->tags = $tags;
-			   $objTemplate->taglist = $taglist;
-			 }
-			 ////////// CHANGES BY ModuleEventReaderTags
-		
+				     ////////// CHANGES BY ModuleEventReaderTags
+					 $objTemplate->showTags = $this->event_showtags;
+					 if ($this->event_showtags)
+					 {
+					   $helper = new \TagHelper();
+					   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
+					   $tags = $tagsandlist['tags'];
+					   $taglist = $tagsandlist['taglist'];
+					   $objTemplate->showTagClass = $this->tag_named_class;
+					   $objTemplate->tags = $tags;
+					   $objTemplate->taglist = $taglist;
+					 }
+					 ////////// CHANGES BY ModuleEventReaderTags
 		
 		$this->Template->event = $objTemplate->parse();
 

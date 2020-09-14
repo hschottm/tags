@@ -189,6 +189,12 @@ class ModuleEventlistTags extends \ModuleEventlist
 						continue;
 					}
 
+					// Hide running non-recurring events (see #30)
+					if ($this->cal_hideRunning && !$event['recurring'] && $event['startTime'] < time())
+					{
+						continue;
+					}
+
 					$event['firstDay'] = $GLOBALS['TL_LANG']['DAYS'][date('w', $day)];
 					$event['firstDate'] = \Date::parse($objPage->dateFormat, $day);
 
@@ -213,7 +219,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		if ($this->perPage > 0)
 		{
 			$id = 'page_e' . $this->id;
-			$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
+			$page = \Input::get($id) ?? 1;
 
 			// Do not index or cache the page if the page number is outside the range
 			if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
@@ -259,7 +265,6 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$blnIsLastEvent = true;
 			}
 
-			/** @var FrontendTemplate|object $objTemplate */
 			$objTemplate = new \FrontendTemplate($this->cal_template);
 			$objTemplate->setData($event);
 
@@ -322,6 +327,18 @@ class ModuleEventlistTags extends \ModuleEventlist
 
 					$event['singleSRC'] = $objModel->path;
 					$this->addImageToTemplate($objTemplate, $event, null, null, $objModel);
+
+					// Link to the event if no image link has been defined
+					if (!$objTemplate->fullsize && !$objTemplate->imageUrl)
+					{
+						// Unset the image title attribute
+						$picture = $objTemplate->picture;
+						unset($picture['title']);
+						$objTemplate->picture = $picture;
+
+						// Link to the event
+						$objTemplate->linkTitle = $objTemplate->readMore;
+					}
 				}
 			}
 
@@ -346,8 +363,8 @@ class ModuleEventlistTags extends \ModuleEventlist
 					   $objTemplate->taglist = $taglist;
 				   }
 				   ////////// CHANGES BY ModuleEventlistTags
-	  
-			$strEvents .= $objTemplate->parse();
+
+		   $strEvents .= $objTemplate->parse();
 
 			++$eventCount;
 			++$headerCount;
@@ -362,6 +379,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		// See #3672
 		$this->Template->headline = $this->headline;
 		$this->Template->events = $strEvents;
+		$this->Template->eventCount = $eventCount;
 
 		// Clear the $_GET array (see #2445)
 		if ($blnClearInput)
@@ -401,7 +419,6 @@ class ModuleEventlistTags extends \ModuleEventlist
 	 $this->Template->tags_activetags = $headlinetags;
 	 ////////// CHANGES BY ModuleEventlistTags
 	}
-
 
   /**
 	 * Read tags from database
