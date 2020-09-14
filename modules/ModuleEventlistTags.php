@@ -253,7 +253,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		{
 			$size = StringUtil::deserialize($this->imgSize);
 
-			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
+			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]) || ($size[2][0] ?? null) === '_')
 			{
 				$imgSize = $this->imgSize;
 			}
@@ -358,20 +358,20 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$this->addEnclosuresToTemplate($objTemplate, $event);
 			}
 
-			       ////////// CHANGES BY ModuleEventlistTags
-				   $objTemplate->showTags = $this->event_showtags;
-				   if ($this->event_showtags)
-				   {
-					   $helper = new \TagHelper();
-					   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
-					   $tags = $tagsandlist['tags'];
-					   $taglist = $tagsandlist['taglist'];
-					   $objTemplate->showTagClass = $this->tag_named_class;
-					   $objTemplate->tags = $tags;
-					   $objTemplate->taglist = $taglist;
-				   }
-				   ////////// CHANGES BY ModuleEventlistTags
-	  
+						       ////////// CHANGES BY ModuleEventlistTags
+							   $objTemplate->showTags = $this->event_showtags;
+							   if ($this->event_showtags)
+							   {
+								   $helper = new \TagHelper();
+								   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
+								   $tags = $tagsandlist['tags'];
+								   $taglist = $tagsandlist['taglist'];
+								   $objTemplate->showTagClass = $this->tag_named_class;
+								   $objTemplate->tags = $tags;
+								   $objTemplate->taglist = $taglist;
+							   }
+							   ////////// CHANGES BY ModuleEventlistTags
+			
 			$strEvents .= $objTemplate->parse();
 
 			++$eventCount;
@@ -426,7 +426,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 	 }
 	 $this->Template->tags_activetags = $headlinetags;
 	 ////////// CHANGES BY ModuleEventlistTags
-}
+	}
 
   /**
 	 * Read tags from database

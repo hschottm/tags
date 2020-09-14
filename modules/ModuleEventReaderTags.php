@@ -64,7 +64,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			$arrRange = StringUtil::deserialize($objEvent->repeatEach);
 
-			if (\is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
+			if (\is_array($arrRange) && isset($arrRange['unit'], $arrRange['value']))
 			{
 				while (($this->cal_hideRunning ? $intStartTime : $intEndTime) < time() && $intEndTime < $objEvent->repeatEnd)
 				{
@@ -99,15 +99,15 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			$arrRange = StringUtil::deserialize($objEvent->repeatEach);
 
-			if (\is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
+			if (\is_array($arrRange) && isset($arrRange['unit'], $arrRange['value']))
 			{
 				if ($arrRange['value'] == 1)
 				{
-					$repeat = $GLOBALS['TL_LANG']['MSC']['cal_single_'.$arrRange['unit']];
+					$repeat = $GLOBALS['TL_LANG']['MSC']['cal_single_' . $arrRange['unit']];
 				}
 				else
 				{
-					$repeat = sprintf($GLOBALS['TL_LANG']['MSC']['cal_multiple_'.$arrRange['unit']], $arrRange['value']);
+					$repeat = sprintf($GLOBALS['TL_LANG']['MSC']['cal_multiple_' . $arrRange['unit']], $arrRange['value']);
 				}
 
 				if ($objEvent->recurrences > 0)
@@ -137,7 +137,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$objTemplate->datetime = $objEvent->addTime ? date('Y-m-d\TH:i:sP', $intStartTime) : date('Y-m-d', $intStartTime);
 		$objTemplate->begin = $intStartTime;
 		$objTemplate->end = $intEndTime;
-		$objTemplate->class = ($objEvent->cssClass != '') ? ' ' . trim($objEvent->cssClass) : '';
+		$objTemplate->class = $objEvent->cssClass ? ' ' . trim($objEvent->cssClass) : '';
 		$objTemplate->recurring = $recurring;
 		$objTemplate->until = $until;
 		$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
@@ -191,7 +191,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				return $strDetails;
 			};
 
-			$objTemplate->hasDetails = function () use ($id)
+			$objTemplate->hasDetails = static function () use ($id)
 			{
 				return ContentModel::countPublishedByPidAndTable($id, 'tl_calendar_events') > 0;
 			};
@@ -214,7 +214,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				{
 					$size = StringUtil::deserialize($this->imgSize);
 
-					if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
+					if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]) || ($size[2][0] ?? null) === '_')
 					{
 						$arrEvent['size'] = $this->imgSize;
 					}
@@ -233,21 +233,21 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
 		}
 
-     ////////// CHANGES BY ModuleEventReaderTags
-     $objTemplate->showTags = $this->event_showtags;
-     if ($this->event_showtags)
-     {
-       $helper = new \TagHelper();
-       $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
-       $tags = $tagsandlist['tags'];
-       $taglist = $tagsandlist['taglist'];
-       $objTemplate->showTagClass = $this->tag_named_class;
-       $objTemplate->tags = $tags;
-       $objTemplate->taglist = $taglist;
-     }
-     ////////// CHANGES BY ModuleEventReaderTags
-
-	 // Add a function to retrieve upcoming dates (see #175)
+		     ////////// CHANGES BY ModuleEventReaderTags
+			 $objTemplate->showTags = $this->event_showtags;
+			 if ($this->event_showtags)
+			 {
+			   $helper = new \TagHelper();
+			   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
+			   $tags = $tagsandlist['tags'];
+			   $taglist = $tagsandlist['taglist'];
+			   $objTemplate->showTagClass = $this->tag_named_class;
+			   $objTemplate->tags = $tags;
+			   $objTemplate->taglist = $taglist;
+			 }
+			 ////////// CHANGES BY ModuleEventReaderTags
+		
+		// Add a function to retrieve upcoming dates (see #175)
 		$objTemplate->getUpcomingDates = function ($recurrences) use ($objEvent, $objPage, $intStartTime, $intEndTime, $arrRange, $span)
 		{
 			if (!$objEvent->recurring || !\is_array($arrRange) || !isset($arrRange['unit']) || !isset($arrRange['value']))
