@@ -42,6 +42,7 @@ class ModuleTagContentList extends \Module
 	
 	protected function getArticlesForTagSource($sourcetable)
 	{
+		global $objPage;
 		$articles = array();
 		$id = $objPage->id;
 
@@ -54,13 +55,13 @@ class ModuleTagContentList extends \Module
 			->execute($time, $time);
 
 		$tagids = array();
-		if (strlen(\TagHelper::decode(\Input::get('tag'))))
+		if (strlen(\TagHelper::decode(Input::get('tag'))))
 		{
 			$limit = null;
 			$offset = 0;
 			
 			$objIds = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute('tl_article', \TagHelper::decode(\Input::get('tag')));
+				->execute('tl_article', \TagHelper::decode(Input::get('tag')));
 			if ($objIds->numRows)
 			{
 				while ($objIds->next())
@@ -71,7 +72,7 @@ class ModuleTagContentList extends \Module
 		}
 		while ($objArticles->next())
 		{
-			$cssID = deserialize($objArticles->cssID, true);
+			$cssID = StringUtil::deserialize($objArticles->cssID, true);
 
 			$objArticle = $this->Database->prepare("SELECT a.id AS aId, a.alias AS aAlias, a.title AS title, p.id AS id, p.alias AS alias, a.teaser FROM tl_article a, tl_page p WHERE a.pid=p.id AND (a.id=? OR a.alias=?)")
 										 ->limit(1)
@@ -85,18 +86,18 @@ class ModuleTagContentList extends \Module
 					{
 						if ($this->linktoarticles)
 						{ // link to articles
-							$articles[] = array('content' => '<a href="' . $this->generateFrontendUrl($objArticle->row(), '/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId)) . '" title="' . specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
+							$articles[] = array('content' => '<a href="' . $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId)) . '" title="' . StringUtil::specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
 						}
 						else
 						{ // link to pages
-							$articles[] = array('content' => '<a href="' . $this->generateFrontendUrl($objArticle->row()) . '" title="' . specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
+							$articles[] = array('content' => '<a href="' . $objPage->getFrontendUrl() . '" title="' . StringUtil::specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
 						}
 					}
 				}
 			}
 		}
-		$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
-		$headlinetags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
+		$relatedlist = (strlen(\TagHelper::decode(Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(Input::get('related'))) : array();
+		$headlinetags = array_merge(array(\TagHelper::decode(Input::get('tag'))), $relatedlist);
 		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->articles = $articles;
 		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyarticles'];
@@ -150,10 +151,10 @@ class ModuleTagContentList extends \Module
 	protected function getTags()
 	{
 		$this->arrTags = array();
-		if (strlen(\TagHelper::decode(\Input::get('tag'))))
+		if (strlen(\TagHelper::decode(Input::get('tag'))))
 		{
 			$this->arrTags = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-				->execute($this->tagsource, \TagHelper::decode(\Input::get('tag')))
+				->execute($this->tagsource, \TagHelper::decode(Input::get('tag')))
 				->fetchEach('tid');
 		}
 	}

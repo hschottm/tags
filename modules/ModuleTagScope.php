@@ -58,6 +58,7 @@ class ModuleTagScope extends \Module
 	 */
 	protected function compile()
 	{
+		global $objPage;
 		$this->loadLanguageFile('tl_module');
 		$this->Template->lngTags = (strlen($this->clear_text)) ? $this->clear_text : $GLOBALS['TL_LANG']['tl_module']['tags'];
 		$this->Template->jumpTo = $this->jumpTo;
@@ -76,7 +77,7 @@ class ModuleTagScope extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = ampersand($this->generateFrontendUrl($pageArr, '/tag/' . \TagHelper::encode($tag)));
+				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -92,7 +93,7 @@ class ModuleTagScope extends \Module
 			}
 		}
 		$this->Template->tag_urls = $tagurls;
-		$strEmptyUrl = ampersand($this->generateFrontendUrl($pageArr, ''));
+		$strEmptyUrl = StringUtil::ampersand($objPage->getFrontendUrl());
 		if (strlen($strParams))
 		{
 			if (strpos($strEmptyUrl, '?') !== false)
@@ -130,7 +131,7 @@ class ModuleTagScope extends \Module
 						$related = array_slice($newarr, 1);
 						$tagpath .= '/related/' . join($related, ',');
 					}
-					$strUrl = ampersand($this->generateFrontendUrl($pageArr, $tagpath));
+					$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($tagpath));
 					if (strlen($strParams))
 					{
 						if (strpos($strUrl, '?') !== false)

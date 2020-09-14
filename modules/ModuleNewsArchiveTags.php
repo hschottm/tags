@@ -169,7 +169,7 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 		if (strlen(\TagHelper::decode(\Input::get('tag'))))
 		{
 			$headlinetags = array_merge($headlinetags, array(\TagHelper::decode(\Input::get('tag'))));
-			if (count($relatedlist))
+			if (!empty($relatedlist))
 			{
 				$headlinetags = array_merge($headlinetags, $relatedlist);
 			}
