@@ -72,15 +72,15 @@ class ContentGalleryTags extends ContentGallery
 	/**
 	 * Add an image to a template
 	 *
-	 * @param object          $template                The template object to add the image to
-	 * @param array           $rowData                 The element or module as array
-	 * @param integer|null    $maxWidth                An optional maximum width of the image
-	 * @param string|null     $lightboxGroupIdentifier An optional lightbox group identifier
-	 * @param FilesModel|null $filesModel              An optional files model
+	 * @param object     $objTemplate   The template object to add the image to
+	 * @param array      $arrItem       The element or module as array
+	 * @param integer    $intMaxWidth   An optional maximum width of the image
+	 * @param string     $strLightboxId An optional lightbox ID
+	 * @param FilesModel $objModel      An optional files model
 	 */
-	public static function addImageToTemplate($template, array $rowData, $maxWidth = null, $lightboxGroupIdentifier = null, FilesModel $filesModel = null): void
+	public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null, FilesModel $objModel=null)
 	{
-		Controller::addImageToTemplate($template, $rowData, $maxWidth, $lightboxGroupIdentifier, $filesModel);
+		Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId, $objModel);
 		if (TL_MODE == 'FE') {
 			$found = \TagModel::findByIdAndTable($rowData['id'], 'tl_files');
 			$tags = array();
