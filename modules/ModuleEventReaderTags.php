@@ -17,193 +17,221 @@ class ModuleEventReaderTags extends \ModuleEventReader
   /**
 	 * Generate the module
 	 */
-   protected function compile()
- 	{
- 		/** @var PageModel $objPage */
- 		global $objPage;
+	protected function compile()
+	{
+		/** @var PageModel $objPage */
+		global $objPage;
 
- 		$this->Template->event = '';
- 		$this->Template->referer = 'javascript:history.go(-1)';
- 		$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
+		$this->Template->event = '';
+		$this->Template->referer = 'javascript:history.go(-1)';
+		$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
 
- 		// Get the current event
- 		$objEvent = \CalendarEventsModel::findPublishedByParentAndIdOrAlias(\Input::get('events'), $this->cal_calendar);
+		// Get the current event
+		$objEvent = CalendarEventsModel::findPublishedByParentAndIdOrAlias(Input::get('events'), $this->cal_calendar);
 
- 		if (null === $objEvent)
- 		{
- 			throw new PageNotFoundException('Page not found: ' . \Environment::get('uri'));
- 		}
+		// The event does not exist or has an external target (see #33)
+		if (null === $objEvent || $objEvent->source != 'default')
+		{
+			throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
+		}
 
- 		// Overwrite the page title (see #2853 and #4955)
- 		if ($objEvent->title != '')
- 		{
- 			$objPage->pageTitle = strip_tags(\StringUtil::stripInsertTags($objEvent->title));
- 		}
+		// Overwrite the page title (see #2853, #4955 and #87)
+		if ($objEvent->pageTitle)
+		{
+			$objPage->pageTitle = $objEvent->pageTitle;
+		}
+		elseif ($objEvent->title)
+		{
+			$objPage->pageTitle = strip_tags(StringUtil::stripInsertTags($objEvent->title));
+		}
 
- 		// Overwrite the page description
- 		if ($objEvent->teaser != '')
- 		{
- 			$objPage->description = $this->prepareMetaDescription($objEvent->teaser);
- 		}
+		// Overwrite the page description
+		if ($objEvent->description)
+		{
+			$objPage->description = $objEvent->description;
+		}
+		elseif ($objEvent->teaser)
+		{
+			$objPage->description = $this->prepareMetaDescription($objEvent->teaser);
+		}
 
- 		$intStartTime = $objEvent->startTime;
- 		$intEndTime = $objEvent->endTime;
- 		$span = \Calendar::calculateSpan($intStartTime, $intEndTime);
+		$intStartTime = $objEvent->startTime;
+		$intEndTime = $objEvent->endTime;
+		$span = Calendar::calculateSpan($intStartTime, $intEndTime);
 
- 		// Do not show dates in the past if the event is recurring (see #923)
- 		if ($objEvent->recurring)
- 		{
- 			$arrRange = \StringUtil::deserialize($objEvent->repeatEach);
+		// Do not show dates in the past if the event is recurring (see #923)
+		if ($objEvent->recurring)
+		{
+			$arrRange = StringUtil::deserialize($objEvent->repeatEach);
 
- 			if (is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
- 			{
- 				while ($intStartTime < time() && $intEndTime < $objEvent->repeatEnd)
- 				{
- 					$intStartTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intStartTime);
- 					$intEndTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intEndTime);
- 				}
- 			}
- 		}
+			if (\is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
+			{
+				while (($this->cal_hideRunning ? $intStartTime : $intEndTime) < time() && $intEndTime < $objEvent->repeatEnd)
+				{
+					$intStartTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intStartTime);
+					$intEndTime = strtotime('+' . $arrRange['value'] . ' ' . $arrRange['unit'], $intEndTime);
+				}
+			}
+		}
 
- 		$strDate = \Date::parse($objPage->dateFormat, $intStartTime);
+		// Mark past and upcoming events (see #187)
+		if ($intEndTime < strtotime('00:00:00'))
+		{
+			$objEvent->cssClass .= ' bygone';
+		}
+		elseif ($intStartTime > strtotime('23:59:59'))
+		{
+			$objEvent->cssClass .= ' upcoming';
+		}
+		else
+		{
+			$objEvent->cssClass .= ' current';
+		}
 
- 		if ($span > 0)
- 		{
- 			$strDate = \Date::parse($objPage->dateFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . \Date::parse($objPage->dateFormat, $intEndTime);
- 		}
+		list($strDate, $strTime) = $this->getDateAndTime($objEvent, $objPage, $intStartTime, $intEndTime, $span);
 
- 		$strTime = '';
+		$until = '';
+		$recurring = '';
+		$arrRange = array();
 
- 		if ($objEvent->addTime)
- 		{
- 			if ($span > 0)
- 			{
- 				$strDate = \Date::parse($objPage->datimFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . \Date::parse($objPage->datimFormat, $intEndTime);
- 			}
- 			elseif ($intStartTime == $intEndTime)
- 			{
- 				$strTime = \Date::parse($objPage->timeFormat, $intStartTime);
- 			}
- 			else
- 			{
- 				$strTime = \Date::parse($objPage->timeFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . \Date::parse($objPage->timeFormat, $intEndTime);
- 			}
- 		}
+		// Recurring event
+		if ($objEvent->recurring)
+		{
+			$arrRange = StringUtil::deserialize($objEvent->repeatEach);
 
- 		$until = '';
- 		$recurring = '';
+			if (\is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
+			{
+				if ($arrRange['value'] == 1)
+				{
+					$repeat = $GLOBALS['TL_LANG']['MSC']['cal_single_'.$arrRange['unit']];
+				}
+				else
+				{
+					$repeat = sprintf($GLOBALS['TL_LANG']['MSC']['cal_multiple_'.$arrRange['unit']], $arrRange['value']);
+				}
 
- 		// Recurring event
- 		if ($objEvent->recurring)
- 		{
- 			$arrRange = \StringUtil::deserialize($objEvent->repeatEach);
+				if ($objEvent->recurrences > 0)
+				{
+					$until = ' ' . sprintf($GLOBALS['TL_LANG']['MSC']['cal_until'], Date::parse($objPage->dateFormat, $objEvent->repeatEnd));
+				}
 
- 			if (is_array($arrRange) && isset($arrRange['unit']) && isset($arrRange['value']))
- 			{
- 				$strKey = 'cal_' . $arrRange['unit'];
- 				$recurring = sprintf($GLOBALS['TL_LANG']['MSC'][$strKey], $arrRange['value']);
+				if ($objEvent->recurrences > 0 && $intEndTime <= time())
+				{
+					$recurring = sprintf($GLOBALS['TL_LANG']['MSC']['cal_repeat_ended'], $repeat, $until);
+				}
+				elseif ($objEvent->addTime)
+				{
+					$recurring = sprintf($GLOBALS['TL_LANG']['MSC']['cal_repeat'], $repeat, $until, date('Y-m-d\TH:i:sP', $intStartTime), $strDate . ($strTime ? ' ' . $strTime : ''));
+				}
+				else
+				{
+					$recurring = sprintf($GLOBALS['TL_LANG']['MSC']['cal_repeat'], $repeat, $until, date('Y-m-d', $intStartTime), $strDate);
+				}
+			}
+		}
 
- 				if ($objEvent->recurrences > 0)
- 				{
- 					$until = sprintf($GLOBALS['TL_LANG']['MSC']['cal_until'], \Date::parse($objPage->dateFormat, $objEvent->repeatEnd));
- 				}
- 			}
- 		}
+		$objTemplate = new FrontendTemplate($this->cal_template);
+		$objTemplate->setData($objEvent->row());
+		$objTemplate->date = $strDate;
+		$objTemplate->time = $strTime;
+		$objTemplate->datetime = $objEvent->addTime ? date('Y-m-d\TH:i:sP', $intStartTime) : date('Y-m-d', $intStartTime);
+		$objTemplate->begin = $intStartTime;
+		$objTemplate->end = $intEndTime;
+		$objTemplate->class = ($objEvent->cssClass != '') ? ' ' . trim($objEvent->cssClass) : '';
+		$objTemplate->recurring = $recurring;
+		$objTemplate->until = $until;
+		$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
+		$objTemplate->calendar = $objEvent->getRelated('pid');
+		$objTemplate->details = '';
+		$objTemplate->hasDetails = false;
+		$objTemplate->hasTeaser = false;
 
- 		/** @var FrontendTemplate|object $objTemplate */
- 		$objTemplate = new \FrontendTemplate($this->cal_template);
- 		$objTemplate->setData($objEvent->row());
+		// Tag the response
+		if (System::getContainer()->has('fos_http_cache.http.symfony_response_tagger'))
+		{
+			/** @var ResponseTagger $responseTagger */
+			$responseTagger = System::getContainer()->get('fos_http_cache.http.symfony_response_tagger');
+			$responseTagger->addTags(array('contao.db.tl_calendar_events.' . $objEvent->id));
+			$responseTagger->addTags(array('contao.db.tl_calendar.' . $objEvent->pid));
+		}
 
- 		$objTemplate->date = $strDate;
- 		$objTemplate->time = $strTime;
- 		$objTemplate->datetime = $objEvent->addTime ? date('Y-m-d\TH:i:sP', $intStartTime) : date('Y-m-d', $intStartTime);
- 		$objTemplate->begin = $intStartTime;
- 		$objTemplate->end = $intEndTime;
- 		$objTemplate->class = ($objEvent->cssClass != '') ? ' ' . $objEvent->cssClass : '';
- 		$objTemplate->recurring = $recurring;
- 		$objTemplate->until = $until;
- 		$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
- 		$objTemplate->details = '';
- 		$objTemplate->hasDetails = false;
- 		$objTemplate->hasTeaser = false;
+		// Clean the RTE output
+		if ($objEvent->teaser != '')
+		{
+			$objTemplate->hasTeaser = true;
+			$objTemplate->teaser = StringUtil::toHtml5($objEvent->teaser);
+			$objTemplate->teaser = StringUtil::encodeEmail($objTemplate->teaser);
+		}
 
- 		// Clean the RTE output
- 		if ($objEvent->teaser != '')
- 		{
- 			$objTemplate->hasTeaser = true;
- 			$objTemplate->teaser = \StringUtil::toHtml5($objEvent->teaser);
- 			$objTemplate->teaser = \StringUtil::encodeEmail($objTemplate->teaser);
- 		}
+		// Display the "read more" button for external/article links
+		if ($objEvent->source != 'default')
+		{
+			$objTemplate->details = true;
+			$objTemplate->hasDetails = true;
+		}
 
- 		// Display the "read more" button for external/article links
- 		if ($objEvent->source != 'default')
- 		{
- 			$objTemplate->details = true;
- 			$objTemplate->hasDetails = true;
- 		}
+		// Compile the event text
+		else
+		{
+			$id = $objEvent->id;
 
- 		// Compile the event text
- 		else
- 		{
- 			$id = $objEvent->id;
+			$objTemplate->details = function () use ($id)
+			{
+				$strDetails = '';
+				$objElement = ContentModel::findPublishedByPidAndTable($id, 'tl_calendar_events');
 
- 			$objTemplate->details = function () use ($id)
- 			{
- 				$strDetails = '';
- 				$objElement = \ContentModel::findPublishedByPidAndTable($id, 'tl_calendar_events');
+				if ($objElement !== null)
+				{
+					while ($objElement->next())
+					{
+						$strDetails .= $this->getContentElement($objElement->current());
+					}
+				}
 
- 				if ($objElement !== null)
- 				{
- 					while ($objElement->next())
- 					{
- 						$strDetails .= $this->getContentElement($objElement->current());
- 					}
- 				}
+				return $strDetails;
+			};
 
- 				return $strDetails;
- 			};
+			$objTemplate->hasDetails = function () use ($id)
+			{
+				return ContentModel::countPublishedByPidAndTable($id, 'tl_calendar_events') > 0;
+			};
+		}
 
- 			$objTemplate->hasDetails = function () use ($id)
- 			{
- 				return \ContentModel::countPublishedByPidAndTable($id, 'tl_calendar_events') > 0;
- 			};
- 		}
+		$objTemplate->addImage = false;
 
- 		$objTemplate->addImage = false;
+		// Add an image
+		if ($objEvent->addImage && $objEvent->singleSRC != '')
+		{
+			$objModel = FilesModel::findByUuid($objEvent->singleSRC);
 
- 		// Add an image
- 		if ($objEvent->addImage && $objEvent->singleSRC != '')
- 		{
- 			$objModel = \FilesModel::findByUuid($objEvent->singleSRC);
+			if ($objModel !== null && is_file(System::getContainer()->getParameter('kernel.project_dir') . '/' . $objModel->path))
+			{
+				// Do not override the field now that we have a model registry (see #6303)
+				$arrEvent = $objEvent->row();
 
- 			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path))
- 			{
- 				// Do not override the field now that we have a model registry (see #6303)
- 				$arrEvent = $objEvent->row();
+				// Override the default image size
+				if ($this->imgSize != '')
+				{
+					$size = StringUtil::deserialize($this->imgSize);
 
- 				// Override the default image size
- 				if ($this->imgSize != '')
- 				{
- 					$size = \StringUtil::deserialize($this->imgSize);
+					if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
+					{
+						$arrEvent['size'] = $this->imgSize;
+					}
+				}
 
- 					if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]))
- 					{
- 						$arrEvent['size'] = $this->imgSize;
- 					}
- 				}
+				$arrEvent['singleSRC'] = $objModel->path;
+				$this->addImageToTemplate($objTemplate, $arrEvent, null, null, $objModel);
+			}
+		}
 
- 				$arrEvent['singleSRC'] = $objModel->path;
- 				$this->addImageToTemplate($objTemplate, $arrEvent, null, null, $objModel);
- 			}
- 		}
+		$objTemplate->enclosure = array();
 
- 		$objTemplate->enclosure = array();
-
- 		// Add enclosures
- 		if ($objEvent->addEnclosure)
- 		{
- 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
- 		}
+		// Add enclosures
+		if ($objEvent->addEnclosure)
+		{
+			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
+		}
 
      ////////// CHANGES BY ModuleEventReaderTags
      $objTemplate->showTags = $this->event_showtags;
@@ -219,61 +247,137 @@ class ModuleEventReaderTags extends \ModuleEventReader
      }
      ////////// CHANGES BY ModuleEventReaderTags
 
- 		$this->Template->event = $objTemplate->parse();
+	 // Add a function to retrieve upcoming dates (see #175)
+		$objTemplate->getUpcomingDates = function ($recurrences) use ($objEvent, $objPage, $intStartTime, $intEndTime, $arrRange, $span)
+		{
+			if (!$objEvent->recurring || !\is_array($arrRange) || !isset($arrRange['unit']) || !isset($arrRange['value']))
+			{
+				return array();
+			}
 
- 		$bundles = \System::getContainer()->getParameter('kernel.bundles');
+			$dates = array();
+			$startTime = $intStartTime;
+			$endTime = $intEndTime;
+			$strtotime = '+ ' . $arrRange['value'] . ' ' . $arrRange['unit'];
 
- 		// HOOK: comments extension required
- 		if ($objEvent->noComments || !isset($bundles['ContaoCommentsBundle']))
- 		{
- 			$this->Template->allowComments = false;
+			for ($i=0; $i<$recurrences; $i++)
+			{
+				$startTime = strtotime($strtotime, $startTime);
+				$endTime = strtotime($strtotime, $endTime);
 
- 			return;
- 		}
+				if ($endTime > $objEvent->repeatEnd)
+				{
+					break;
+				}
 
- 		/** @var CalendarModel $objCalendar */
- 		$objCalendar = $objEvent->getRelated('pid');
- 		$this->Template->allowComments = $objCalendar->allowComments;
+				list($strDate, $strTime) = $this->getDateAndTime($objEvent, $objPage, $startTime, $endTime, $span);
 
- 		// Comments are not allowed
- 		if (!$objCalendar->allowComments)
- 		{
- 			return;
- 		}
+				$dates[] = array
+				(
+					'date' => $strDate,
+					'time' => $strTime,
+					'datetime' => $objEvent->addTime ? date('Y-m-d\TH:i:sP', $startTime) : date('Y-m-d', $endTime),
+					'begin' => $startTime,
+					'end' => $endTime
+				);
+			}
 
- 		// Adjust the comments headline level
- 		$intHl = min(intval(str_replace('h', '', $this->hl)), 5);
- 		$this->Template->hlc = 'h' . ($intHl + 1);
+			return $dates;
+		};
 
- 		$this->import('Comments');
- 		$arrNotifies = array();
+		// Add a function to retrieve past dates (see #175)
+		$objTemplate->getPastDates = function ($recurrences) use ($objEvent, $objPage, $intStartTime, $intEndTime, $arrRange, $span)
+		{
+			if (!$objEvent->recurring || !\is_array($arrRange) || !isset($arrRange['unit']) || !isset($arrRange['value']))
+			{
+				return array();
+			}
 
- 		// Notify the system administrator
- 		if ($objCalendar->notify != 'notify_author')
- 		{
- 			$arrNotifies[] = $GLOBALS['TL_ADMIN_EMAIL'];
- 		}
+			$dates = array();
+			$startTime = $intStartTime;
+			$endTime = $intEndTime;
+			$strtotime = '- ' . $arrRange['value'] . ' ' . $arrRange['unit'];
 
- 		// Notify the author
- 		if ($objCalendar->notify != 'notify_admin')
- 		{
- 			/** @var UserModel $objAuthor */
- 			if (($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email != '')
- 			{
- 				$arrNotifies[] = $objAuthor->email;
- 			}
- 		}
+			for ($i=0; $i<$recurrences; $i++)
+			{
+				$startTime = strtotime($strtotime, $startTime);
+				$endTime = strtotime($strtotime, $endTime);
 
- 		$objConfig = new \stdClass();
+				if ($startTime < $objEvent->startDate)
+				{
+					break;
+				}
 
- 		$objConfig->perPage = $objCalendar->perPage;
- 		$objConfig->order = $objCalendar->sortOrder;
- 		$objConfig->template = $this->com_template;
- 		$objConfig->requireLogin = $objCalendar->requireLogin;
- 		$objConfig->disableCaptcha = $objCalendar->disableCaptcha;
- 		$objConfig->bbcode = $objCalendar->bbcode;
- 		$objConfig->moderate = $objCalendar->moderate;
+				list($strDate, $strTime) = $this->getDateAndTime($objEvent, $objPage, $startTime, $endTime, $span);
 
- 		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_calendar_events', $objEvent->id, $arrNotifies);
- 	}
+				$dates[] = array
+				(
+					'date' => $strDate,
+					'time' => $strTime,
+					'datetime' => $objEvent->addTime ? date('Y-m-d\TH:i:sP', $startTime) : date('Y-m-d', $endTime),
+					'begin' => $startTime,
+					'end' => $endTime
+				);
+			}
+
+			return $dates;
+		};
+
+		$this->Template->event = $objTemplate->parse();
+
+		$bundles = System::getContainer()->getParameter('kernel.bundles');
+
+		// HOOK: comments extension required
+		if ($objEvent->noComments || !isset($bundles['ContaoCommentsBundle']))
+		{
+			$this->Template->allowComments = false;
+
+			return;
+		}
+
+		/** @var CalendarModel $objCalendar */
+		$objCalendar = $objEvent->getRelated('pid');
+		$this->Template->allowComments = $objCalendar->allowComments;
+
+		// Comments are not allowed
+		if (!$objCalendar->allowComments)
+		{
+			return;
+		}
+
+		// Adjust the comments headline level
+		$intHl = min((int) str_replace('h', '', $this->hl), 5);
+		$this->Template->hlc = 'h' . ($intHl + 1);
+
+		$this->import(Comments::class, 'Comments');
+		$arrNotifies = array();
+
+		// Notify the system administrator
+		if ($objCalendar->notify != 'notify_author')
+		{
+			$arrNotifies[] = $GLOBALS['TL_ADMIN_EMAIL'];
+		}
+
+		// Notify the author
+		if ($objCalendar->notify != 'notify_admin')
+		{
+			/** @var UserModel $objAuthor */
+			if (($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email != '')
+			{
+				$arrNotifies[] = $objAuthor->email;
+			}
+		}
+
+		$objConfig = new \stdClass();
+
+		$objConfig->perPage = $objCalendar->perPage;
+		$objConfig->order = $objCalendar->sortOrder;
+		$objConfig->template = $this->com_template;
+		$objConfig->requireLogin = $objCalendar->requireLogin;
+		$objConfig->disableCaptcha = $objCalendar->disableCaptcha;
+		$objConfig->bbcode = $objCalendar->bbcode;
+		$objConfig->moderate = $objCalendar->moderate;
+
+		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_calendar_events', $objEvent->id, $arrNotifies);
+	}
 }
