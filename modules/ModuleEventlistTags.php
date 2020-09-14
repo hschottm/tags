@@ -178,7 +178,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 				foreach ($events as $event)
 				{
 					// Use repeatEnd if > 0 (see #8447)
-					if (($event['repeatEnd'] ?: $event['endTime']) < $intStart || $event['startTime'] > $intEnd)
+					if ($event['startTime'] > $intEnd || ($event['repeatEnd'] ?: $event['endTime']) < $intStart)
 					{
 						continue;
 					}
@@ -259,7 +259,19 @@ class ModuleEventlistTags extends \ModuleEventlist
 			}
 		}
 
-		$rootDir = System::getContainer()->getParameter('kernel.project_dir');
+		$projectDir = System::getContainer()->getParameter('kernel.project_dir');
+		$uuids = array();
+
+		for ($i=$offset; $i<$limit; $i++)
+		{
+			if ($arrEvents[$i]['addImage'] && $arrEvents[$i]['singleSRC'] != '')
+			{
+				$uuids[] = $arrEvents[$i]['singleSRC'];
+			}
+		}
+
+		// Preload all images in one query so they are loaded into the model registry
+		FilesModel::findMultipleByUuids($uuids);
 
 		// Parse events
 		for ($i=$offset; $i<$limit; $i++)
@@ -273,7 +285,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$blnIsLastEvent = true;
 			}
 
-			$objTemplate = new FrontendTemplate($this->cal_template);
+			$objTemplate = new FrontendTemplate($this->cal_template ?: 'event_list');
 			$objTemplate->setData($event);
 
 			// Month header
@@ -326,7 +338,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 			{
 				$objModel = FilesModel::findByUuid($event['singleSRC']);
 
-				if ($objModel !== null && is_file($rootDir . '/' . $objModel->path))
+				if ($objModel !== null && is_file($projectDir . '/' . $objModel->path))
 				{
 					if ($imgSize)
 					{
@@ -358,19 +370,19 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$this->addEnclosuresToTemplate($objTemplate, $event);
 			}
 
-						       ////////// CHANGES BY ModuleEventlistTags
-							   $objTemplate->showTags = $this->event_showtags;
-							   if ($this->event_showtags)
-							   {
-								   $helper = new \TagHelper();
-								   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
-								   $tags = $tagsandlist['tags'];
-								   $taglist = $tagsandlist['taglist'];
-								   $objTemplate->showTagClass = $this->tag_named_class;
-								   $objTemplate->tags = $tags;
-								   $objTemplate->taglist = $taglist;
-							   }
-							   ////////// CHANGES BY ModuleEventlistTags
+									       ////////// CHANGES BY ModuleEventlistTags
+										   $objTemplate->showTags = $this->event_showtags;
+										   if ($this->event_showtags)
+										   {
+											   $helper = new \TagHelper();
+											   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
+											   $tags = $tagsandlist['tags'];
+											   $taglist = $tagsandlist['taglist'];
+											   $objTemplate->showTagClass = $this->tag_named_class;
+											   $objTemplate->tags = $tags;
+											   $objTemplate->taglist = $taglist;
+										   }
+										   ////////// CHANGES BY ModuleEventlistTags
 			
 			$strEvents .= $objTemplate->parse();
 

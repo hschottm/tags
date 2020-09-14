@@ -29,10 +29,40 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		// Get the current event
 		$objEvent = CalendarEventsModel::findPublishedByParentAndIdOrAlias(Input::get('events'), $this->cal_calendar);
 
-		// The event does not exist or has an external target (see #33)
-		if (null === $objEvent || $objEvent->source != 'default')
+		// The event does not exist (see #33)
+		if ($objEvent === null)
 		{
 			throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
+		}
+
+		// Redirect if the event has a target URL (see #1498)
+		switch ($objEvent->source) {
+			case 'internal':
+				if ($page = PageModel::findPublishedById($objEvent->jumpTo))
+				{
+					throw new RedirectResponseException($page->getAbsoluteUrl(), 301);
+				}
+
+				throw new InternalServerErrorException('Invalid "jumpTo" value or target page not public');
+				break;
+
+			case 'article':
+				if (($article = ArticleModel::findByPk($objEvent->articleId)) && ($page = PageModel::findPublishedById($article->pid)))
+				{
+					throw new RedirectResponseException($page->getAbsoluteUrl('/articles/' . ($article->alias ?: $article->id)), 301);
+				}
+
+				throw new InternalServerErrorException('Invalid "articleId" value or target page not public');
+				break;
+
+			case 'external':
+				if ($objEvent->url)
+				{
+					throw new RedirectResponseException($objEvent->url, 301);
+				}
+
+				throw new InternalServerErrorException('Empty target URL');
+				break;
 		}
 
 		// Overwrite the page title (see #2853, #4955 and #87)
@@ -64,7 +94,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			$arrRange = StringUtil::deserialize($objEvent->repeatEach);
 
-			if (\is_array($arrRange) && isset($arrRange['unit'], $arrRange['value']))
+			if (isset($arrRange['unit'], $arrRange['value']))
 			{
 				while (($this->cal_hideRunning ? $intStartTime : $intEndTime) < time() && $intEndTime < $objEvent->repeatEnd)
 				{
@@ -99,7 +129,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		{
 			$arrRange = StringUtil::deserialize($objEvent->repeatEach);
 
-			if (\is_array($arrRange) && isset($arrRange['unit'], $arrRange['value']))
+			if (isset($arrRange['unit'], $arrRange['value']))
 			{
 				if ($arrRange['value'] == 1)
 				{
@@ -130,7 +160,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			}
 		}
 
-		$objTemplate = new FrontendTemplate($this->cal_template);
+		$objTemplate = new FrontendTemplate($this->cal_template ?: 'event_full');
 		$objTemplate->setData($objEvent->row());
 		$objTemplate->date = $strDate;
 		$objTemplate->time = $strTime;
@@ -166,7 +196,6 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		// Display the "read more" button for external/article links
 		if ($objEvent->source != 'default')
 		{
-			$objTemplate->details = true;
 			$objTemplate->hasDetails = true;
 		}
 
@@ -233,24 +262,24 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
 		}
 
-		     ////////// CHANGES BY ModuleEventReaderTags
-			 $objTemplate->showTags = $this->event_showtags;
-			 if ($this->event_showtags)
-			 {
-			   $helper = new \TagHelper();
-			   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
-			   $tags = $tagsandlist['tags'];
-			   $taglist = $tagsandlist['taglist'];
-			   $objTemplate->showTagClass = $this->tag_named_class;
-			   $objTemplate->tags = $tags;
-			   $objTemplate->taglist = $taglist;
-			 }
-			 ////////// CHANGES BY ModuleEventReaderTags
+				     ////////// CHANGES BY ModuleEventReaderTags
+					 $objTemplate->showTags = $this->event_showtags;
+					 if ($this->event_showtags)
+					 {
+					   $helper = new \TagHelper();
+					   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
+					   $tags = $tagsandlist['tags'];
+					   $taglist = $tagsandlist['taglist'];
+					   $objTemplate->showTagClass = $this->tag_named_class;
+					   $objTemplate->tags = $tags;
+					   $objTemplate->taglist = $taglist;
+					 }
+					 ////////// CHANGES BY ModuleEventReaderTags
 		
 		// Add a function to retrieve upcoming dates (see #175)
 		$objTemplate->getUpcomingDates = function ($recurrences) use ($objEvent, $objPage, $intStartTime, $intEndTime, $arrRange, $span)
 		{
-			if (!$objEvent->recurring || !\is_array($arrRange) || !isset($arrRange['unit']) || !isset($arrRange['value']))
+			if (!$objEvent->recurring || !isset($arrRange['unit'], $arrRange['value']))
 			{
 				return array();
 			}
@@ -288,7 +317,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		// Add a function to retrieve past dates (see #175)
 		$objTemplate->getPastDates = function ($recurrences) use ($objEvent, $objPage, $intStartTime, $intEndTime, $arrRange, $span)
 		{
-			if (!$objEvent->recurring || !\is_array($arrRange) || !isset($arrRange['unit']) || !isset($arrRange['value']))
+			if (!$objEvent->recurring || !isset($arrRange['unit'], $arrRange['value']))
 			{
 				return array();
 			}
@@ -358,14 +387,10 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$arrNotifies[] = $GLOBALS['TL_ADMIN_EMAIL'];
 		}
 
-		// Notify the author
-		if ($objCalendar->notify != 'notify_admin')
+		/** @var UserModel $objAuthor */
+		if ($objCalendar->notify != 'notify_admin' && ($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email != '')
 		{
-			/** @var UserModel $objAuthor */
-			if (($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email != '')
-			{
-				$arrNotifies[] = $objAuthor->email;
-			}
+			$arrNotifies[] = $objAuthor->email;
 		}
 
 		$objConfig = new \stdClass();
