@@ -177,7 +177,7 @@ class TagHelper extends \Backend
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = ampersand($objPage->getFrontendUrl('/tag/' . $tag['tag']));
 					}
 				}
 			}
@@ -316,7 +316,7 @@ class TagHelper extends \Backend
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag'])));
+						$arrTags[$idx]['url'] = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag'])));
 					}
 				}
 			}
@@ -351,7 +351,7 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+				$strUrl = ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -384,7 +384,7 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(

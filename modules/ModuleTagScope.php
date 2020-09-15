@@ -77,7 +77,7 @@ class ModuleTagScope extends \Module
 		{
 			if (count($pageArr))
 			{
-				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
+				$strUrl = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -93,7 +93,7 @@ class ModuleTagScope extends \Module
 			}
 		}
 		$this->Template->tag_urls = $tagurls;
-		$strEmptyUrl = StringUtil::ampersand($objPage->getFrontendUrl());
+		$strEmptyUrl = ampersand($objPage->getFrontendUrl());
 		if (strlen($strParams))
 		{
 			if (strpos($strEmptyUrl, '?') !== false)
@@ -131,7 +131,7 @@ class ModuleTagScope extends \Module
 						$related = array_slice($newarr, 1);
 						$tagpath .= '/related/' . join($related, ',');
 					}
-					$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($tagpath));
+					$strUrl = ampersand($objPage->getFrontendUrl($tagpath));
 					if (strlen($strParams))
 					{
 						if (strpos($strUrl, '?') !== false)
