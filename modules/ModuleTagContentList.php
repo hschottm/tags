@@ -86,11 +86,11 @@ class ModuleTagContentList extends \Module
 					{
 						if ($this->linktoarticles)
 						{ // link to articles
-							$articles[] = array('content' => '<a href="' . $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId)) . '" title="' . StringUtil::specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
+							$articles[] = array('content' => '<a href="' . \TagHelper::getPageObj($objArticle->tags_jumpto)->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId)) . '" title="' . StringUtil::specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
 						}
 						else
 						{ // link to pages
-							$articles[] = array('content' => '<a href="' . $objPage->getFrontendUrl() . '" title="' . StringUtil::specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
+							$articles[] = array('content' => '<a href="' . \TagHelper::getPageObj($objArticle->tags_jumpto)->getFrontendUrl() . '" title="' . StringUtil::specialchars($objArticle->title) . '">' . $objArticle->title . '</a>', 'tags' => $taglist, 'data' => $objArticle->row());
 						}
 					}
 				}

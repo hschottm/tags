@@ -21,6 +21,19 @@ class TagHelper extends \Backend
 		$this->import('Database');
 	}
 
+	public static function getPageObj($jumpTo = null)
+	{
+		global $objPage;
+		if(!empty($jumpTo)) 
+		{
+			return (new PageModel())->findPublishedById($jumpTo);
+		}
+		else
+		{
+			return $objPage;
+		}
+	}
+
 	public function encode($tag)
 	{
 		return str_replace('/', 'x2F', $tag);
@@ -168,16 +181,13 @@ class TagHelper extends \Backend
 			}
 			if (strlen($target))
 			{
-				$pageArr = array();
-				$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=? OR alias=?")
-					->limit(1)
-					->execute(array($target, $target));
-				$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
-				if (count($pageArr))
+				$pageObj = new PageModel();
+				$pageObj = $pageObj::findPublishedByIdOrAlias($target);
+				if (!empty($pageObj))
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . $tag['tag']));
 					}
 				}
 			}
@@ -195,11 +205,13 @@ class TagHelper extends \Backend
 						}
 						else
 						{
+							$pageObj = self::getPageObj($objArticle->tags_jumpto);
 							foreach ($arrTags as $idx => $tag)
 							{
-								$arrTags[$idx]['url'] = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+								$arrTags[$idx]['url'] = $pageObj->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 							}
-							$objTemplate->url = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+							// Whats up here?
+							$objTemplate->url = $pageObj->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 						}
 						break;
 				}
@@ -268,7 +280,7 @@ class TagHelper extends \Backend
 		$objTemplate->show_tags = $moduleArticle->tags_showtags;
 		if ($moduleArticle->tags_showtags)
 		{
-			$objTemplate->tags = $this->getTagsForArticle($moduleArticle, $moduleArticle->tags_max_tags, $moduleArticle->tags_relevance, $moduleArticlehis->tags_jumpto);
+			$objTemplate->tags = $this->getTagsForArticle($moduleArticle, $moduleArticle->tags_max_tags, $moduleArticle->tags_relevance, $moduleArticle->tags_jumpto);
 		}
 	}
 
@@ -334,24 +346,12 @@ class TagHelper extends \Backend
 		$objTemplate->showTags = $news_showtags;
 		if ($news_showtags)
 		{
-			$pageArr = array();
-			if (strlen($news_jumpto))
-			{
-				$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-					->limit(1)
-					->execute($news_jumpto);
-				$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
-			}
-			if (count($pageArr) == 0)
-			{
-				global $objPage;
-				$pageArr = $objPage->row();
-			}
+			$pageObj = self::getPageObj($news_jumpto);
 			$tags = $this->getTags($row['id'], 'tl_news');
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -367,24 +367,13 @@ class TagHelper extends \Backend
 	
 	public function getTagsAndTaglistForIdAndTable($id, $table, $jumpto)
 	{
-		$pageArr = array();
-		if (strlen($jumpto))
-		{
-			$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-				->limit(1)
-				->execute($jumpto);
-			$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
-		}
-		if (count($pageArr) == 0)
-		{
-			global $objPage;
-			$pageArr = $objPage->row();
-		}
+		$pageObj = self::getPageObj($jumpto);
+		
 		$tags = $this->getTags($id, $table);
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = StringUtil::ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
