@@ -21,6 +21,19 @@ class TagHelper extends \Backend
 		$this->import('Database');
 	}
 
+	public static function getPageObj($jumpTo = null)
+	{
+		global $objPage;
+		if(!empty($jumpTo)) 
+		{
+			return (new PageModel())->findPublishedById($jumpTo);
+		}
+		else
+		{
+			return $objPage;
+		}
+	}
+
 	public function encode($tag)
 	{
 		return str_replace('/', 'x2F', $tag);
