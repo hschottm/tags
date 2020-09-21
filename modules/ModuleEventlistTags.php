@@ -14,10 +14,18 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 
 class ModuleEventlistTags extends \ModuleEventlist
 {
-	/**
-	 * Generate module
-	 */
-	protected function getAllEvents($arrCalendars, $intStart, $intEnd)
+
+    /**
+     * Get all events of a certain period
+     *
+     * @param array   $arrCalendars
+     * @param integer $intStart
+     * @param integer $intEnd
+     * @param boolean $blnFeatured
+     *
+     * @return array
+     */
+    protected function getAllEvents($arrCalendars, $intStart, $intEnd, $blnFeatured = null)
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (($this->tag_ignore) && !strlen($this->tag_filter)) return $arrAllEvents;
