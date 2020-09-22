@@ -12,10 +12,18 @@ namespace Contao;
 
 class ModuleLastEventsTags extends \ModuleLastEvents
 {
-	/**
-	 * Generate module
-	 */
-	protected function getAllEvents($arrCalendars, $intStart, $intEnd)
+
+    /**
+     * Get all events of a certain period
+     *
+     * @param array   $arrCalendars
+     * @param integer $intStart
+     * @param integer $intEnd
+     * @param boolean $blnFeatured
+     *
+     * @return array
+     */
+    protected function getAllEvents($arrCalendars, $intStart, $intEnd, $blnFeatured = null)
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (strlen(\TagHelper::decode(\Input::get('tag'))))

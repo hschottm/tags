@@ -16,13 +16,14 @@ class ModuleCalendarTags extends \ModuleCalendar
 	/**
 	 * Get all events of a certain period
 	 *
-	 * @param array   $arrCalendars
-	 * @param integer $intStart
-	 * @param integer $intEnd
-	 *
-	 * @return array
-	 */
-	protected function getAllEvents($arrCalendars, $intStart, $intEnd)
+     * @param array   $arrCalendars
+     * @param integer $intStart
+     * @param integer $intEnd
+     * @param boolean $blnFeatured
+     *
+     * @return array
+     */
+    protected function getAllEvents($arrCalendars, $intStart, $intEnd, $blnFeatured = null)
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (($this->tag_ignore) && !strlen($this->tag_filter)) return $arrAllEvents;
