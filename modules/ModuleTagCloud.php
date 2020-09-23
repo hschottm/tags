@@ -91,15 +91,15 @@ class ModuleTagCloud extends \Module
 	 */
 	protected function showTags()
 	{
+		global $objPage;
 		$this->loadLanguageFile('tl_module');
 		$strUrl = ampersand(\Environment::get('request'));
 		// Get target page
-		$objPageObject = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-			->limit(1)
-			->execute($this->tag_jumpTo);
-		global $objPage;
-		$default = ($objPage != null) ? $objPage->row() : array();
-		$pageArr = ($objPageObject->numRows) ? $objPageObject->fetchAssoc() : $default;
+
+		$pageObj = \TagHelper::getPageObj($this->tag_jumpTo);
+
+		// $default = ($objPage != null) ? $objPage->row() : array();
+		// $pageArr = ($objPageObject->numRows) ? $objPageObject->fetchAssoc() : $default;
 		$strParams = '';
 
 		if ($this->keep_url_params)
@@ -109,9 +109,9 @@ class ModuleTagCloud extends \Module
 
 		foreach ($this->arrTags as $idx => $tag)
 		{
-			if (count($pageArr))
+			if (!empty($pageObj))
 			{
-				$strUrl = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
+				$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -144,7 +144,6 @@ class ModuleTagCloud extends \Module
 			}
 			if ($this->checkForContentElementOnPage)
 			{
-				global $objPage;
 				// get articles on page
 				$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid = ?")
 					->execute($objPage->id)->fetchEach('id');
@@ -164,10 +163,10 @@ class ModuleTagCloud extends \Module
 		$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
 		foreach ($this->arrRelated as $idx => $tag)
 		{
-			if (count($pageArr))
+			if (!empty($pageObj))
 			{
 				$allrelated = array_merge($relatedlist, array($tag['tag_name']));
-				$strUrl = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(join($allrelated, ','))));
+				$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(join($allrelated, ','))));
 			}
 			$this->arrRelated[$idx]['tag_url'] = $strUrl;
 		}
@@ -198,26 +197,23 @@ class ModuleTagCloud extends \Module
 			$this->Template->lngEmpty = $GLOBALS['TL_LANG']['tl_module']['tag_clear_tags'];
 		}
 		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/tags/assets/tagcloud.js';
-		if (count($pageArr))
+		if (!empty($pageObj))
 		{
 			$this->Template->topten = $this->tag_topten;
 			if ($this->tag_topten)
 			{
 				foreach ($this->arrTopTenTags as $idx => $tag)
 				{
-					if (count($pageArr))
+					$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
+					if (strlen($strParams))
 					{
-						$strUrl = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
-						if (strlen($strParams))
+						if (strpos($strUrl, '?') !== false)
 						{
-							if (strpos($strUrl, '?') !== false)
-							{
-								$strUrl .= '&amp;' . $strParams;
-							}
-							else
-							{
-								$strUrl .= '?' . $strParams;
-							}
+							$strUrl .= '&amp;' . $strParams;
+						}
+						else
+						{
+							$strUrl .= '?' . $strParams;
 						}
 					}
 					$this->arrTopTenTags[$idx]['tag_url'] = $strUrl;

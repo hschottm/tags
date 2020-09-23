@@ -63,10 +63,8 @@ class ModuleTagScope extends \Module
 		$this->Template->lngTags = (strlen($this->clear_text)) ? $this->clear_text : $GLOBALS['TL_LANG']['tl_module']['tags'];
 		$this->Template->jumpTo = $this->jumpTo;
 		$this->Template->arrTags = $this->arrTags;
-		$objPageObject = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-			->limit(1)
-			->execute($this->tag_jumpTo);
-		$pageArr = ($objPageObject->numRows) ? $objPageObject->fetchAssoc() : array();
+
+		$pageObj = \TagHelper::getPageObj($this->tag_jumpTo);
 		$strParams = '';
 		if ($this->keep_url_params)
 		{
@@ -75,9 +73,9 @@ class ModuleTagScope extends \Module
 		$tagurls = array();
 		foreach ($this->arrTags as $idx => $tag)
 		{
-			if (count($pageArr))
+			if (!empty($pageObj))
 			{
-				$strUrl = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
+				$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -93,7 +91,7 @@ class ModuleTagScope extends \Module
 			}
 		}
 		$this->Template->tag_urls = $tagurls;
-		$strEmptyUrl = ampersand($objPage->getFrontendUrl());
+		$strEmptyUrl = ampersand($pageObj->getFrontendUrl());
 		if (strlen($strParams))
 		{
 			if (strpos($strEmptyUrl, '?') !== false)
@@ -131,7 +129,7 @@ class ModuleTagScope extends \Module
 						$related = array_slice($newarr, 1);
 						$tagpath .= '/related/' . join($related, ',');
 					}
-					$strUrl = ampersand($objPage->getFrontendUrl($tagpath));
+					$strUrl = ampersand($pageObj->getFrontendUrl($tagpath));
 					if (strlen($strParams))
 					{
 						if (strpos($strUrl, '?') !== false)
