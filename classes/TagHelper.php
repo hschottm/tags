@@ -373,7 +373,7 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
