@@ -2,6 +2,8 @@
 
 namespace Contao;
 
+use Patchwork\Utf8;
+
 /**
  * Contao Open Source CMS - tags extension
  *
@@ -337,12 +339,12 @@ class TagList extends \System
 	 */
 	protected function getTagNameClass($tag)
 	{
-		return str_replace('"', '', str_replace(' ', '_', $tag));
+		return Utf8::toAscii(StringUtil::standardize($tag));
 	}
 
 	public static function _getTagNameClass($tag)
 	{
-		return str_replace('"', '', str_replace(' ', '_', $tag));
+		return Utf8::toAscii(StringUtil::standardize($tag));
 	}
 
 	protected function getRelevantPages($page_id)

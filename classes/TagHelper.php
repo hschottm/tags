@@ -21,6 +21,19 @@ class TagHelper extends \Backend
 		$this->import('Database');
 	}
 
+	public static function getPageObj($jumpTo = null)
+	{
+		global $objPage;
+		if(!empty($jumpTo)) 
+		{
+			return (new PageModel())->findPublishedById($jumpTo);
+		}
+		else
+		{
+			return $objPage;
+		}
+	}
+
 	public function encode($tag)
 	{
 		return str_replace('/', 'x2F', $tag);
@@ -334,24 +347,12 @@ class TagHelper extends \Backend
 		$objTemplate->showTags = $news_showtags;
 		if ($news_showtags)
 		{
-			$pageArr = array();
-			if (strlen($news_jumpto))
-			{
-				$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-					->limit(1)
-					->execute($news_jumpto);
-				$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
-			}
-			if (count($pageArr) == 0)
-			{
-				global $objPage;
-				$pageArr = $objPage->row();
-			}
+			$pageObj = self::getPageObj($news_jumpto);
 			$tags = $this->getTags($row['id'], 'tl_news');
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+				$strUrl = ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -367,24 +368,12 @@ class TagHelper extends \Backend
 	
 	public function getTagsAndTaglistForIdAndTable($id, $table, $jumpto)
 	{
-		$pageArr = array();
-		if (strlen($jumpto))
-		{
-			$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-				->limit(1)
-				->execute($jumpto);
-			$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
-		}
-		if (count($pageArr) == 0)
-		{
-			global $objPage;
-			$pageArr = $objPage->row();
-		}
+		$pageObj = self::getPageObj($jumpto);
 		$tags = $this->getTags($id, $table);
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = ampersand($objPage->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
