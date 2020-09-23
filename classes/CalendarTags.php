@@ -63,7 +63,7 @@ class CalendarTags extends \Calendar
 						}
 						else
 						{
-							$strUrl = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objEvent->aAlias)) ? $objEvent->aAlias : $objEvent->aId));
+							$strUrl = \TagHelper::getPageObj()->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objEvent->aAlias)) ? $objEvent->aAlias : $objEvent->aId));
 						}
 						break;
 				}
