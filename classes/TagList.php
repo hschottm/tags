@@ -344,7 +344,7 @@ class TagList extends \System
 
 	public static function _getTagNameClass($tag)
 	{
-		return str_replace('"', '', str_replace(' ', '_', $tag));
+		return Utf8::toAscii(StringUtil::standardize($tag));
 	}
 
 	protected function getRelevantPages($page_id)
