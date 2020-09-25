@@ -405,4 +405,37 @@ class ModuleEventReaderTags extends \ModuleEventReader
 
 		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_calendar_events', $objEvent->id, $arrNotifies);
 	}
+
+	/*
+	 * copied from ModuleEventReader
+	 */
+	private function getDateAndTime(CalendarEventsModel $objEvent, PageModel $objPage, $intStartTime, $intEndTime, $span)
+	{
+		$strDate = Date::parse($objPage->dateFormat, $intStartTime);
+
+		if ($span > 0)
+		{
+			$strDate = Date::parse($objPage->dateFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->dateFormat, $intEndTime);
+		}
+
+		$strTime = '';
+
+		if ($objEvent->addTime)
+		{
+			if ($span > 0)
+			{
+				$strDate = Date::parse($objPage->datimFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->datimFormat, $intEndTime);
+			}
+			elseif ($intStartTime == $intEndTime)
+			{
+				$strTime = Date::parse($objPage->timeFormat, $intStartTime);
+			}
+			else
+			{
+				$strTime = Date::parse($objPage->timeFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->timeFormat, $intEndTime);
+			}
+		}
+
+		return array($strDate, $strTime);
+	}
 }
