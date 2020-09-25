@@ -14,7 +14,48 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 
 class ModuleEventReaderTags extends \ModuleEventReader
 {
-  /**
+	/**
+	 * Return the date and time strings - COPIED from Contao ModuleEventReader
+	 *
+	 * @param CalendarEventsModel $objEvent
+	 * @param PageModel           $objPage
+	 * @param integer             $intStartTime
+	 * @param integer             $intEndTime
+	 * @param integer             $span
+	 *
+	 * @return array
+	 */
+	private function getDateAndTime(CalendarEventsModel $objEvent, PageModel $objPage, $intStartTime, $intEndTime, $span)
+	{
+		$strDate = Date::parse($objPage->dateFormat, $intStartTime);
+
+		if ($span > 0)
+		{
+			$strDate = Date::parse($objPage->dateFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->dateFormat, $intEndTime);
+		}
+
+		$strTime = '';
+
+		if ($objEvent->addTime)
+		{
+			if ($span > 0)
+			{
+				$strDate = Date::parse($objPage->datimFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->datimFormat, $intEndTime);
+			}
+			elseif ($intStartTime == $intEndTime)
+			{
+				$strTime = Date::parse($objPage->timeFormat, $intStartTime);
+			}
+			else
+			{
+				$strTime = Date::parse($objPage->timeFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->timeFormat, $intEndTime);
+			}
+		}
+
+		return array($strDate, $strTime);
+	}
+
+	/**
 	 * Generate the module
 	 */
 	protected function compile()
