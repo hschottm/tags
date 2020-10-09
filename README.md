@@ -250,7 +250,6 @@ During the validation in the save process the tags module automatically saves th
 | Key        | Value           | Description  |
 | ---------- |-------------| -----|
 | table      | Source table `string` | Name of the source table of the tag data. Default is the name of the actual DCA data container. |
-| isTag      | true/false `boolean`      |   If true (default) the tags will be saved in a separate tag table (tl_tags). If false, the content of the tag field will be saved in the associated database field of the data container. In this case you'll need more than a char(1) database field. |
-| isTag      | Count `integer`      |    The maximum number of tags that should be shown above the input field. This may be helpful if you have a large number of tags. If the maximum number is lower than the number of all tags, the component takes the tags with the most selections first and hides tags which are used rarely. |
+| maxtags    | Count `integer`      |    The maximum number of tags that should be shown above the input field. This may be helpful if you have a large number of tags. If the maximum number is lower than the number of all tags, the component takes the tags with the most selections first and hides tags which are used rarely. |
 
 
