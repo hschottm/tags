@@ -12,6 +12,8 @@ namespace Contao;
 
 class TagHelper extends \Backend
 {
+    public static $config = array();
+
 	/**
 	 * Load the database object
 	 */
@@ -339,10 +341,9 @@ class TagHelper extends \Backend
 	public function parseArticlesHook($objTemplate, $row)
 	{
 		global $objPage;
-		$this->import('Session');
-		$news_showtags = $this->Session->get('news_showtags');
-		$news_jumpto = $this->Session->get('news_jumpto');
-		$tag_named_class = $this->Session->get('news_tag_named_class');
+		$news_showtags = static::$config['news_showtags'];
+		$news_jumpto = static::$config['news_jumpto'];
+		$tag_named_class = static::$config['news_tag_named_class'];
 		$objTemplate->showTags = $news_showtags;
 		if ($news_showtags)
 		{

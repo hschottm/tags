@@ -195,9 +195,9 @@ class ModuleNewsListTags extends \ModuleNewsList
 	 */
 	protected function compile()
 	{
-		$this->Session->set('news_showtags', $this->news_showtags);
-		$this->Session->set('news_jumpto', $this->tag_jumpTo);
-		$this->Session->set('news_tag_named_class', $this->tag_named_class);
+		\TagHelper::$config['news_showtags'] = $this->news_showtags;
+		\TagHelper::$config['news_jumpto'] = $this->tag_jumpTo;
+		\TagHelper::$config['news_tag_named_class'] = $this->tag_named_class;
 		if ((strlen(\TagHelper::decode(\Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
@@ -247,9 +247,9 @@ class ModuleNewsListTags extends \ModuleNewsList
 		{
 			parent::compile();
 		}
-		$this->Session->set('news_showtags', '');
-		$this->Session->set('news_jumpto', '');
-		$this->Session->set('news_tag_named_class', '');
+		unset(\TagHelper::$config['news_showtags']);
+		unset(\TagHelper::$config['news_jumpto']);
+		unset(\TagHelper::$config['news_tag_named_class']);
 	}
 }
 
