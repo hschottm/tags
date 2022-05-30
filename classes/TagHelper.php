@@ -34,12 +34,12 @@ class TagHelper extends \Backend
 		}
 	}
 
-	public function encode($tag)
+	public static function encode($tag)
 	{
 		return str_replace('/', 'x2F', $tag);
 	}
 
-	public function decode($tag)
+	public static function decode($tag)
 	{
 		return str_replace('x2F', '/', $tag);
 	}
