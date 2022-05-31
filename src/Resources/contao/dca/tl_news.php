@@ -8,6 +8,8 @@
  * @license LGPL-3.0+
  */
 
+use Contao\Backend;
+
 if (@class_exists("tl_news"))
 {
 
@@ -23,7 +25,7 @@ if (is_array($GLOBALS['TL_DCA']['tl_news']['config']['onload_callback']))
 }
 
 
-class tl_news_tags extends tl_news
+class tl_news_tags extends \tl_news
 {
 	public function deleteNews($dc)
 	{

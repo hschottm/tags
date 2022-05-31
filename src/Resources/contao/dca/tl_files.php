@@ -25,6 +25,8 @@ $GLOBALS['TL_DCA']['tl_files']['fields']['tags'] = array
 	'sql'                     => "char(1) NOT NULL default ''"
 );
 
+use Contao\Backend;
+
 /**
  * Class tl_files_tags
  *
@@ -33,7 +35,7 @@ $GLOBALS['TL_DCA']['tl_files']['fields']['tags'] = array
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
-class tl_files_tags extends tl_files
+class tl_files_tags extends \tl_files
 {
 	public function removeContentElement($dc)
 	{

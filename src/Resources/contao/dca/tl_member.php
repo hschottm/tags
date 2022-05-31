@@ -8,7 +8,9 @@
  * @filesource
  */
 
-class tl_member_tags extends tl_member
+use Contao\Backend;
+
+class tl_member_tags extends \tl_member
 {
 	public function deleteMember($dc)
 	{

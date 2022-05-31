@@ -8,7 +8,9 @@
  * @license LGPL-3.0+
  */
 
-class tl_article_tags extends tl_article
+use Contao\Backend;
+
+class tl_article_tags extends \tl_article
 {
 	public function removeArticle($dc)
 	{

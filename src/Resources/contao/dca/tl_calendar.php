@@ -8,6 +8,8 @@
  * @license LGPL-3.0+
  */
 
+use Contao\Backend;
+
 if (@class_exists("tl_calendar"))
 {
 
