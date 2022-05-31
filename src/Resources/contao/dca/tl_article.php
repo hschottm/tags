@@ -9,7 +9,7 @@
  */
 
 
-class tl_article_tags extends \tl_article
+class tl_article_tags extends Contao\Backend
 {
 	public function removeArticle($dc)
 	{

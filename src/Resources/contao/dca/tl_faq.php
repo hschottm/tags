@@ -30,7 +30,7 @@ if (@class_exists("tl_faq"))
 		'eval'                    => array('tl_class'=>'clr long')
 	);
 
-	class tl_faq_tags extends \tl_faq
+	class tl_faq_tags extends Contao\Backend
 	{
 		public function removeFAQ($dc)
 		{

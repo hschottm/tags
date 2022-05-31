@@ -8,7 +8,7 @@
  * @license LGPL-3.0+
  */
 
-class tl_module_tags extends \tl_module
+class tl_module_tags extends Contao\Backend
 {
 	/**
 	 * Return available tag tables

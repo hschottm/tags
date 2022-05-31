@@ -23,7 +23,7 @@ if (is_array($GLOBALS['TL_DCA']['tl_news']['config']['onload_callback']))
 }
 
 
-class tl_news_tags extends \tl_news
+class tl_news_tags extends Contao\Backend
 {
 	public function deleteNews($dc)
 	{

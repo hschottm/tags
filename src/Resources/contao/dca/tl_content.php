@@ -68,7 +68,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['tag_ignore'] = array
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
-class tl_content_tags extends \tl_content
+class tl_content_tags extends Contao\Backend
 {
 	public function removeContentElement($dc)
 	{
