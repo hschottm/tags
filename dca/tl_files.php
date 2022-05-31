@@ -44,11 +44,11 @@ class tl_files_tags extends \Backend
 			->execute($dc->table, $dc->id);
 	}
 
-	public function onCopy($insertID, DataContainer $dc)
+	public function onCopy($source, $destination, \DataContainer $dc)
 	{
 		$level = LogLevel::INFO;
 		$logger = static::getContainer()->get('monolog.logger.contao');
-        $logger->log($level, "Callback called for " . $insertID, array());
+        $logger->log($level, "Callback called for " . $source . " and " . $destination, array());
 
 		if (is_array($this->Session->get('tl_files_copy')))
 		{
