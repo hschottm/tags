@@ -1,5 +1,8 @@
 <?php
 
+use Hschottm\Tags\DataContainer\FileTableCallbackListener;
+
+
 /**
  * Contao Open Source CMS - tags extension
  *
@@ -33,7 +36,7 @@ $GLOBALS['TL_DCA']['tl_files']['fields']['tags'] = array
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
-class tl_files_tags extends tl_files
+class tl_files_tags extends \Backend
 {
 	public function removeContentElement($dc)
 	{
@@ -41,8 +44,12 @@ class tl_files_tags extends tl_files
 			->execute($dc->table, $dc->id);
 	}
 
-	public function onCopy($dc)
+	public function onCopy($insertID, DataContainer $dc)
 	{
+		$level = LogLevel::INFO;
+		$logger = static::getContainer()->get('monolog.logger.contao');
+        $logger->log($level, "Callback called for " . $insertID, array());
+
 		if (is_array($this->Session->get('tl_files_copy')))
 		{
 			foreach ($this->Session->get('tl_files_copy') as $data)

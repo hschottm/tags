@@ -1,6 +1,6 @@
 <?php
 
-namespace Contao;
+namespace Hschottm\Tags\DataContainer;
 
 use Contao\Controller;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
