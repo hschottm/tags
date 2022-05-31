@@ -17,7 +17,7 @@ if (!in_array('tl_files', $disabledObjects))
 	$GLOBALS['TL_DCA']['tl_files']['palettes']['default'] = str_replace(';meta', ';tags;meta', $GLOBALS['TL_DCA']['tl_files']['palettes']['default']);
 
 	$GLOBALS['TL_DCA']['tl_files']['config']['ondelete_callback'][] = array('tl_files_tags', 'removeContentElement');
-	$GLOBALS['TL_DCA']['tl_files']['config']['onload_callback'][] = array('tl_files_tags', 'onCopy');
+	$GLOBALS['TL_DCA']['tl_files']['config']['oncopy_callback'][] = array('tl_files_tags', 'onCopy');
 }
 
 $GLOBALS['TL_DCA']['tl_files']['fields']['tags'] = array
