@@ -127,7 +127,7 @@ class ModuleTagScope extends \Module
 					if (count($newarr) > 1)
 					{
 						$related = array_slice($newarr, 1);
-						$tagpath .= '/related/' . join($related, ',');
+						$tagpath .= '/related/' . implode(',',$related);
 					}
 					$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($tagpath));
 					if (strlen($strParams))

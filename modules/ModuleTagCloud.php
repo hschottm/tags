@@ -166,7 +166,7 @@ class ModuleTagCloud extends \Module
 			if (!empty($pageObj))
 			{
 				$allrelated = array_merge($relatedlist, array($tag['tag_name']));
-				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(join($allrelated, ','))));
+				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(implode(',', $allrelated))));
 			}
 			$this->arrRelated[$idx]['tag_url'] = $strUrl;
 		}

@@ -38,7 +38,7 @@ class ModuleLastEventsTags extends \ModuleLastEvents
 			{
 				if (count($tagids))
 				{
-					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
 						->execute('tl_calendar_events', $tag)
 						->fetchEach('tid');
 				}

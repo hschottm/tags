@@ -63,7 +63,7 @@ class tl_files_tags extends tl_files
 		{
 			array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
 		}
-		$this->Session->set("tl_files_copy", $tags);
+		$this->Session->set('tl_files_copy', $tags);
 	}
 }
 

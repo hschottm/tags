@@ -129,19 +129,19 @@ class TagList extends \System
 				{
 					array_push($keys, 'from_table = ?');
 				}
-				$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . join($keys, " OR ") . ") AND tid IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
+				$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . implode(" OR ", $keys) . ") AND tid IN (" . implode(",", $ids) . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 					->execute($this->forTable);
 			}
 			else
 			{
 				if (strlen($this->forTable))
 				{
-					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE from_table = ? AND tid IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
+					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE from_table = ? AND tid IN (" . implode(",", $ids) . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 						->execute($this->forTable);
 				}
 				else
 				{
-					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE tid IN (" . join($ids, ",") . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
+					$objTags = $this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE tid IN (" . implode(",", $ids) . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 						->execute();
 				}
 			}
@@ -162,7 +162,7 @@ class TagList extends \System
 							{
 								array_push($keys, 'from_table = ?');
 							}
-							$count = count($this->Database->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND (" . join($keys, " OR ") . ") AND tid IN (" . join($ids, ",") . ")")
+							$count = count($this->Database->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND (" . implode(" OR ", $keys) . ") AND tid IN (" . implode(",", $ids) . ")")
 								->execute(array_merge(array($objTags->tag), $this->forTable))
 								->fetchAllAssoc());
 						}
@@ -170,13 +170,13 @@ class TagList extends \System
 						{
 							if (strlen($this->forTable))
 							{
-								$count = count($this->Database->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND from_table = ? AND tid IN (" . join($ids, ",") . ")")
+								$count = count($this->Database->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND from_table = ? AND tid IN (" . implode(",", $ids) . ")")
 									->execute($objTags->tag, $this->forTable)
 									->fetchAllAssoc());
 							}
 							else
 							{
-								$count = count($this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE $tagfield = ? AND tid IN (" . join($ids, ",") . ")")
+								$count = count($this->Database->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE $tagfield = ? AND tid IN (" . implode(",", $ids) . ")")
 									->execute($objTags->tag)
 									->fetchAllAssoc());
 							}
@@ -369,7 +369,7 @@ class TagList extends \System
 			$time = time();
 
 			// Get published articles
-			$pids = join($this->arrPages, ",");
+			$pids = implode(",", $this->arrPages);
 			if (strlen($this->inColumn))
 			{
 				$objArticles = $this->Database->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")

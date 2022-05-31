@@ -40,7 +40,7 @@ class ModuleCalendarTags extends \ModuleCalendar
 			{
 				if (count($tagids))
 				{
-					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
 						->execute('tl_calendar_events', $tag)
 						->fetchEach('tid');
 				}
@@ -121,7 +121,7 @@ class ModuleCalendarTags extends \ModuleCalendar
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_calendar_events');
-			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');
 		}

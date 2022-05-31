@@ -180,12 +180,12 @@ class ModuleTagContentList extends \Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE id IN (" . join($this->arrTags, ',') . ") AND pid IN (" . join($this->arrPages, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',', $this->arrTags) . ") AND pid IN (" . implode(',', $this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
 				->execute($time, $time)
 				->fetchEach('id');
 			if (count($arrArticles))
 			{
-				$ctes = $this->Database->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE pid IN (" . join($arrArticles, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				$ctes = $this->Database->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
 					->execute()
 					->fetchAllAssoc();
 			}
@@ -199,11 +199,11 @@ class ModuleTagContentList extends \Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid IN (" . join($this->arrPages, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			if (count($arrArticles))
 			{
-				$ctes = $this->Database->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE id IN (" . join($this->arrTags, ',') . ") AND pid IN (" . join($arrArticles, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				$ctes = $this->Database->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
 					->execute()
 					->fetchAllAssoc();
 			}
@@ -217,7 +217,7 @@ class ModuleTagContentList extends \Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$articles = $this->Database->prepare("SELECT DISTINCT id, tl_article.* FROM tl_article WHERE id IN (" . join($this->arrTags, ',') . ") AND pid IN (" . join($this->arrPages, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			$articles = $this->Database->prepare("SELECT DISTINCT id, tl_article.* FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
 				->execute($time, $time)
 				->fetchAllAssoc();
 		}
@@ -230,15 +230,15 @@ class ModuleTagContentList extends \Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid IN (" . join($this->arrPages, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			if (count($arrArticles))
 			{
-				$arrContentElements = $this->Database->prepare("SELECT id FROM tl_content WHERE  id IN (" . join($this->arrTags, ',') . ") AND pid IN (" . join($arrArticles, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				$arrContentElements = $this->Database->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
 					->execute()->fetchEach('id');
 				if (count($arrContentElements))
 				{
-					$articles = $this->Database->prepare("SELECT DISTINCT tl_article.id, tl_article.* FROM tl_article, tl_content WHERE tl_content.id IN (" . join($arrContentElements, ',') . ") AND tl_content.pid = tl_article.id ORDER BY tl_article.sorting")
+					$articles = $this->Database->prepare("SELECT DISTINCT tl_article.id, tl_article.* FROM tl_article, tl_content WHERE tl_content.id IN (" . implode(',',$arrContentElements) . ") AND tl_content.pid = tl_article.id ORDER BY tl_article.sorting")
 						->execute()
 						->fetchAllAssoc();
 				}
@@ -253,11 +253,11 @@ class ModuleTagContentList extends \Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE id IN (" . join($this->arrTags, ',') . ") AND pid IN (" . join($this->arrPages, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			if (count($arrArticles))
 			{
-				$pages = $this->Database->prepare("SELECT DISTINCT tl_page.id, tl_page.* FROM tl_page, tl_article WHERE tl_article.id IN (" . join($arrArticles, ',') . ") AND tl_article.pid = tl_page.id ORDER BY tl_page.sorting")
+				$pages = $this->Database->prepare("SELECT DISTINCT tl_page.id, tl_page.* FROM tl_page, tl_article WHERE tl_article.id IN (" . implode(',',$arrArticles) . ") AND tl_article.pid = tl_page.id ORDER BY tl_page.sorting")
 					->execute()->fetchAllAssoc();
 			}
 		}
@@ -270,15 +270,15 @@ class ModuleTagContentList extends \Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid IN (" . join($this->arrPages, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			$arrArticles = $this->Database->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			if (count($arrArticles))
 			{
-				$arrContentElements = $this->Database->prepare("SELECT id FROM tl_content WHERE  id IN (" . join($this->arrTags, ',') . ") AND pid IN (" . join($arrArticles, ',') . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				$arrContentElements = $this->Database->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
 					->execute()->fetchEach('id');
 				if (count($arrContentElements))
 				{
-					$pages = $this->Database->prepare("SELECT DISTINCT tl_page.id, tl_page.* FROM tl_page, tl_article, tl_content WHERE tl_content.id IN (" . join($arrContentElements, ',') . ") AND tl_content.pid = tl_article.id  AND tl_article.pid = tl_page.id ORDER BY tl_page.sorting")
+					$pages = $this->Database->prepare("SELECT DISTINCT tl_page.id, tl_page.* FROM tl_page, tl_article, tl_content WHERE tl_content.id IN (" . implode(',',$arrContentElements) . ") AND tl_content.pid = tl_article.id  AND tl_article.pid = tl_page.id ORDER BY tl_page.sorting")
 						->execute()->fetchAllAssoc();
 				}
 			}
