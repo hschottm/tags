@@ -23,3 +23,5 @@ class ContentHeadlineTags extends \ContentHeadline
 	}
 }
 
+
+class_alias(ContentHeadlineTags::class, 'ContentHeadlineTags');

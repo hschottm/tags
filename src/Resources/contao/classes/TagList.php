@@ -500,3 +500,5 @@ class TagList extends \System
 		}
 	}
 }
+
+class_alias(TagList::class, 'TagList');

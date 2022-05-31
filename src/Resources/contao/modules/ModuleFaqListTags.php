@@ -100,3 +100,4 @@ class ModuleFaqListTags extends \ModuleFaqList
 
 }
 
+class_alias(ModuleFaqListTags::class, 'ModuleFaqListTags');

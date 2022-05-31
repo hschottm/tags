@@ -162,3 +162,5 @@ class TagFieldMemberFrontend extends \FormTextField
 		parent::validate();
 	}
 }
+
+class_alias(TagFieldMemberFrontend::class, 'TagFieldMemberFrontend');

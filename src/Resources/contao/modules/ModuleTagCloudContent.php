@@ -57,3 +57,5 @@ class ModuleTagCloudContent extends \ModuleTagCloud
 		return Module::generate();
 	}
 }
+
+class_alias(ModuleTagCloudContent::class, 'ModuleTagCloudContent');

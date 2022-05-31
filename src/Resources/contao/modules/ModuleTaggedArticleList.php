@@ -279,3 +279,5 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 		$this->block = false;
 	}
 }
+
+class_alias(ModuleTaggedArticleList::class, 'ModuleTaggedArticleList');

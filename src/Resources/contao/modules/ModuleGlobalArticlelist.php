@@ -129,3 +129,4 @@ class ModuleGlobalArticlelist extends \Module
 	}
 }
 
+class_alias(ModuleGlobalArticlelist::class, 'ModuleGlobalArticlelist');

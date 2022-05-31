@@ -503,5 +503,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 			return array();
 		}
 	}
-
 }
+
+class_alias(ModuleEventlistTags::class, 'ModuleEventlistTags');
+

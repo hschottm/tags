@@ -487,3 +487,5 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_calendar_events', $objEvent->id, $arrNotifies);
 	}
 }
+
+class_alias(ModuleEventReaderTags::class, 'ModuleEventReaderTags');

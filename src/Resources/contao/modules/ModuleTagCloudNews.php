@@ -57,3 +57,5 @@ class ModuleTagCloudNews extends \ModuleTagCloud
 		return Module::generate();
 	}
 }
+
+class_alias(ModuleTagCloudNews::class, 'ModuleTagCloudNews');

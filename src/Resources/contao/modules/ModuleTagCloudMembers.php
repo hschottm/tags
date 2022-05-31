@@ -56,3 +56,5 @@ class ModuleTagCloudMembers extends \ModuleTagCloud
 		return Module::generate();
 	}
 }
+
+class_alias(ModuleTagCloudMembers::class, 'ModuleTagCloudMembers');

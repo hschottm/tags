@@ -76,3 +76,5 @@ class CalendarTags extends \Calendar
 		return $res;
 	}
 }
+
+class_alias(CalendarTags::class, 'CalendarTags');

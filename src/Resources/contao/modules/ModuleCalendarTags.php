@@ -131,3 +131,5 @@ class ModuleCalendarTags extends \ModuleCalendar
 		}
 	}
 }
+
+class_alias(ModuleCalendarTags::class, 'ModuleCalendarTags');

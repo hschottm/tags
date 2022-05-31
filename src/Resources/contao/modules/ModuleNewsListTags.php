@@ -253,3 +253,4 @@ class ModuleNewsListTags extends \ModuleNewsList
 	}
 }
 
+class_alias(ModuleNewsListTags::class, 'ModuleNewsListTags');

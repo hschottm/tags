@@ -308,3 +308,4 @@ class ModuleTagContentList extends \Module
 	}
 }
 
+class_alias(ModuleTagContentList::class, 'ModuleTagContentList');

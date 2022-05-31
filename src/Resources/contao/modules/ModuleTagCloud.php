@@ -270,3 +270,5 @@ class ModuleTagCloud extends \Module
 		}
 	}
 }
+
+class_alias(ModuleTagCloud::class, 'ModuleTagCloud');

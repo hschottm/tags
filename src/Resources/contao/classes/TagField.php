@@ -143,3 +143,5 @@ class TagField extends \TextField
 		parent::validate();
 	}
 }
+
+class_alias(TagField::class, 'TagField');

@@ -89,3 +89,4 @@ class ModuleLastEventsTags extends \ModuleLastEvents
 	}
 }
 
+class_alias(ModuleLastEventsTags::class, 'ModuleLastEventsTags');

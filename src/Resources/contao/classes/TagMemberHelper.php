@@ -59,3 +59,5 @@ class TagMemberHelper extends \Backend
 		return array();
 	}
 }
+
+class_alias(TagMemberHelper::class, 'TagMemberHelper');

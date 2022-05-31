@@ -168,3 +168,5 @@ class TagListMembers extends TagList
 		}
 	}
 }
+
+class_alias(TagListMembers::class, 'TagListMembers');

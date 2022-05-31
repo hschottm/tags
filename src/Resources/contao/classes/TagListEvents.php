@@ -130,3 +130,5 @@ class TagListEvents extends TagList
 		}
 	}
 }
+
+class_alias(TagListEvents::class, 'TagListEvents');

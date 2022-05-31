@@ -110,3 +110,5 @@ class ContentGalleryTags extends \ContentGallery
 		}
 	}
 }
+
+class_alias(ContentGalleryTags::class, 'ContentGalleryTags');

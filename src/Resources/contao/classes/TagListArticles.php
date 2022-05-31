@@ -140,3 +140,5 @@ class TagListArticles extends TagList
 		}
 	}
 }
+
+class_alias(TagListArticles::class, 'TagListArticles');

@@ -64,3 +64,5 @@ class NewsTags extends \News
 	}
 }
 
+
+class_alias(NewsTags::class, 'NewsTags');

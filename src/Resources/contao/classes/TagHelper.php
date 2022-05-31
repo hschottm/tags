@@ -433,3 +433,5 @@ class TagHelper extends \Backend
 	}
 }
 
+
+class_alias(TagHelper::class, 'TagHelper');

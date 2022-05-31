@@ -244,3 +244,4 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 	}
 }
 
+class_alias(ModuleNewsArchiveTags::class, 'ModuleNewsArchiveTags');

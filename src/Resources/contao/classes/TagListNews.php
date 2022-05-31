@@ -135,3 +135,5 @@ class TagListNews extends TagList
 		}
 	}
 }
+
+class_alias(TagListNews::class, 'TagListNews');

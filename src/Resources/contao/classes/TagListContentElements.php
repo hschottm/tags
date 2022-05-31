@@ -166,3 +166,5 @@ class TagListContentElements extends TagList
 		}
 	}
 }
+
+class_alias(TagListContentElements::class, 'TagListContentElements');

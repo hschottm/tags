@@ -30,3 +30,4 @@ class ModuleNewsReaderTags extends \ModuleNewsReader
 	}
 }
 
+class_alias(ModuleNewsReaderTags::class, 'ModuleNewsReaderTags');

@@ -148,3 +148,5 @@ class ModuleTagScope extends \Module
 		$this->Template->delete_urls = $deleteUrls;
 	}
 }
+
+class_alias(ModuleTagScope::class, 'ModuleTagScope');

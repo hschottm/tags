@@ -57,3 +57,5 @@ class ModuleTagCloudEvents extends \ModuleTagCloud
 		return Module::generate();
 	}
 }
+
+class_alias(ModuleTagCloudEvents::class, 'ModuleTagCloudEvents');

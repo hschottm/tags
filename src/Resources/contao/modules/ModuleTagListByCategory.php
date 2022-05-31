@@ -244,3 +244,4 @@ class ModuleTagListByCategory extends \Module
 	}
 }
 
+class_alias(ModuleTagListByCategory::class, 'ModuleTagListByCategory');
