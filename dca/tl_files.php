@@ -1,7 +1,6 @@
 <?php
 
 use Hschottm\Tags\DataContainer\FileTableCallbackListener;
-use Psr\Log\LogLevel;
 
 
 /**
@@ -47,31 +46,17 @@ class tl_files_tags extends \Backend
 
 	public function onCopy($source, $destination, \DataContainer $dc)
 	{
-		$level = LogLevel::INFO;
-		$logger = static::getContainer()->get('monolog.logger.contao');
-        $logger->log($level, "Callback called for " . $source . " and " . $destination, array());
-
-		if (is_array($this->Session->get('tl_files_copy')))
-		{
-			foreach ($this->Session->get('tl_files_copy') as $data)
-			{
-				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
-					->execute($dc->id, $data['tag'], $data['table']);
-			}
-		}
-		$this->Session->set('tl_files_copy', null);
-		if (\Input::get('act') != 'copy')
-		{
-			return;
-		}
 		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")
-			->execute(\Input::get('id'), $dc->table);
+			->execute($source, $dc->table);
 		$tags = array();
 		while ($objTags->next())
 		{
 			array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
 		}
-		$this->Session->set('tl_files_copy', $tags);
+		foreach ($tags as $entry) {
+			$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
+			->execute($destination, $entry['tag'], $entry['table']);
+		}
 	}
 }
 
