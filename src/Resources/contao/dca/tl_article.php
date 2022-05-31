@@ -66,7 +66,7 @@ $GLOBALS['TL_DCA']['tl_article']['fields']['tags_jumpto'] = array
 	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
 );
 
-class tl_article_tags extends tl_article
+class tl_article_tags extends Contao\Backend
 {
 	public function removeArticle($dc)
 	{
