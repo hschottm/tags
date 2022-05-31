@@ -8,163 +8,6 @@
  * @license LGPL-3.0+
  */
 
-class tl_module_tags extends Contao\Backend
-{
-	/**
-	 * Return available tag tables
-	 *
-	 * @return array Array of tag tables
-	 */
-	public function getTagTables()
-	{
-		$objTable = $this->Database->prepare("SELECT DISTINCT(from_table) FROM tl_tag ORDER BY from_table")
-			->execute();
-		$tables = array();
-		if ($objTable->numRows)
-		{
-			while ($objTable->next())
-			{
-				$tables[$objTable->from_table] = $objTable->from_table;
-			}
-		}
-		return $tables;
-	}
-
-	public function getObjectTypes()
-	{
-		return array(
-			'tl_content' => $GLOBALS['TL_LANG']['tl_module']['tl_content'],
-			'tl_article' => $GLOBALS['TL_LANG']['tl_module']['tl_article'],
-			'tl_page' => $GLOBALS['TL_LANG']['tl_module']['tl_page']
-		);
-	}
-
-	public function getContentObjectTagTables()
-	{
-		return array(
-			'tl_content' => 'tl_content',
-			'tl_article' => 'tl_article',
-			'tl_page' => 'tl_page'
-		);
-	}
-
-	/**
-	 * Return all articlelist templates as array
-	 * @param object
-	 * @return array
-	 */
-	public function getArticleListTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_global_');
-	}
-
-	/**
-	 * Return all tag cloud templates as array
-	 * @param object
-	 * @return array
-	 */
-	public function getTagCloudTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_tagcloud');
-	}
-
-	/**
-	 * Return all tag scope templates as array
-	 * @param object
-	 * @return array
-	 */
-	public function getTagScopeTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_tagscope');
-	}
-}
-
-class tl_module_tags_articles extends tl_module
-{
-	public function getArticlelistTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_');
-	}
-
-	public function getArticlelistOrder(DataContainer $dc)
-	{
-		$this->loadLanguageFile('tl_article');
-		return array(
-			'' => '-',
-			'tstamp ASC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'tstamp DESC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
-			'title ASC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'title DESC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
-			'start ASC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'start DESC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
-			'stop ASC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'stop DESC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')'
-		);
-	}
-}
-
-/**
- * Class tl_module_tags_events
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Helmut Schottmüller 2008-2013
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @package    Controller
- */
-class tl_module_tags_events extends tl_module
-{
-	/**
-	 * Return available calendars
-	 *
-	 * @return array Array of calendars
-	 */
-	public function getCalendars()
-	{
-		$objTable = $this->Database->prepare("SELECT id, title FROM tl_calendar ORDER BY title")
-			->execute();
-		$tables = array();
-		if ($objTable->numRows)
-		{
-			while ($objTable->next())
-			{
-				$tables[$objTable->id] = $objTable->title;
-			}
-		}
-		return $tables;
-	}
-}
-
-/**
- * Class tl_module_tags_news
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Helmut Schottmüller 2008-2013
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @package    Controller
- */
-class tl_module_tags_news extends tl_module
-{
-	/**
-	 * Return available news archives
-	 *
-	 * @return array Array of news archives
-	 */
-	public function getNewsArchives()
-	{
-		$objTable = $this->Database->prepare("SELECT id, title FROM tl_news_archive ORDER BY title")
-			->execute();
-		$tables = array();
-		if ($objTable->numRows)
-		{
-			while ($objTable->next())
-			{
-				$tables[$objTable->id] = $objTable->title;
-			}
-		}
-		return $tables;
-	}
-}
-
 /**
  * Add palettes to tl_module
  */
@@ -580,3 +423,160 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_news_archives'] = array
 	'eval'                    => array('multiple'=>true),
 	'sql'                     => "blob NULL"
 );
+
+class tl_module_tags extends Contao\Backend
+{
+	/**
+	 * Return available tag tables
+	 *
+	 * @return array Array of tag tables
+	 */
+	public function getTagTables()
+	{
+		$objTable = $this->Database->prepare("SELECT DISTINCT(from_table) FROM tl_tag ORDER BY from_table")
+			->execute();
+		$tables = array();
+		if ($objTable->numRows)
+		{
+			while ($objTable->next())
+			{
+				$tables[$objTable->from_table] = $objTable->from_table;
+			}
+		}
+		return $tables;
+	}
+
+	public function getObjectTypes()
+	{
+		return array(
+			'tl_content' => $GLOBALS['TL_LANG']['tl_module']['tl_content'],
+			'tl_article' => $GLOBALS['TL_LANG']['tl_module']['tl_article'],
+			'tl_page' => $GLOBALS['TL_LANG']['tl_module']['tl_page']
+		);
+	}
+
+	public function getContentObjectTagTables()
+	{
+		return array(
+			'tl_content' => 'tl_content',
+			'tl_article' => 'tl_article',
+			'tl_page' => 'tl_page'
+		);
+	}
+
+	/**
+	 * Return all articlelist templates as array
+	 * @param object
+	 * @return array
+	 */
+	public function getArticleListTemplates(DataContainer $dc)
+	{
+		return $this->getTemplateGroup('mod_global_');
+	}
+
+	/**
+	 * Return all tag cloud templates as array
+	 * @param object
+	 * @return array
+	 */
+	public function getTagCloudTemplates(DataContainer $dc)
+	{
+		return $this->getTemplateGroup('mod_tagcloud');
+	}
+
+	/**
+	 * Return all tag scope templates as array
+	 * @param object
+	 * @return array
+	 */
+	public function getTagScopeTemplates(DataContainer $dc)
+	{
+		return $this->getTemplateGroup('mod_tagscope');
+	}
+}
+
+class tl_module_tags_articles extends tl_module
+{
+	public function getArticlelistTemplates(DataContainer $dc)
+	{
+		return $this->getTemplateGroup('mod_');
+	}
+
+	public function getArticlelistOrder(DataContainer $dc)
+	{
+		$this->loadLanguageFile('tl_article');
+		return array(
+			'' => '-',
+			'tstamp ASC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'tstamp DESC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'title ASC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'title DESC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'start ASC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'start DESC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'stop ASC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'stop DESC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')'
+		);
+	}
+}
+
+/**
+ * Class tl_module_tags_events
+ *
+ * Provide miscellaneous methods that are used by the data configuration array.
+ * @copyright  Helmut Schottmüller 2008-2013
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
+ * @package    Controller
+ */
+class tl_module_tags_events extends tl_module
+{
+	/**
+	 * Return available calendars
+	 *
+	 * @return array Array of calendars
+	 */
+	public function getCalendars()
+	{
+		$objTable = $this->Database->prepare("SELECT id, title FROM tl_calendar ORDER BY title")
+			->execute();
+		$tables = array();
+		if ($objTable->numRows)
+		{
+			while ($objTable->next())
+			{
+				$tables[$objTable->id] = $objTable->title;
+			}
+		}
+		return $tables;
+	}
+}
+
+/**
+ * Class tl_module_tags_news
+ *
+ * Provide miscellaneous methods that are used by the data configuration array.
+ * @copyright  Helmut Schottmüller 2008-2013
+ * @author     Helmut Schottmüller <https://github.com/hschottm>
+ * @package    Controller
+ */
+class tl_module_tags_news extends tl_module
+{
+	/**
+	 * Return available news archives
+	 *
+	 * @return array Array of news archives
+	 */
+	public function getNewsArchives()
+	{
+		$objTable = $this->Database->prepare("SELECT id, title FROM tl_news_archive ORDER BY title")
+			->execute();
+		$tables = array();
+		if ($objTable->numRows)
+		{
+			while ($objTable->next())
+			{
+				$tables[$objTable->id] = $objTable->title;
+			}
+		}
+		return $tables;
+	}
+}

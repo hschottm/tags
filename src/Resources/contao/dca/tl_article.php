@@ -9,7 +9,64 @@
  */
 
 
-class tl_article_tags extends Contao\Backend
+/**
+ * Change tl_article default palette
+ */
+
+$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+if (!in_array('tl_article', $disabledObjects))
+{
+	$GLOBALS['TL_DCA']['tl_article']['palettes']['default'] = str_replace("keywords", "keywords;{tags_legend},tags,tags_showtags", $GLOBALS['TL_DCA']['tl_article']['palettes']['default']);
+	$GLOBALS['TL_DCA']['tl_article']['palettes']['__selector__'][] = 'tags_showtags';
+	$GLOBALS['TL_DCA']['tl_article']['subpalettes']['tags_showtags']    = 'tags_max_tags,tags_relevance,tags_jumpto';
+	$GLOBALS['TL_DCA']['tl_article']['config']['ondelete_callback'][] = array('tl_article_tags', 'removeArticle');
+	$GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array('tl_article_tags', 'removePage');
+	$GLOBALS['TL_DCA']['tl_article']['config']['onload_callback'][] = array('tl_article_tags', 'onCopy');
+}
+
+$GLOBALS['TL_DCA']['tl_article']['fields']['tags'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
+	'inputType'               => 'tag',
+	'eval'                    => array('tl_class'=>'clr long'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_article']['fields']['tags_showtags'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_showtags'],
+	'inputType'               => 'checkbox',
+	'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr m12'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_article']['fields']['tags_max_tags'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_max_tags'],
+	'default'                 => '0',
+	'inputType'               => 'text',
+	'eval'                    => array('maxlength'=>5, 'rgxp' => 'digit', 'tl_class'=>'w50'),
+	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
+);
+
+$GLOBALS['TL_DCA']['tl_article']['fields']['tags_relevance'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_relevance'],
+	'inputType'               => 'checkbox',
+	'eval'                    => array('tl_class'=>'w50 m12'),
+	'sql'                     => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_article']['fields']['tags_jumpto'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_jumpto'],
+	'inputType'               => 'pageTree',
+	'explanation'             => 'jumpTo',
+	'eval'                    => array('fieldType'=>'radio', 'helpwizard'=>true),
+	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
+);
+
+class tl_article_tags extends tl_article
 {
 	public function removeArticle($dc)
 	{
@@ -68,62 +125,4 @@ class tl_article_tags extends Contao\Backend
 		$this->Session->set("tl_article_copy", $tags);
 	}
 }
-
-
-/**
- * Change tl_article default palette
- */
-
-$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
-if (!in_array('tl_article', $disabledObjects))
-{
-	$GLOBALS['TL_DCA']['tl_article']['palettes']['default'] = str_replace("keywords", "keywords;{tags_legend},tags,tags_showtags", $GLOBALS['TL_DCA']['tl_article']['palettes']['default']);
-	$GLOBALS['TL_DCA']['tl_article']['palettes']['__selector__'][] = 'tags_showtags';
-	$GLOBALS['TL_DCA']['tl_article']['subpalettes']['tags_showtags']    = 'tags_max_tags,tags_relevance,tags_jumpto';
-	$GLOBALS['TL_DCA']['tl_article']['config']['ondelete_callback'][] = array('tl_article_tags', 'removeArticle');
-	$GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array('tl_article_tags', 'removePage');
-	$GLOBALS['TL_DCA']['tl_article']['config']['onload_callback'][] = array('tl_article_tags', 'onCopy');
-}
-
-$GLOBALS['TL_DCA']['tl_article']['fields']['tags'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
-	'inputType'               => 'tag',
-	'eval'                    => array('tl_class'=>'clr long'),
-	'sql'                     => "char(1) NOT NULL default ''"
-);
-
-$GLOBALS['TL_DCA']['tl_article']['fields']['tags_showtags'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_showtags'],
-	'inputType'               => 'checkbox',
-	'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr m12'),
-	'sql'                     => "char(1) NOT NULL default ''"
-);
-
-$GLOBALS['TL_DCA']['tl_article']['fields']['tags_max_tags'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_max_tags'],
-	'default'                 => '0',
-	'inputType'               => 'text',
-	'eval'                    => array('maxlength'=>5, 'rgxp' => 'digit', 'tl_class'=>'w50'),
-	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
-);
-
-$GLOBALS['TL_DCA']['tl_article']['fields']['tags_relevance'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_relevance'],
-	'inputType'               => 'checkbox',
-	'eval'                    => array('tl_class'=>'w50 m12'),
-	'sql'                     => "char(1) NOT NULL default ''"
-);
-
-$GLOBALS['TL_DCA']['tl_article']['fields']['tags_jumpto'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_article']['tags_jumpto'],
-	'inputType'               => 'pageTree',
-	'explanation'             => 'jumpTo',
-	'eval'                    => array('fieldType'=>'radio', 'helpwizard'=>true),
-	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
-);
 
