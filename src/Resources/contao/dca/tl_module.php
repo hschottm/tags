@@ -8,8 +8,6 @@
  * @license LGPL-3.0+
  */
 
-use Contao\Backend;
-
 class tl_module_tags extends \tl_module
 {
 	/**

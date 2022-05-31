@@ -22,7 +22,6 @@ if (is_array($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onload_callback
 	}
 }
 
-use Contao\Backend;
 
 class tl_calendar_events_tags extends \tl_calendar_events
 {

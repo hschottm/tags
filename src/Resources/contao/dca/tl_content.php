@@ -60,8 +60,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['tag_ignore'] = array
 	'sql'                     => "char(1) NOT NULL default ''"
 );
 
-use Contao\Backend;
-
 /**
  * Class tl_content_tags
  *

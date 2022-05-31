@@ -8,7 +8,6 @@
  * @license LGPL-3.0+
  */
 
-use Contao\Backend;
 
 class tl_article_tags extends \tl_article
 {

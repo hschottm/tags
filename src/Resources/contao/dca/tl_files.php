@@ -25,8 +25,6 @@ $GLOBALS['TL_DCA']['tl_files']['fields']['tags'] = array
 	'sql'                     => "char(1) NOT NULL default ''"
 );
 
-use Contao\Backend;
-
 /**
  * Class tl_files_tags
  *

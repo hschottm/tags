@@ -8,8 +8,6 @@
  * @license LGPL-3.0+
  */
 
-use Contao\Backend;
-
 if (@class_exists("tl_news_archive"))
 {
 	if (is_array($GLOBALS['TL_DCA']['tl_news_archive']['config']['onload_callback']))
