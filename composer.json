@@ -3,7 +3,7 @@
   "description":"tags is a Contao extension that provides an architecture to tag any Contao element.",
   "keywords":["contao", "module", "extension", "tagcloud", "tags"],
   "type":"contao-module",
-  "license":"LGPL-3.0+",
+  "license":["LGPL-3.0-or-later", "CC-BY-NC-SA-4.0"],
   "authors":[
     {
       "name":"Helmut Schottmüller",
@@ -11,10 +11,9 @@
     }
   ],
   "require":{
-    "php":">=5.3",
-    "contao/core-bundle": "~4.10",
-    "patchwork/utf8": "^1.3",
-    "contao-community-alliance/composer-plugin": "~3.0"
+    "php": "^7.4 || ^8.0",
+    "contao/core-bundle": "~4.13",
+    "contao-community-alliance/composer-plugin":"~3.2"
   },
   "extra":{
     "contao": {
