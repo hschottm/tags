@@ -1,1 +1,10 @@
 .DS_Store
+.svn
+.git/
+.settings/
+.buildpath
+.project
+composer.lock
+vendor
+# Transifex
+/.tx/

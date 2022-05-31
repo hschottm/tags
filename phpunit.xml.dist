@@ -1,0 +1,5 @@
+<testsuites>
+    <testsuite name="Tags Bundle">
+        <directory>./tests</directory>
+    </testsuite>
+</testsuites>
