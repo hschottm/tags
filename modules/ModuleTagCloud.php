@@ -219,7 +219,6 @@ class ModuleTagCloud extends \Module
 					$this->arrTopTenTags[$idx]['tag_url'] = $strUrl;
 				}
 				$ts = deserialize(\Input::cookie('tagcloud_states'), true);
-//				$ts = $this->Session->get('tagcloud_states');
 				$this->Template->expandedTopTen = (strlen($ts[$this->id]['topten'])) ? ((strcmp($ts[$this->id]['topten'], 'none') == 0) ? 0 : 1) : $this->tag_topten_expanded;
 				$this->Template->expandedAll = (strlen($ts[$this->id]['alltags'])) ? ((strcmp($ts[$this->id]['alltags'], 'none') == 0) ? 0 : 1) : $this->tag_all_expanded;
 				$this->Template->expandedRelated = (strlen($ts[$this->id]['related'])) ? ((strcmp($ts[$this->id]['related'], 'none') == 0) ? 0 : 1) : 1;

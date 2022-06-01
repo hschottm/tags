@@ -60,7 +60,7 @@ if (TL_MODE == 'BE')
 	 * CSS files
 	 */
 
-	if (is_array($GLOBALS['TL_CSS']))
+    if (isset($GLOBALS['TL_CSS']) && \is_array($GLOBALS['TL_CSS']))
 	{
 		array_insert($GLOBALS['TL_CSS'], 1, 'system/modules/tags/assets/tag.css');
 	}
@@ -72,14 +72,14 @@ if (TL_MODE == 'BE')
 	/**
 	 * JavaScript files
 	 */
-	if (is_array($GLOBALS['TL_JAVASCRIPT']))
-	{
-		array_insert($GLOBALS['TL_JAVASCRIPT'], 1, 'system/modules/tags/assets/tag.js');
-	}
-	else
-	{
-		$GLOBALS['TL_JAVASCRIPT'] = array('system/modules/tags/assets/tag.js');
-	}
+    if (isset($GLOBALS['TL_JAVASCRIPT']) && \is_array($GLOBALS['TL_JAVASCRIPT']))
+    {
+        \array_insert($GLOBALS['TL_JAVASCRIPT'], 1, 'system/modules/tags/assets/tag.js');
+    }
+    else
+    {
+        $GLOBALS['TL_JAVASCRIPT'] = array('system/modules/tags/assets/tag.js');
+    }
 }
 
 /**
@@ -104,7 +104,11 @@ $GLOBALS['tags_extension']['sourcetable'][] = 'tl_member';
 /**
 * Add 'tag' to the URL keywords to prevent problems with URL manipulating modules like folderurl
 */
-$GLOBALS['TL_CONFIG']['urlKeywords'] .= (strlen(trim($GLOBALS['TL_CONFIG']['urlKeywords'])) ? ',' : '') . 'tag';
+if (isset($GLOBALS['TL_CONFIG']['urlKeywords'])) {
+	$GLOBALS['TL_CONFIG']['urlKeywords'] .= (strlen(trim($GLOBALS['TL_CONFIG']['urlKeywords'])) ? ',' : '') . 'tag';
+} else {
+	$GLOBALS['TL_CONFIG']['urlKeywords'] = 'tag';
+}
 $GLOBALS['tags']['showInFeeds'] = true;
 
 $GLOBALS['TL_FFL']['tag'] = 'TagFieldMemberFrontend';
