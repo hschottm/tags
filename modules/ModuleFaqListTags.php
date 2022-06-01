@@ -59,33 +59,43 @@ class ModuleFaqListTags extends \ModuleFaqList
 			return;
 		}
 
+		$tags = array();
 		$arrFaq = array_fill_keys($this->faq_categories, array());
 
 		// Add FAQs
 		while ($objFaq->next())
 		{
 			$arrTemp = $objFaq->row();
-			$arrTemp['title'] = specialchars($objFaq->question, true);
+			$arrTemp['title'] = StringUtil::specialchars($objFaq->question, true);
 			$arrTemp['href'] = $this->generateFaqLink($objFaq);
 
-			/** @var \FaqCategoryModel $objPid */
+			/** @var FaqCategoryModel $objPid */
 			$objPid = $objFaq->getRelated('pid');
 
 			$arrFaq[$objFaq->pid]['items'][] = $arrTemp;
 			$arrFaq[$objFaq->pid]['headline'] = $objPid->headline;
 			$arrFaq[$objFaq->pid]['title'] = $objPid->title;
+
+			$tags[] = 'contao.db.tl_faq.' . $objFaq->id;
+		}
+
+		// Tag the FAQs (see #2137)
+		if (System::getContainer()->has('fos_http_cache.http.symfony_response_tagger'))
+		{
+			$responseTagger = System::getContainer()->get('fos_http_cache.http.symfony_response_tagger');
+			$responseTagger->addTags($tags);
 		}
 
 		$arrFaq = array_values(array_filter($arrFaq));
 
 		$cat_count = 0;
-		$cat_limit = count($arrFaq);
+		$cat_limit = \count($arrFaq);
 
 		// Add classes
 		foreach ($arrFaq as $k=>$v)
 		{
 			$count = 0;
-			$limit = count($v['items']);
+			$limit = \count($v['items']);
 
 			for ($i=0; $i<$limit; $i++)
 			{
