@@ -28,13 +28,13 @@ class ModuleTagCloud extends \Module
 	protected $checkForArticleOnPage = false;
 	protected $checkForContentElementOnPage = false;
 
+	public static $tagCloudStates = array();
+
 	protected function toggleTagCloud()
 	{
 		if (\Input::post('toggleTagCloud') == 1)
 		{
-			$ts = deserialize(\Input::cookie('tagcloud_states'), true);
-			$ts[\Input::post('cloudPageID')][\Input::post('cloudID')] = \Input::post('display');
-			$this->setCookie('tagcloud_states', serialize($ts), (time() + 60*60*24*30), $GLOBALS['TL_CONFIG']['websitePath']);
+			static::$tagCloudStates[\Input::post('cloudPageID')][\Input::post('cloudID')] = \Input::post('display');
 		}
 	}
 
@@ -93,7 +93,7 @@ class ModuleTagCloud extends \Module
 	{
 		global $objPage;
 		$this->loadLanguageFile('tl_module');
-		$strUrl = ampersand(\Environment::get('request'));
+		$strUrl = StringUtil::ampersand(\Environment::get('request'));
 		// Get target page
 
 		$pageObj = \TagHelper::getPageObj($this->tag_jumpTo);
@@ -111,7 +111,7 @@ class ModuleTagCloud extends \Module
 		{
 			if (!empty($pageObj))
 			{
-				$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
+				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
 				if (strlen($strParams))
 				{
 					if (strpos($strUrl, '?') !== false)
@@ -166,7 +166,7 @@ class ModuleTagCloud extends \Module
 			if (!empty($pageObj))
 			{
 				$allrelated = array_merge($relatedlist, array($tag['tag_name']));
-				$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(join($allrelated, ','))));
+				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode(\TagHelper::decode(\Input::get('tag'))) . '/related/' . \TagHelper::encode(implode(',', $allrelated))));
 			}
 			$this->arrRelated[$idx]['tag_url'] = $strUrl;
 		}
@@ -181,7 +181,7 @@ class ModuleTagCloud extends \Module
 		$this->Template->selectedtags = (strlen(\TagHelper::decode(\Input::get('tag')))) ? (count($this->arrRelated)+1) : 0;
 		if ($this->tag_show_reset)
 		{
-			$strEmptyUrl = ampersand($objPage->getFrontendUrl(''));
+			$strEmptyUrl = StringUtil::ampersand($objPage->getFrontendUrl(''));
 			if (strlen($strParams))
 			{
 				if (strpos($strUrl, '?') !== false)
@@ -204,7 +204,7 @@ class ModuleTagCloud extends \Module
 			{
 				foreach ($this->arrTopTenTags as $idx => $tag)
 				{
-					$strUrl = ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
+					$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
 					if (strlen($strParams))
 					{
 						if (strpos($strUrl, '?') !== false)
@@ -218,11 +218,17 @@ class ModuleTagCloud extends \Module
 					}
 					$this->arrTopTenTags[$idx]['tag_url'] = $strUrl;
 				}
-				$ts = deserialize(\Input::cookie('tagcloud_states'), true);
-//				$ts = $this->Session->get('tagcloud_states');
-				$this->Template->expandedTopTen = (strlen($ts[$this->id]['topten'])) ? ((strcmp($ts[$this->id]['topten'], 'none') == 0) ? 0 : 1) : $this->tag_topten_expanded;
-				$this->Template->expandedAll = (strlen($ts[$this->id]['alltags'])) ? ((strcmp($ts[$this->id]['alltags'], 'none') == 0) ? 0 : 1) : $this->tag_all_expanded;
-				$this->Template->expandedRelated = (strlen($ts[$this->id]['related'])) ? ((strcmp($ts[$this->id]['related'], 'none') == 0) ? 0 : 1) : 1;
+				$topten = "";
+				$expandedAll = "";
+				$expandedRelated = "";
+				if (array_key_exists($this->id, static::$tagCloudStates)) {
+					$topten = static::$tagCloudStates[$this->id]['topten'];
+					$expandedAll = static::$tagCloudStates[$this->id]['alltags'];
+					$expandedRelated = static::$tagCloudStates[$this->id]['related'];
+				}
+				$this->Template->expandedTopTen = (strlen($topten)) ? ((strcmp($topten, 'none') == 0) ? 0 : 1) : $this->tag_topten_expanded;
+				$this->Template->expandedAll = (strlen($expandedAll)) ? ((strcmp($expandedAll, 'none') == 0) ? 0 : 1) : $this->tag_all_expanded;
+				$this->Template->expandedRelated = (strlen($expandedRelated)) ? ((strcmp($expandedRelated, 'none') == 0) ? 0 : 1) : 1;
 				$this->Template->toptentags = $this->arrTopTenTags;
 			}
 		}

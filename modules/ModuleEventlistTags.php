@@ -14,10 +14,18 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 
 class ModuleEventlistTags extends \ModuleEventlist
 {
-	/**
-	 * Generate module
-	 */
-	protected function getAllEvents($arrCalendars, $intStart, $intEnd)
+
+    /**
+     * Get all events of a certain period
+     *
+     * @param array   $arrCalendars
+     * @param integer $intStart
+     * @param integer $intEnd
+     * @param boolean $blnFeatured
+     *
+     * @return array
+     */
+    protected function getAllEvents($arrCalendars, $intStart, $intEnd, $blnFeatured = null)
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (($this->tag_ignore) && !strlen($this->tag_filter)) return $arrAllEvents;
@@ -36,7 +44,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 			{
 				if (count($tagids))
 				{
-					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
 						->execute('tl_calendar_events', $tag)
 						->fetchEach('tid');
 				}
@@ -164,7 +172,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		$arrEvents = array();
 
 		// Remove events outside the scope
-		foreach ($arrAllEvents as $key=>$days)
+		foreach ($arrAllEvents as $days)
 		{
 			foreach ($days as $day=>$events)
 			{
@@ -249,7 +257,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		$imgSize = false;
 
 		// Override the default image size
-		if ($this->imgSize != '')
+		if ($this->imgSize)
 		{
 			$size = StringUtil::deserialize($this->imgSize);
 
@@ -264,7 +272,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 
 		for ($i=$offset; $i<$limit; $i++)
 		{
-			if ($arrEvents[$i]['addImage'] && $arrEvents[$i]['singleSRC'] != '')
+			if ($arrEvents[$i]['addImage'] && $arrEvents[$i]['singleSRC'])
 			{
 				$uuids[] = $arrEvents[$i]['singleSRC'];
 			}
@@ -334,7 +342,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 			$objTemplate->addImage = false;
 
 			// Add an image
-			if ($event['addImage'] && $event['singleSRC'] != '')
+			if ($event['addImage'] && $event['singleSRC'])
 			{
 				$objModel = FilesModel::findByUuid($event['singleSRC']);
 
@@ -370,20 +378,20 @@ class ModuleEventlistTags extends \ModuleEventlist
 				$this->addEnclosuresToTemplate($objTemplate, $event);
 			}
 
-									       ////////// CHANGES BY ModuleEventlistTags
-										   $objTemplate->showTags = $this->event_showtags;
-										   if ($this->event_showtags)
-										   {
-											   $helper = new \TagHelper();
-											   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
-											   $tags = $tagsandlist['tags'];
-											   $taglist = $tagsandlist['taglist'];
-											   $objTemplate->showTagClass = $this->tag_named_class;
-											   $objTemplate->tags = $tags;
-											   $objTemplate->taglist = $taglist;
-										   }
-										   ////////// CHANGES BY ModuleEventlistTags
-			
+			////////// CHANGES BY ModuleEventlistTags
+			$objTemplate->showTags = $this->event_showtags;
+			if ($this->event_showtags)
+			{
+				$helper = new \TagHelper();
+				$tagsandlist = $helper->getTagsAndTaglistForIdAndTable($event['id'], 'tl_calendar_events', $this->tag_jumpTo);
+				$tags = $tagsandlist['tags'];
+				$taglist = $tagsandlist['taglist'];
+				$objTemplate->showTagClass = $this->tag_named_class;
+				$objTemplate->tags = $tags;
+				$objTemplate->taglist = $taglist;
+			}
+			////////// CHANGES BY ModuleEventlistTags
+
 			$strEvents .= $objTemplate->parse();
 
 			++$eventCount;
@@ -391,7 +399,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 		}
 
 		// No events found
-		if ($strEvents == '')
+		if (!$strEvents)
 		{
 			$strEvents = "\n" . '<div class="empty">' . $strEmpty . '</div>' . "\n";
 		}
@@ -409,35 +417,35 @@ class ModuleEventlistTags extends \ModuleEventlist
 			Input::setGet('day', null);
 		}
 
-     ////////// CHANGES BY ModuleEventlistTags
-	 $headlinetags = array();
-	 if ((strlen(\TagHelper::decode(\Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
-	 {
-		 if (strlen($this->tag_filter))
-		 {
-			 $headlinetags = preg_split("/,/", $this->tag_filter);
-			 $tagids = $this->getFilterTags();
-			 $first = false;
-		 }
-		 else
-		 {
-			 $headlinetags = array();
-		 }
-		 $relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
-		 $tagArray = (strlen(\TagHelper::decode(\Input::get('tag')))) ? array(\TagHelper::decode(\Input::get('tag'))) : array();
-		 $headlinetags = array_merge($headlinetags, $tagArray);
-		 if (!empty($relatedlist))
-		 {
-			 $headlinetags = array_merge($headlinetags, $relatedlist);
-		 }
-	 }
-	 if (strlen($this->Template->events) == 0)
-	 {
-		 $headlinetags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
-		 $this->Template->events = $GLOBALS['TL_LANG']['MSC']['emptyevents'];
-	 }
-	 $this->Template->tags_activetags = $headlinetags;
-	 ////////// CHANGES BY ModuleEventlistTags
+		////////// CHANGES BY ModuleEventlistTags
+		$headlinetags = array();
+		if ((strlen(\TagHelper::decode(\Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
+		{
+			if (strlen($this->tag_filter))
+			{
+				$headlinetags = preg_split("/,/", $this->tag_filter);
+				$tagids = $this->getFilterTags();
+				$first = false;
+			}
+			else
+			{
+				$headlinetags = array();
+			}
+			$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+			$tagArray = (strlen(\TagHelper::decode(\Input::get('tag')))) ? array(\TagHelper::decode(\Input::get('tag'))) : array();
+			$headlinetags = array_merge($headlinetags, $tagArray);
+			if (!empty($relatedlist))
+			{
+				$headlinetags = array_merge($headlinetags, $relatedlist);
+			}
+		}
+		if (strlen($this->Template->events) == 0)
+		{
+			$headlinetags = array_merge(array(\TagHelper::decode(\Input::get('tag'))), $relatedlist);
+			$this->Template->events = $GLOBALS['TL_LANG']['MSC']['emptyevents'];
+		}
+		$this->Template->tags_activetags = $headlinetags;
+		////////// CHANGES BY ModuleEventlistTags
 	}
 
   /**
@@ -455,7 +463,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_calendar_events');
-			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');
 		}

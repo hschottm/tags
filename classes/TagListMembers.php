@@ -51,7 +51,7 @@ class TagListMembers extends TagList
 		$arrCloudTags = array();
 		if (count($ids))
 		{
-			$objTags = $this->Database->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND from_table = ? AND tl_tag.tid IN (" . join($ids, ",") . ") GROUP BY tag ORDER BY tag ASC")
+			$objTags = $this->Database->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
 				->execute('tl_member');
 			$list = "";
 			$tags = array();
@@ -61,7 +61,7 @@ class TagListMembers extends TagList
 				{
 					if (!in_array($objTags->tag, $for_tags))
 					{
-						$count = count($this->Database->prepare("SELECT tl_tag.tid FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND tag = ? AND from_table = ? AND tl_tag.tid IN (" . join($ids, ",") . ")")
+						$count = count($this->Database->prepare("SELECT tl_tag.tid FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND tag = ? AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
 							->execute($objTags->tag, 'tl_member')
 							->fetchAllAssoc());
 						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));

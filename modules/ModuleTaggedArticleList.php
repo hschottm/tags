@@ -29,6 +29,7 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 	protected $arrPages = array();
 	protected $arrArticles = array();
 
+	private $block = false;
 
 	/**
 	 * Do not display the module if there are no articles
@@ -72,7 +73,7 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 			$time = time();
 
 			// Get published articles
-			$pids = join($this->arrPages, ",");
+			$pids = implode(",",$this->arrPages);
 
 			$orders = array();
 			if (isset($GLOBALS['MISC']['tag_articles_id'][$this->id]['ORDER_BY_START'])
@@ -172,12 +173,12 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 		global $objPage;
 
 		// block this method to prevent recursive call of getArticle if the HTML of an article is the same as the current article
-		if ($this->Session->get('block'))
+		if ($this->block)
 		{
-			$this->Session->set('block', false);
+			$this->block = false;
 			return;
 		}
-		$this->Session->set('block', true);
+		$this->block = true;
 		$articles = array();
 		$id = $objPage->id;
 
@@ -201,7 +202,7 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 			{
 				if (count($tagids))
 				{
-					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",",$tagids) . ")")
 						->execute('tl_article', $tag)
 						->fetchEach('tid');
 				}
@@ -275,6 +276,6 @@ class ModuleTaggedArticleList extends \ModuleGlobalArticlelist
 		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->articles = $articles;
 		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyarticles'];
-		$this->Session->set('block', false);
+		$this->block = false;
 	}
 }

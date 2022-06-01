@@ -8,7 +8,7 @@
  * @license LGPL-3.0+
  */
 
-class tl_module_tags extends tl_module
+class tl_module_tags extends \Backend
 {
 	/**
 	 * Return available tag tables
@@ -79,7 +79,7 @@ class tl_module_tags extends tl_module
 	}
 }
 
-class tl_module_tags_articles extends tl_module
+class tl_module_tags_articles extends \Backend
 {
 	public function getArticlelistTemplates(DataContainer $dc)
 	{
@@ -111,7 +111,7 @@ class tl_module_tags_articles extends tl_module
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
-class tl_module_tags_events extends tl_module
+class tl_module_tags_events extends \Backend
 {
 	/**
 	 * Return available calendars
@@ -142,7 +142,7 @@ class tl_module_tags_events extends tl_module
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
-class tl_module_tags_news extends tl_module
+class tl_module_tags_news extends \Backend
 {
 	/**
 	 * Return available news archives

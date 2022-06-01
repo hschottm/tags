@@ -14,7 +14,48 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 
 class ModuleEventReaderTags extends \ModuleEventReader
 {
-  /**
+	/**
+	 * Return the date and time strings - COPIED from Contao ModuleEventReader
+	 *
+	 * @param CalendarEventsModel $objEvent
+	 * @param PageModel           $objPage
+	 * @param integer             $intStartTime
+	 * @param integer             $intEndTime
+	 * @param integer             $span
+	 *
+	 * @return array
+	 */
+	private function getDateAndTime(CalendarEventsModel $objEvent, PageModel $objPage, $intStartTime, $intEndTime, $span)
+	{
+		$strDate = Date::parse($objPage->dateFormat, $intStartTime);
+
+		if ($span > 0)
+		{
+			$strDate = Date::parse($objPage->dateFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->dateFormat, $intEndTime);
+		}
+
+		$strTime = '';
+
+		if ($objEvent->addTime)
+		{
+			if ($span > 0)
+			{
+				$strDate = Date::parse($objPage->datimFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->datimFormat, $intEndTime);
+			}
+			elseif ($intStartTime == $intEndTime)
+			{
+				$strTime = Date::parse($objPage->timeFormat, $intStartTime);
+			}
+			else
+			{
+				$strTime = Date::parse($objPage->timeFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->timeFormat, $intEndTime);
+			}
+		}
+
+		return array($strDate, $strTime);
+	}
+
+	/**
 	 * Generate the module
 	 */
 	protected function compile()
@@ -44,7 +85,6 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				}
 
 				throw new InternalServerErrorException('Invalid "jumpTo" value or target page not public');
-				break;
 
 			case 'article':
 				if (($article = ArticleModel::findByPk($objEvent->articleId)) && ($page = PageModel::findPublishedById($article->pid)))
@@ -53,7 +93,6 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				}
 
 				throw new InternalServerErrorException('Invalid "articleId" value or target page not public');
-				break;
 
 			case 'external':
 				if ($objEvent->url)
@@ -62,7 +101,6 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				}
 
 				throw new InternalServerErrorException('Empty target URL');
-				break;
 		}
 
 		// Overwrite the page title (see #2853, #4955 and #87)
@@ -176,17 +214,8 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$objTemplate->hasDetails = false;
 		$objTemplate->hasTeaser = false;
 
-		// Tag the response
-		if (System::getContainer()->has('fos_http_cache.http.symfony_response_tagger'))
-		{
-			/** @var ResponseTagger $responseTagger */
-			$responseTagger = System::getContainer()->get('fos_http_cache.http.symfony_response_tagger');
-			$responseTagger->addTags(array('contao.db.tl_calendar_events.' . $objEvent->id));
-			$responseTagger->addTags(array('contao.db.tl_calendar.' . $objEvent->pid));
-		}
-
 		// Clean the RTE output
-		if ($objEvent->teaser != '')
+		if ($objEvent->teaser)
 		{
 			$objTemplate->hasTeaser = true;
 			$objTemplate->teaser = StringUtil::toHtml5($objEvent->teaser);
@@ -229,7 +258,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$objTemplate->addImage = false;
 
 		// Add an image
-		if ($objEvent->addImage && $objEvent->singleSRC != '')
+		if ($objEvent->addImage && $objEvent->singleSRC)
 		{
 			$objModel = FilesModel::findByUuid($objEvent->singleSRC);
 
@@ -239,7 +268,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				$arrEvent = $objEvent->row();
 
 				// Override the default image size
-				if ($this->imgSize != '')
+				if ($this->imgSize)
 				{
 					$size = StringUtil::deserialize($this->imgSize);
 
@@ -262,20 +291,20 @@ class ModuleEventReaderTags extends \ModuleEventReader
 			$this->addEnclosuresToTemplate($objTemplate, $objEvent->row());
 		}
 
-				     ////////// CHANGES BY ModuleEventReaderTags
-					 $objTemplate->showTags = $this->event_showtags;
-					 if ($this->event_showtags)
-					 {
-					   $helper = new \TagHelper();
-					   $tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
-					   $tags = $tagsandlist['tags'];
-					   $taglist = $tagsandlist['taglist'];
-					   $objTemplate->showTagClass = $this->tag_named_class;
-					   $objTemplate->tags = $tags;
-					   $objTemplate->taglist = $taglist;
-					 }
-					 ////////// CHANGES BY ModuleEventReaderTags
-		
+		////////// CHANGES BY ModuleEventReaderTags
+		$objTemplate->showTags = $this->event_showtags;
+		if ($this->event_showtags)
+		{
+			$helper = new \TagHelper();
+			$tagsandlist = $helper->getTagsAndTaglistForIdAndTable($objEvent->id, 'tl_calendar_events', $this->tag_jumpTo);
+			$tags = $tagsandlist['tags'];
+			$taglist = $tagsandlist['taglist'];
+			$objTemplate->showTagClass = $this->tag_named_class;
+			$objTemplate->tags = $tags;
+			$objTemplate->taglist = $taglist;
+		}
+		////////// CHANGES BY ModuleEventReaderTags
+
 		// Add a function to retrieve upcoming dates (see #175)
 		$objTemplate->getUpcomingDates = function ($recurrences) use ($objEvent, $objPage, $intStartTime, $intEndTime, $arrRange, $span)
 		{
@@ -354,6 +383,13 @@ class ModuleEventReaderTags extends \ModuleEventReader
 
 		$this->Template->event = $objTemplate->parse();
 
+		// Tag the event (see #2137)
+		if (System::getContainer()->has('fos_http_cache.http.symfony_response_tagger'))
+		{
+			$responseTagger = System::getContainer()->get('fos_http_cache.http.symfony_response_tagger');
+			$responseTagger->addTags(array('contao.db.tl_calendar_events.' . $objEvent->id));
+		}
+
 		$bundles = System::getContainer()->getParameter('kernel.bundles');
 
 		// HOOK: comments extension required
@@ -388,7 +424,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		}
 
 		/** @var UserModel $objAuthor */
-		if ($objCalendar->notify != 'notify_admin' && ($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email != '')
+		if ($objCalendar->notify != 'notify_admin' && ($objAuthor = $objEvent->getRelated('author')) instanceof UserModel && $objAuthor->email)
 		{
 			$arrNotifies[] = $objAuthor->email;
 		}
@@ -404,38 +440,5 @@ class ModuleEventReaderTags extends \ModuleEventReader
 		$objConfig->moderate = $objCalendar->moderate;
 
 		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_calendar_events', $objEvent->id, $arrNotifies);
-	}
-
-	/*
-	 * copied from ModuleEventReader
-	 */
-	private function getDateAndTime(CalendarEventsModel $objEvent, PageModel $objPage, $intStartTime, $intEndTime, $span)
-	{
-		$strDate = Date::parse($objPage->dateFormat, $intStartTime);
-
-		if ($span > 0)
-		{
-			$strDate = Date::parse($objPage->dateFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->dateFormat, $intEndTime);
-		}
-
-		$strTime = '';
-
-		if ($objEvent->addTime)
-		{
-			if ($span > 0)
-			{
-				$strDate = Date::parse($objPage->datimFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->datimFormat, $intEndTime);
-			}
-			elseif ($intStartTime == $intEndTime)
-			{
-				$strTime = Date::parse($objPage->timeFormat, $intStartTime);
-			}
-			else
-			{
-				$strTime = Date::parse($objPage->timeFormat, $intStartTime) . $GLOBALS['TL_LANG']['MSC']['cal_timeSeparator'] . Date::parse($objPage->timeFormat, $intEndTime);
-			}
-		}
-
-		return array($strDate, $strTime);
 	}
 }

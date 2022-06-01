@@ -8,9 +8,9 @@
  * @license LGPL-3.0+
  */
 
-class tl_article_tags extends tl_article
+class tl_article_tags extends \Backend
 {
-	public function removeArticle($dc)
+	public function removeArticle(\DataContainer $dc, $undoId)
 	{
 		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($dc->table, $dc->id);
@@ -23,7 +23,7 @@ class tl_article_tags extends tl_article
 		}
 	}
 
-	public function removePage($dc)
+	public function removePage(\DataContainer $dc, $undoId)
 	{
 		// remove tags of all articles in the page
 		$arrArticles = $this->Database->prepare("SELECT DISTINCT id FROM tl_article WHERE pid = ?")
@@ -42,29 +42,16 @@ class tl_article_tags extends tl_article
 		}
 	}
 
-	public function onCopy($dc)
-	{
-		if (is_array($this->Session->get('tl_article_copy')))
-		{
-			foreach ($this->Session->get('tl_article_copy') as $data)
-			{
-				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
-					->execute($dc->id, $data['tag'], $data['table']);
-			}
-		}
-		$this->Session->set('tl_article_copy', null);
-		if (\Input::get('act') != 'copy')
-		{
-			return;
-		}
-		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")
-			->execute(\Input::get('id'), $dc->table);
+    public function onCopy($insertID, \DataContainer $dc)
+    {
+		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")->execute($dc->id, $dc->table);
 		$tags = array();
-		while ($objTags->next())
-		{
-			array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
+		while ($objTags->next()) {
+			\array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
 		}
-		$this->Session->set("tl_article_copy", $tags);
+		foreach ($tags as $entry) {
+			$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")->execute($insertID, $entry['tag'], $entry['table']);
+		}
 	}
 }
 
@@ -73,7 +60,11 @@ class tl_article_tags extends tl_article
  * Change tl_article default palette
  */
 
-$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+if (isset($GLOBALS['TL_CONFIG']['disabledTagObjects'])) {
+	$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+} else {
+	$disabledObjects = array();
+}
 if (!in_array('tl_article', $disabledObjects))
 {
 	$GLOBALS['TL_DCA']['tl_article']['palettes']['default'] = str_replace("keywords", "keywords;{tags_legend},tags,tags_showtags", $GLOBALS['TL_DCA']['tl_article']['palettes']['default']);
@@ -81,7 +72,7 @@ if (!in_array('tl_article', $disabledObjects))
 	$GLOBALS['TL_DCA']['tl_article']['subpalettes']['tags_showtags']    = 'tags_max_tags,tags_relevance,tags_jumpto';
 	$GLOBALS['TL_DCA']['tl_article']['config']['ondelete_callback'][] = array('tl_article_tags', 'removeArticle');
 	$GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array('tl_article_tags', 'removePage');
-	$GLOBALS['TL_DCA']['tl_article']['config']['onload_callback'][] = array('tl_article_tags', 'onCopy');
+	$GLOBALS['TL_DCA']['tl_article']['config']['oncopy_callback'][] = array('tl_article_tags', 'onCopy');
 }
 
 $GLOBALS['TL_DCA']['tl_article']['fields']['tags'] = array

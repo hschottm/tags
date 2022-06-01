@@ -12,10 +12,18 @@ namespace Contao;
 
 class ModuleLastEventsTags extends \ModuleLastEvents
 {
-	/**
-	 * Generate module
-	 */
-	protected function getAllEvents($arrCalendars, $intStart, $intEnd)
+
+    /**
+     * Get all events of a certain period
+     *
+     * @param array   $arrCalendars
+     * @param integer $intStart
+     * @param integer $intEnd
+     * @param boolean $blnFeatured
+     *
+     * @return array
+     */
+    protected function getAllEvents($arrCalendars, $intStart, $intEnd, $blnFeatured = null)
 	{
 		$arrAllEvents = parent::getAllEvents($arrCalendars, $intStart, $intEnd);
 		if (strlen(\TagHelper::decode(\Input::get('tag'))))
@@ -30,7 +38,7 @@ class ModuleLastEventsTags extends \ModuleLastEvents
 			{
 				if (count($tagids))
 				{
-					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+					$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
 						->execute('tl_calendar_events', $tag)
 						->fetchEach('tid');
 				}

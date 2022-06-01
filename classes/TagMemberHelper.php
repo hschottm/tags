@@ -33,7 +33,7 @@ class TagMemberHelper extends \Backend
 				{
 					if (count($tagids))
 					{
-						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND  tid IN (" . join($tagids, ",") . ")")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND  tid IN (" . implode(",", $tagids) . ")")
 							->execute('tl_member', $tag)
 							->fetchEach('tid');
 					}
@@ -49,7 +49,7 @@ class TagMemberHelper extends \Backend
 			$arrValidMembers = $tagids;
 			if (count($arrValidMembers) > 0)
 			{
-				return array("tl_member.id IN (" . join(',', $arrValidMembers) . ")");
+				return array("tl_member.id IN (" . implode(',', $arrValidMembers) . ")");
 			}
 			else
 			{

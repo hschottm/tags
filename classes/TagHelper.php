@@ -12,6 +12,8 @@ namespace Contao;
 
 class TagHelper extends \Backend
 {
+    public static $config = array();
+	
 	/**
 	 * Load the database object
 	 */
@@ -34,12 +36,12 @@ class TagHelper extends \Backend
 		}
 	}
 
-	public function encode($tag)
+	public static function encode($tag)
 	{
 		return str_replace('/', 'x2F', $tag);
 	}
 
-	public function decode($tag)
+	public static function decode($tag)
 	{
 		return str_replace('x2F', '/', $tag);
 	}
@@ -89,7 +91,7 @@ class TagHelper extends \Backend
 		}
 		if (count($arrParams))
 		{
-			$strParams = join($arrParams, '&');
+			$strParams = implode('&', $arrParams);
 		}
 		return $strParams;
 	}
@@ -123,7 +125,7 @@ class TagHelper extends \Backend
 					->fetchEach('tid');
 				if (count($ids))
 				{
-					$this->Database->prepare("DELETE FROM tl_tag WHERE tid IN (" . join($ids, ",") . ") AND from_table = ?")
+					$this->Database->prepare("DELETE FROM tl_tag WHERE tid IN (" . implode(",", $ids) . ") AND from_table = ?")
 						->execute($table);
 				}
 			}
@@ -181,16 +183,13 @@ class TagHelper extends \Backend
 			}
 			if (strlen($target))
 			{
-				$pageArr = array();
-				$objFoundPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=? OR alias=?")
-					->limit(1)
-					->execute(array($target, $target));
-				$pageArr = ($objFoundPage->numRows) ? $objFoundPage->fetchAssoc() : array();
-				if (count($pageArr))
+				$pageObj = new PageModel();
+				$pageObj = $pageObj::findPublishedByIdOrAlias($target);
+				if (!empty($pageObj))
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = ampersand($objPage->getFrontendUrl('/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . $tag['tag']));
 					}
 				}
 			}
@@ -208,11 +207,13 @@ class TagHelper extends \Backend
 						}
 						else
 						{
+							$pageObj = self::getPageObj($objArticle->tags_jumpto);
 							foreach ($arrTags as $idx => $tag)
 							{
-								$arrTags[$idx]['url'] = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+								$arrTags[$idx]['url'] = $pageObj->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 							}
-							$objTemplate->url = $objPage->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+							// Whats up here?
+							$objTemplate->url = $pageObj->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 						}
 						break;
 				}
@@ -281,7 +282,7 @@ class TagHelper extends \Backend
 		$objTemplate->show_tags = $moduleArticle->tags_showtags;
 		if ($moduleArticle->tags_showtags)
 		{
-			$objTemplate->tags = $this->getTagsForArticle($moduleArticle, $moduleArticle->tags_max_tags, $moduleArticle->tags_relevance, $moduleArticlehis->tags_jumpto);
+			$objTemplate->tags = $this->getTagsForArticle($moduleArticle, $moduleArticle->tags_max_tags, $moduleArticle->tags_relevance, $moduleArticle->tags_jumpto);
 		}
 	}
 
@@ -329,7 +330,7 @@ class TagHelper extends \Backend
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag'])));
+						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag'])));
 					}
 				}
 			}
@@ -340,11 +341,9 @@ class TagHelper extends \Backend
 	public function parseArticlesHook($objTemplate, $row)
 	{
 		global $objPage;
-		$this->import('Session');
-		$news_showtags = $this->Session->get('news_showtags');
-		$news_jumpto = $this->Session->get('news_jumpto');
-		$tag_named_class = $this->Session->get('news_tag_named_class');
-		$objTemplate->showTags = $news_showtags;
+		$news_showtags = static::$config['news_showtags'];
+		$news_jumpto = static::$config['news_jumpto'];
+		$tag_named_class = static::$config['news_tag_named_class'];
 		if ($news_showtags)
 		{
 			$pageObj = self::getPageObj($news_jumpto);
@@ -352,7 +351,7 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -360,12 +359,13 @@ class TagHelper extends \Backend
 					'class' => TagList::_getTagNameClass($tag)
 				);
 			}
+			$objTemplate->showTags = 1;
 			$objTemplate->showTagClass = $tag_named_class;
 			$objTemplate->tags = $tags;
 			$objTemplate->taglist = $taglist;
 		}
 	}
-		
+	
 	public function getTagsAndTaglistForIdAndTable($id, $table, $jumpto)
 	{
 		$pageObj = self::getPageObj($jumpto);
@@ -374,7 +374,7 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
@@ -394,21 +394,8 @@ class TagHelper extends \Backend
 	 */
 	public function generateEventFeed()
 	{
-		$session = $this->Session->get('calendar_feed_updater');
-
-		if (!is_array($session) || count($session) < 1)
-		{
-			return;
-		}
-
-		$this->import('CalendarTags');
-
-		foreach ($session as $id)
-		{
-			$this->CalendarTags->generateFeedsByCalendar($id);
-		}
-
-		$this->Session->set('calendar_feed_updater', null);
+		//$this->import('CalendarTags');
+		//$this->CalendarTags->generateFeedsByCalendar($id);
 	}
 
 	/**
@@ -416,21 +403,8 @@ class TagHelper extends \Backend
 	 */
 	public function generateNewsFeed()
 	{
-		$session = $this->Session->get('news_feed_updater');
-
-		if (!is_array($session) || count($session) < 1)
-		{
-			return;
-		}
-
-		$this->import('NewsTags');
-
-		foreach ($session as $id)
-		{
-			$this->NewsTags->generateFeedsByArchive($id);
-		}
-
-		$this->Session->set('news_feed_updater', null);
+		//$this->import('NewsTags');
+		//$this->NewsTags->generateFeedsByArchive($id);
 	}
 }
 

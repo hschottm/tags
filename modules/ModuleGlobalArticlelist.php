@@ -12,6 +12,8 @@ namespace Contao;
 
 class ModuleGlobalArticlelist extends \Module
 {
+	private $block = false;
+
 
 	/**
 	 * Template
@@ -47,12 +49,12 @@ class ModuleGlobalArticlelist extends \Module
 		global $objPage;
 
 		// block this method to prevent recursive call of getArticle if the HTML of an article is the same as the current article
-		if ($this->Session->get('block'))
+		if ($this->block)
 		{
-			$this->Session->set('block', false);
+			$this->block = false;
 			return;
 		}
-		$this->Session->set('block', true);
+		$this->block = true;
 		$articles = array();
 		$id = $objPage->id;
 
@@ -123,7 +125,7 @@ class ModuleGlobalArticlelist extends \Module
 		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->articles = $articles;
 		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyarticles'];
-		$this->Session->set('block', false);
+		$this->block = false;
 	}
 }
 

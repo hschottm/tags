@@ -27,7 +27,7 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_news');
-			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');
 		}
@@ -186,9 +186,9 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 	 */
 	protected function compile()
 	{
-		$this->Session->set('news_showtags', $this->news_showtags);
-		$this->Session->set('news_jumpto', $this->tag_jumpTo);
-		$this->Session->set('news_tag_named_class', $this->tag_named_class);
+		\TagHelper::$config['news_showtags'] = $this->news_showtags;
+		\TagHelper::$config['news_jumpto'] = $this->tag_jumpTo;
+		\TagHelper::$config['news_tag_named_class'] = $this->tag_named_class;
 		if ((strlen(\TagHelper::decode(\Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
 		{
 			$tagids = array();
@@ -212,7 +212,7 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 				{
 					if (count($tagids))
 					{
-						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
 							->execute('tl_news', $tag)
 							->fetchEach('tid');
 					}
@@ -238,9 +238,6 @@ class ModuleNewsArchiveTags extends \ModuleNewsArchive
 		{
 			parent::compile();
 		}
-		$this->Session->set('news_showtags', '');
-		$this->Session->set('news_jumpto', '');
-		$this->Session->set('news_tag_named_class', '');
 	}
 }
 

@@ -35,7 +35,7 @@ class ContentGalleryTags extends ContentGallery
 			foreach ($alltags as $tag) {
 				if (strlen(trim($tag))) {
 					if (count($tagids)) {
-						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . join($tagids, ",") . ")")
+						$tagids = $this->Database->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
 							->execute('tl_files', $tag)
 							->fetchEach('tid');
 					} else if ($first) {
@@ -72,15 +72,15 @@ class ContentGalleryTags extends ContentGallery
 	/**
 	 * Add an image to a template
 	 *
-	 * @param object     $objTemplate   The template object to add the image to
-	 * @param array      $arrItem       The element or module as array
-	 * @param integer    $intMaxWidth   An optional maximum width of the image
-	 * @param string     $strLightboxId An optional lightbox ID
-	 * @param FilesModel $objModel      An optional files model
+	 * @param object          $template                The template object to add the image to
+	 * @param array           $rowData                 The element or module as array
+	 * @param integer|null    $maxWidth                An optional maximum width of the image
+	 * @param string|null     $lightboxGroupIdentifier An optional lightbox group identifier
+	 * @param FilesModel|null $filesModel              An optional files model
 	 */
-	public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null, FilesModel $objModel=null)
+	public static function addImageToTemplate($template, array $rowData, $maxWidth = null, $lightboxGroupIdentifier = null, FilesModel $filesModel = null): void
 	{
-		Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId, $objModel);
+		Controller::addImageToTemplate($template, $rowData, $maxWidth, $lightboxGroupIdentifier, $filesModel);
 		if (TL_MODE == 'FE') {
 			$found = \TagModel::findByIdAndTable($rowData['id'], 'tl_files');
 			$tags = array();
@@ -102,7 +102,7 @@ class ContentGalleryTags extends ContentGallery
 				array_push($placeholders, '?');
 			}
 			array_push($tags, 'tl_files');
-			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . join($placeholders, ',') . ") AND from_table = ? ORDER BY tag ASC")
+			return $this->Database->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');
 		} else {

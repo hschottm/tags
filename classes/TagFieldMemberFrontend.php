@@ -20,7 +20,7 @@ namespace Contao;
  */
 class TagFieldMemberFrontend extends \FormTextField
 {
-	protected $blnSubmitInput = FALSE;
+	protected $blnSubmitInput = true;
 	protected $strTagTable = "";
 	protected $intMaxTags = 0;
 
@@ -31,7 +31,7 @@ class TagFieldMemberFrontend extends \FormTextField
 	 */
 	protected function saveTags($value)
 	{
-		if (!$this->blnSubmitInput)
+		if ($this->blnSubmitInput)
 		{
 			$this->import('FrontendUser', 'User');
 			$this->import('Database');
@@ -71,9 +71,6 @@ class TagFieldMemberFrontend extends \FormTextField
 	{
 		switch ($strKey)
 		{
-			case 'isTag':
-				$this->blnSubmitInput = !$varValue;
-				break;
 			case 'table':
 				$this->strTagTable = $varValue;
 				break;
@@ -99,9 +96,6 @@ class TagFieldMemberFrontend extends \FormTextField
 	{
 		switch ($strKey)
 		{
-			case 'isTag':
-				return !$this->blnSubmitInput;
-				break;
 			case 'table':
 				return strlen($this->strTagTable) ? $this->strTagTable : $this->strTable;
 				break;
@@ -146,7 +140,7 @@ class TagFieldMemberFrontend extends \FormTextField
 			$list .= '</li> ';
 		}
 		$list .= '</ul></div>';
-		$value = (!$this->blnSubmitInput) ? $this->readTags() : $this->varValue;
+		$value = $this->readTags();
 		return sprintf($list.'<input type="%s" name="%s" id="ctrl_%s" class="text%s%s" value="%s"%s%s',
 						$this->type,
 						$this->strName,

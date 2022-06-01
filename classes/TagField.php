@@ -12,7 +12,7 @@ namespace Contao;
 
 class TagField extends \TextField
 {
-	protected $blnSubmitInput = FALSE;
+	protected $blnSubmitInput = true;
 	protected $strTagTable = "";
 	protected $intMaxTags = 0;
 
@@ -23,7 +23,7 @@ class TagField extends \TextField
 	 */
 	protected function saveTags($value)
 	{
-		if (!$this->blnSubmitInput)
+		if ($this->blnSubmitInput)
 		{
 			$this->import('Database');
 			$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
@@ -66,9 +66,6 @@ class TagField extends \TextField
 	{
 		switch ($strKey)
 		{
-			case 'isTag':
-				$this->blnSubmitInput = !$varValue;
-				break;
 			case 'table':
 				$this->strTagTable = $varValue;
 				break;
@@ -94,14 +91,11 @@ class TagField extends \TextField
 	{
 		switch ($strKey)
 		{
-			case 'isTag':
-				return !$this->blnSubmitInput;
-				break;
 			case 'table':
 				return strlen($this->strTagTable) ? $this->strTagTable : $this->strTable;
 				break;
 			case 'value':
-				return $this->varValue;
+				return '';
 				break;
 			case 'maxtags':
 				return $this->intMaxTags;
@@ -130,7 +124,7 @@ class TagField extends \TextField
 			$list .= '</li> ';
 		}
 		$list .= '</ul></div>';
-		$value = (!$this->blnSubmitInput) ? $this->readTags() : $this->varValue;
+		$value = $this->readTags();
 		return $list.sprintf('<input type="text" name="%s" id="ctrl_%s" class="tl_text%s" value="%s"%s onfocus="Backend.getScrollOffset();" />',
 						$this->strName,
 						$this->strId,
@@ -149,4 +143,3 @@ class TagField extends \TextField
 		parent::validate();
 	}
 }
-

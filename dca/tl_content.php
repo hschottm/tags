@@ -8,7 +8,11 @@
  * @license LGPL-3.0+
  */
 
-$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+if (isset($GLOBALS['TL_CONFIG']['disabledTagObjects'])) {
+	$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+} else {
+	$disabledObjects = array();
+}
 if (!in_array('tl_content', $disabledObjects))
 {
 	foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $key => $palette)
@@ -25,7 +29,7 @@ if (!in_array('tl_content', $disabledObjects))
 
 	$GLOBALS['TL_DCA']['tl_content']['palettes']['headline'] = str_replace('guests','guests,tagsonly', $GLOBALS['TL_DCA']['tl_content']['palettes']['headline']);
 	$GLOBALS['TL_DCA']['tl_content']['config']['ondelete_callback'][] = array('tl_content_tags', 'removeContentElement');
-	$GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_tags', 'onCopy');
+	$GLOBALS['TL_DCA']['tl_content']['config']['oncopy_callback'][] = array('tl_content_tags', 'onCopy');
 	$GLOBALS['TL_DCA']['tl_content']['palettes']['gallery'] = str_replace('numberOfItems','numberOfItems,tag_filter,tag_ignore;', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery']);
 }
 
@@ -68,37 +72,24 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['tag_ignore'] = array
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
-class tl_content_tags extends tl_content
+class tl_content_tags extends \Backend
 {
-	public function removeContentElement($dc)
+	public function removeContentElement(\DataContainer $dc, $undoId)
 	{
 		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($dc->table, $dc->id);
 	}
 
-	public function onCopy($dc)
-	{
-		if (is_array($this->Session->get('tl_content_copy')))
-		{
-			foreach ($this->Session->get('tl_content_copy') as $data)
-			{
-				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
-					->execute($dc->id, $data['tag'], $data['table']);
-			}
-		}
-		$this->Session->set('tl_content_copy', null);
-		if (\Input::get('act') != 'copy')
-		{
-			return;
-		}
-		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")
-			->execute(\Input::get('id'), $dc->table);
+    public function onCopy($insertID, \DataContainer $dc)
+    {
+		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")->execute($dc->id, $dc->table);
 		$tags = array();
-		while ($objTags->next())
-		{
-			array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
+		while ($objTags->next()) {
+			\array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
 		}
-		$this->Session->set("tl_content_copy", $tags);
+		foreach ($tags as $entry) {
+			$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")->execute($insertID, $entry['tag'], $entry['table']);
+		}
 	}
 }
 

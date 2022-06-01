@@ -23,49 +23,42 @@ if (is_array($GLOBALS['TL_DCA']['tl_news']['config']['onload_callback']))
 }
 
 
-class tl_news_tags extends tl_news
+class tl_news_tags extends \Backend
 {
-	public function deleteNews($dc)
+	public function deleteNews(\DataContainer $dc, $undoId)
 	{
 		$this->Database->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->execute($dc->table, $dc->id);
 	}
 	
-	public function onCopy($dc)
+	public function onCopy($insertID, \DataContainer $dc)
 	{
-		if (is_array($this->Session->get('tl_news_copy')))
-		{
-			foreach ($this->Session->get('tl_news_copy') as $data)
-			{
-				$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
-					->execute($dc->id, $data['tag'], $data['table']);
-			}
-		}
-		$this->Session->set('tl_news_copy', null);
-		if (\Input::get('act') != 'copy')
-		{
-			return;
-		}
-		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")
-			->execute(\Input::get('tid'), $dc->table);
+		$objTags = $this->Database->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")->execute($dc->id, $dc->table);
 		$tags = array();
-		while ($objTags->next())
-		{
-			array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
+		while ($objTags->next()) {
+			\array_push($tags, array("table" => $dc->table, "tag" => $objTags->tag));
 		}
-		$this->Session->set("tl_news_copy", $tags);
+		foreach ($tags as $entry) {
+			$this->Database->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")->execute($insertID, $entry['tag'], $entry['table']);
+		}
 	}
 }
 
 /**
  * Change tl_news palettes
  */
-$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+if (isset($GLOBALS['TL_CONFIG']['disabledTagObjects'])) {
+	$disabledObjects = deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+} else {
+	$disabledObjects = array();
+}
 if (!in_array('tl_news', $disabledObjects))
 {
 	$GLOBALS['TL_DCA']['tl_news']['config']['ondelete_callback'][] = array('tl_news_tags', 'deleteNews');
-	$GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'][] = array('tl_news_tags', 'onCopy');
+	$GLOBALS['TL_DCA']['tl_news']['config']['oncopy_callback'][] = array('tl_news_tags', 'onCopy');
 	$GLOBALS['TL_DCA']['tl_news']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_news']['palettes']['default']);
+	$GLOBALS['TL_DCA']['tl_news']['palettes']['internal'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_news']['palettes']['internal']);
+	$GLOBALS['TL_DCA']['tl_news']['palettes']['external'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_news']['palettes']['external']);
 }
 
 $GLOBALS['TL_DCA']['tl_news']['fields']['tags'] = array

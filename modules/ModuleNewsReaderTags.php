@@ -20,13 +20,10 @@ class ModuleNewsReaderTags extends \ModuleNewsReader
 	 */
 	protected function compile()
 	{
-		$this->Session->set('news_showtags', $this->news_showtags);
-		$this->Session->set('news_jumpto', $this->tag_jumpTo);
-		$this->Session->set('news_tag_named_class', $this->tag_named_class);
+		\TagHelper::$config['news_showtags'] = $this->news_showtags;
+		\TagHelper::$config['news_jumpto'] = $this->tag_jumpTo;
+		\TagHelper::$config['news_tag_named_class'] = $this->tag_named_class;
 		parent::compile();
-		$this->Session->set('news_showtags', '');
-		$this->Session->set('news_jumpto', '');
-		$this->Session->set('news_tag_named_class', '');
 	}
 }
 
