@@ -359,6 +359,7 @@ class TagHelper extends \Backend
 					'class' => TagList::_getTagNameClass($tag)
 				);
 			}
+			$objTemplate->showTags = 1;
 			$objTemplate->showTagClass = $tag_named_class;
 			$objTemplate->tags = $tags;
 			$objTemplate->taglist = $taglist;
