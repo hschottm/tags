@@ -12,6 +12,8 @@ namespace Contao;
 
 class TagHelper extends \Backend
 {
+    public static $config = array();
+	
 	/**
 	 * Load the database object
 	 */
@@ -339,11 +341,9 @@ class TagHelper extends \Backend
 	public function parseArticlesHook($objTemplate, $row)
 	{
 		global $objPage;
-		$this->import('Session');
-		$news_showtags = $this->Session->get('news_showtags');
-		$news_jumpto = $this->Session->get('news_jumpto');
-		$tag_named_class = $this->Session->get('news_tag_named_class');
-		$objTemplate->showTags = $news_showtags;
+		$news_showtags = static::$config['news_showtags'];
+		$news_jumpto = static::$config['news_jumpto'];
+		$tag_named_class = static::$config['news_tag_named_class'];
 		if ($news_showtags)
 		{
 			$pageObj = self::getPageObj($news_jumpto);
@@ -351,7 +351,7 @@ class TagHelper extends \Backend
 			$taglist = array();
 			foreach ($tags as $id => $tag)
 			{
-				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+				$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 				$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 				$taglist[$id] = array(
 					'url' => $tags[$id],
@@ -373,7 +373,7 @@ class TagHelper extends \Backend
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl($items . '/tag/' . \TagHelper::encode($tag)));
+			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag)));
 			if (strlen(\Environment::get('queryString'))) $strUrl .= "?" . \Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
@@ -393,21 +393,8 @@ class TagHelper extends \Backend
 	 */
 	public function generateEventFeed()
 	{
-		$session = $this->Session->get('calendar_feed_updater');
-
-		if (!is_array($session) || count($session) < 1)
-		{
-			return;
-		}
-
-		$this->import('CalendarTags');
-
-		foreach ($session as $id)
-		{
-			$this->CalendarTags->generateFeedsByCalendar($id);
-		}
-
-		$this->Session->set('calendar_feed_updater', null);
+		//$this->import('CalendarTags');
+		//$this->CalendarTags->generateFeedsByCalendar($id);
 	}
 
 	/**
@@ -415,21 +402,8 @@ class TagHelper extends \Backend
 	 */
 	public function generateNewsFeed()
 	{
-		$session = $this->Session->get('news_feed_updater');
-
-		if (!is_array($session) || count($session) < 1)
-		{
-			return;
-		}
-
-		$this->import('NewsTags');
-
-		foreach ($session as $id)
-		{
-			$this->NewsTags->generateFeedsByArchive($id);
-		}
-
-		$this->Session->set('news_feed_updater', null);
+		//$this->import('NewsTags');
+		//$this->NewsTags->generateFeedsByArchive($id);
 	}
 }
 
