@@ -20,11 +20,12 @@ if (!in_array('tl_content', $disabledObjects))
 	{
 		if (strcmp($key, '__selector__') != 0)
 		{
-			if (strlen($palette) >= 2) {
-				$pos = strpos($palette, '{', 2);
+			$value = $GLOBALS['TL_DCA']['tl_content']['palettes'][$key];
+			if (strlen($value) >= 2) {
+				$pos = strpos($value, '{', 2);
 				if ($pos !== FALSE)
 				{
-					$palette = substr($palette,0,$pos) . "{tags_legend:hide},tags;" . substr($palette,$pos);
+					$GLOBALS['TL_DCA']['tl_content']['palettes'][$key] = substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],0,$pos) . "{tags_legend:hide},tags;" . substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],$pos);
 				}
 			}
 		}
