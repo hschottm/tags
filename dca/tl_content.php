@@ -13,16 +13,20 @@ if (isset($GLOBALS['TL_CONFIG']['disabledTagObjects'])) {
 } else {
 	$disabledObjects = array();
 }
+
 if (!in_array('tl_content', $disabledObjects))
 {
 	foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $key => $palette)
 	{
 		if (strcmp($key, '__selector__') != 0)
 		{
-			$pos = strpos($GLOBALS['TL_DCA']['tl_content']['palettes'][$key], '{', 2);
-			if ($pos !== FALSE)
-			{
-				$GLOBALS['TL_DCA']['tl_content']['palettes'][$key] = substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],0,$pos) . "{tags_legend:hide},tags;" . substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],$pos);
+			$value = $GLOBALS['TL_DCA']['tl_content']['palettes'][$key];
+			if (strlen($value) >= 2) {
+				$pos = strpos($value, '{', 2);
+				if ($pos !== FALSE)
+				{
+					$GLOBALS['TL_DCA']['tl_content']['palettes'][$key] = substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],0,$pos) . "{tags_legend:hide},tags;" . substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],$pos);
+				}
 			}
 		}
 	}
