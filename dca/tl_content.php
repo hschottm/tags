@@ -16,20 +16,20 @@ if (isset($GLOBALS['TL_CONFIG']['disabledTagObjects'])) {
 
 if (!in_array('tl_content', $disabledObjects))
 {
-	foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $key => $palette)
+	foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $key => &$palette)
 	{
 		if (strcmp($key, '__selector__') != 0)
 		{
-			$value = $GLOBALS['TL_DCA']['tl_content']['palettes'][$key];
-			if (strlen($value) >= 2) {
-				$pos = strpos($value, '{', 2);
+			if (strlen($palette) >= 2) {
+				$pos = strpos($palette, '{', 2);
 				if ($pos !== FALSE)
 				{
-					$GLOBALS['TL_DCA']['tl_content']['palettes'][$key] = substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],0,$pos) . "{tags_legend:hide},tags;" . substr($GLOBALS['TL_DCA']['tl_content']['palettes'][$key],$pos);
+					$palette = substr($palette,0,$pos) . "{tags_legend:hide},tags;" . substr($palette,$pos);
 				}
 			}
 		}
 	}
+	unset($palette);
 
 	$GLOBALS['TL_DCA']['tl_content']['palettes']['headline'] = str_replace('guests','guests,tagsonly', $GLOBALS['TL_DCA']['tl_content']['palettes']['headline']);
 	$GLOBALS['TL_DCA']['tl_content']['config']['ondelete_callback'][] = array('tl_content_tags', 'removeContentElement');

@@ -13,13 +13,14 @@ if (@class_exists("tl_news"))
 
 if (is_array($GLOBALS['TL_DCA']['tl_news']['config']['onload_callback']))
 {
-	foreach ($GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'] as $key => $arr)
+	foreach ($GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'] as $key => &$arr)
 	{
 		if (is_array($arr) && strcmp($arr[0], 'tl_news') == 0 && strcmp($arr[1], 'generateFeed') == 0)
 		{
-			$GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'][$key] = array('TagHelper', 'generateNewsFeed');
+			$arr = array('TagHelper', 'generateNewsFeed');
 		}
 	}
+	unset($arr);
 }
 
 

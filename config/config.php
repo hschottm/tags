@@ -100,6 +100,8 @@ $GLOBALS['tags_extension']['sourcetable'][] = 'tl_calendar_events';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_content';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_news';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_member';
+$GLOBALS['tags_extension']['sourcetable'][] = 'tl_faq';
+$GLOBALS['tags_extension']['sourcetable'][] = 'fl_files';
 
 /**
 * Add 'tag' to the URL keywords to prevent problems with URL manipulating modules like folderurl

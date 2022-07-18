@@ -10,6 +10,7 @@
 
 if (@class_exists("tl_news_archive"))
 {
+	/*
 	if (is_array($GLOBALS['TL_DCA']['tl_news_archive']['config']['onload_callback']))
 	{
 		foreach ($GLOBALS['TL_DCA']['tl_news_archive']['config']['onload_callback'] as $key => $arr)
@@ -20,6 +21,7 @@ if (@class_exists("tl_news_archive"))
 			}
 		}
 	}
+	*/
 
 }
 

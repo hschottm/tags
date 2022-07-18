@@ -11,6 +11,7 @@
 if (@class_exists("tl_calendar"))
 {
 
+	/*
 if (is_array($GLOBALS['TL_DCA']['tl_calendar']['config']['onload_callback']))
 {
 	foreach ($GLOBALS['TL_DCA']['tl_calendar']['config']['onload_callback'] as $key => $arr)
@@ -21,6 +22,7 @@ if (is_array($GLOBALS['TL_DCA']['tl_calendar']['config']['onload_callback']))
 		}
 	}
 }
+*/
 
 }
 
