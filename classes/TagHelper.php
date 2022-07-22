@@ -252,6 +252,22 @@ class TagHelper extends \Backend
 		$target = (count($elements) > 4) ? $elements[4] : 0;
 		switch ($elements[0])
 		{
+			case 'tags_used':
+				$headlinetags = array();
+				$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+				if (strlen(\TagHelper::decode(\Input::get('tag'))))
+				{
+					$headlinetags = array_merge($headlinetags, array($this->Input->get('tag')));
+					if (count($relatedlist))
+					{
+						$headlinetags = array_merge($headlinetags, $relatedlist);
+					}
+				}
+				if (count($headlinetags))
+				{
+					return $elements[1];
+				}
+				break;
 			case 'tags_news':
 				return $this->getTagsForTableAndId('tl_news', $elements[1], false, $max_tags, $relevance, $target);
 				break;
