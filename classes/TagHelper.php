@@ -183,13 +183,13 @@ class TagHelper extends \Backend
 			}
 			if (strlen($target))
 			{
-				$pageObj = new PageModel();
-				$pageObj = $pageObj::findPublishedByIdOrAlias($target);
-				if (!empty($pageObj))
+				$pageModel = new PageModel();
+				$pageModel = $pageModel::findPublishedByIdOrAlias($target);
+				if (!empty($pageModel))
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = StringUtil::ampersand($pageModel->current()->getFrontendUrl('/tag/' . $tag['tag']));
 					}
 				}
 			}
