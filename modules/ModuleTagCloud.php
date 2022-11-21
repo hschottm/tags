@@ -107,6 +107,8 @@ class ModuleTagCloud extends \Module
 			$strParams = \TagHelper::getSavedURLParams($this->Input);
 		}
 
+		$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
+
 		foreach ($this->arrTags as $idx => $tag)
 		{
 			if (!empty($pageObj))
@@ -128,6 +130,9 @@ class ModuleTagCloud extends \Module
 			if ($tag['tag_name'] == \TagHelper::decode(\Input::get('tag')))
 			{
 				$this->arrTags[$idx]['tag_class'] .= ' active';
+			}
+			if (in_array($tag['tag_name'], $relatedlist)) {
+				$this->arrTags[$idx]['tag_class'] .= ' related';
 			}
 			if ($this->checkForArticleOnPage)
 			{
@@ -160,7 +165,6 @@ class ModuleTagCloud extends \Module
 				}
 			}
 		}
-		$relatedlist = (strlen(\TagHelper::decode(\Input::get('related')))) ? preg_split("/,/", \TagHelper::decode(\Input::get('related'))) : array();
 		foreach ($this->arrRelated as $idx => $tag)
 		{
 			if (!empty($pageObj))
@@ -205,6 +209,13 @@ class ModuleTagCloud extends \Module
 				foreach ($this->arrTopTenTags as $idx => $tag)
 				{
 					$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . \TagHelper::encode($tag['tag_name'])));
+					if ($tag['tag_name'] == \TagHelper::decode(\Input::get('tag')))
+					{
+						$this->arrTopTenTags[$idx]['tag_class'] .= ' active';
+					}
+					if (in_array($tag['tag_name'], $relatedlist)) {
+						$this->arrTopTenTags[$idx]['tag_class'] .= ' related';
+					}
 					if (strlen($strParams))
 					{
 						if (strpos($strUrl, '?') !== false)
