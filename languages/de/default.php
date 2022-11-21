@@ -2,8 +2,8 @@
 /**
  * TL_ROOT/system/modules/tags/languages/de/default.php 
  * 
- * Contao extension: tags 1.6.5 stable 
- * Deutsch translation file 
+ * Contao extension: tags
+ * German translation file 
  * 
  * Copyright : &copy; Helmut Schottmüller 
  * License   : GNU Lesser Public License (LGPL) 
