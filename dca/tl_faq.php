@@ -30,7 +30,8 @@ if (@class_exists("tl_faq"))
 	(
 		'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
 		'inputType'               => 'tag',
-		'eval'                    => array('tl_class'=>'clr long')
+		'eval'                    => array('tl_class'=>'clr long'),
+		'sql'                     => "char(1) NOT NULL default ''"
 	);
 
 	class tl_faq_tags extends \Backend
