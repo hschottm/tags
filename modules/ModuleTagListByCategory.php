@@ -48,6 +48,11 @@ class ModuleTagListByCategory extends \Module
 	 */
 	protected function compile()
 	{
+		$this->loadLanguageFile('tl_module');
+		$this->Template->news = array();
+		$this->Template->events = array();
+		$this->Template->other_pages = array();
+		$this->Template->pages = array();
 		if (strlen(\TagHelper::decode(\Input::get('tag'))) && count($this->sourcetables) > 0)
 		{
 			$tagids = array();
