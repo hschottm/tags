@@ -37,9 +37,8 @@ class ModuleTagListByCategory extends \Module
 			return $objTemplate->parse();
 		}
 		if (strlen($this->tag_sourcetables)) $this->sourcetables = deserialize($this->tag_sourcetables, TRUE);
-
+		array_push($this->arrPages, $this->pagesource);
 		$this->getRelevantPages($this->pagesource);
-//		$this->getTags();
 		return parent::generate();
 	}
 	
@@ -102,18 +101,31 @@ class ModuleTagListByCategory extends \Module
 				switch ($sourcetable)
 				{
 					case 'tl_news':
-						$this->Template->news = $this->getNewsForNewsTags($tagid_cats[$sourcetable]);
+						if (array_key_exists($sourcetable, $tagid_cats)) {
+							$this->Template->news = $this->getNewsForNewsTags($tagid_cats[$sourcetable]);
+						} else {
+							$this->Template->news = array();
+						}
 						break;
 					case 'tl_calendar_events':
-						$this->Template->events = $this->getEventsForEventTags($tagid_cats[$sourcetable]);
+						if (array_key_exists($sourcetable, $tagid_cats)) {
+							$this->Template->events = $this->getEventsForEventTags($tagid_cats[$sourcetable]);
+						} else {
+							$this->Template->events = array();
+						}
 						break;
 					case 'tl_content':
-						$pages = array_merge($pages, $this->getPagesForContentTags($tagid_cats[$sourcetable]));
-//						$this->Template->contentElements = $this->getContentElementsForContentTags($tagid_cats[$sourcetable]);
+						if (array_key_exists($sourcetable, $tagid_cats)) {
+							$pages = array_merge($pages, $this->getPagesForContentTags($tagid_cats[$sourcetable]));
+						}
 						break;
 					case 'tl_article':
-						$this->Template->articles = $this->getArticlesForArticleTags($tagid_cats[$sourcetable]);
-						$pages = array_merge($pages, $this->getPagesForArticleTags($tagid_cats[$sourcetable]));
+						if (array_key_exists($sourcetable, $tagid_cats)) {
+							$this->Template->articles = $this->getArticlesForArticleTags($tagid_cats[$sourcetable]);
+							$pages = array_merge($pages, $this->getPagesForArticleTags($tagid_cats[$sourcetable]));
+						} else {
+							$this->Template->articles = array();
+						}
 						break;
 					default:
 						if (isset($GLOBALS['TL_HOOKS']['tagSourceTable']) && is_array($GLOBALS['TL_HOOKS']['tagSourceTable'])) {
