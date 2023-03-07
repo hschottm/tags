@@ -354,7 +354,7 @@ class ModuleEventlistTags extends \ModuleEventlist
 					}
 
 					$event['singleSRC'] = $objModel->path;
-					$this->addImageToTemplate($objTemplate, $event, null, null);
+					$this->addImageToTemplate($objTemplate, $event, null, null, $objModel);
 
 					// Link to the event if no image link has been defined
 					if (!$objTemplate->fullsize && !$objTemplate->imageUrl)

@@ -5,7 +5,7 @@ namespace Contao;
 /**
  * Contao Open Source CMS - tags extension
  *
- * Copyright (c) 2008-2016 Helmut Schottmüller
+ * Copyright (c) 2008-2023 Helmut Schottmüller
  *
  * @license LGPL-3.0+
  */
@@ -67,29 +67,6 @@ class ContentGalleryTags extends ContentGallery
 			}
 		}
 		parent::compile();
-	}
-
-	/**
-	 * Add an image to a template
-	 *
-	 * @param object  $objTemplate   The template object to add the image to
-	 * @param array   $arrItem       The element or module as array
-	 * @param integer $intMaxWidth   An optional maximum width of the image
-	 * @param string  $strLightboxId An optional lightbox ID
-	 */
-	public static function addImageToTemplate($objTemplate, $arrItem, $intMaxWidth=null, $strLightboxId=null)
-	{
-		Controller::addImageToTemplate($objTemplate, $arrItem, $intMaxWidth, $strLightboxId);
-		if (TL_MODE == 'FE') {
-			$found = \TagModel::findByIdAndTable($arrItem['id'], 'tl_files');
-			$tags = array();
-			if ($found && $found->count()) {
-				while ($found->next()) {
-					array_push($tags, $found->tag);
-				}
-				$template->tags = $tags;
-			}
-		}
 	}
 
 	protected function getFilterTags()
