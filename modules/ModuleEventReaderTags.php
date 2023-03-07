@@ -279,7 +279,7 @@ class ModuleEventReaderTags extends \ModuleEventReader
 				}
 
 				$arrEvent['singleSRC'] = $objModel->path;
-				$this->addImageToTemplate($objTemplate, $arrEvent, null, null, $objModel);
+				$this->addImageToTemplate($objTemplate, $arrEvent, null, null);
 			}
 		}
 
