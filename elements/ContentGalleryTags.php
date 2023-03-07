@@ -69,30 +69,6 @@ class ContentGalleryTags extends ContentGallery
 		parent::compile();
 	}
 
-	/**
-	 * Add an image to a template
-	 *
-	 * @param object          $template                The template object to add the image to
-	 * @param array           $rowData                 The element or module as array
-	 * @param integer|null    $maxWidth                An optional maximum width of the image
-	 * @param string|null     $lightboxGroupIdentifier An optional lightbox group identifier
-	 * @param FilesModel|null $filesModel              An optional files model
-	 */
-	public static function addImageToTemplate($template, array $rowData, $maxWidth = null, $lightboxGroupIdentifier = null, FilesModel $filesModel = null): void
-	{
-		Controller::addImageToTemplate($template, $rowData, $maxWidth, $lightboxGroupIdentifier, $filesModel);
-		if (TL_MODE == 'FE') {
-			$found = \TagModel::findByIdAndTable($rowData['id'], 'tl_files');
-			$tags = array();
-			if ($found && $found->count()) {
-				while ($found->next()) {
-					array_push($tags, $found->tag);
-				}
-				$template->tags = $tags;
-			}
-		}
-	}
-
 	protected function getFilterTags()
 	{
 		if (strlen($this->tag_filter)) {
