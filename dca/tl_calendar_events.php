@@ -57,7 +57,9 @@ if (!in_array('tl_calendar_events', $disabledObjects))
 {
 	$GLOBALS['TL_DCA']['tl_calendar_events']['config']['ondelete_callback'][] = array('tl_calendar_events_tags', 'deleteEvents');
 	$GLOBALS['TL_DCA']['tl_calendar_events']['config']['oncopy_callback'][] = array('tl_calendar_events_tags', 'onCopy');
-	$GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['default']);
+	if (array_key_exists('tl_calendar_events', $GLOBALS['TL_DCA'])) {
+		$GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['default']);
+	}
 }
 $GLOBALS['TL_DCA']['tl_calendar_events']['fields']['tags'] = array
 (
