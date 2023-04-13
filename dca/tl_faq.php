@@ -21,7 +21,9 @@ if (@class_exists("tl_faq"))
 	}
 	if (!in_array('tl_article', $disabledObjects))
 	{
-		$GLOBALS['TL_DCA']['tl_faq']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_faq']['palettes']['default']);
+		if (array_key_exists('tl_faq', $GLOBALS['TL_DCA'])) {
+			$GLOBALS['TL_DCA']['tl_faq']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_faq']['palettes']['default']);
+		}
 		$GLOBALS['TL_DCA']['tl_faq']['config']['ondelete_callback'][] = array('tl_faq_tags', 'removeFAQ');
 		$GLOBALS['TL_DCA']['tl_faq']['config']['oncopy_callback'][] = array('tl_faq_tags', 'onCopy');
 	}

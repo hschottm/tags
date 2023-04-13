@@ -173,12 +173,24 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['tagscope']    = '{title_legend},nam
 $GLOBALS['TL_DCA']['tl_module']['palettes']['globalArticleList'] = '{title_legend},name,headline,type;{template_legend:hide},articlelist_template;{showtags_legend},hide_on_empty;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['tagcontentlist'] = '{title_legend},name,headline,type;{object_selection_legend},objecttype,tagsource,pagesource;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['taglistbycategory'] = '{title_legend},name,headline,type;{datasource_legend},tag_sourcetables,pagesource;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']);
-$GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']);
-$GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']);
-$GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']);
-$GLOBALS['TL_DCA']['tl_module']['palettes']['calendar']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar']);
-$GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader'] = str_replace('{template_legend', '{showtags_legend},event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader']);
+if (array_key_exists('newsreader', $GLOBALS['TL_DCA']['tl_module']['palettes'])) {
+	$GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsreader']);
+}
+if (array_key_exists('newsarchive', $GLOBALS['TL_DCA']['tl_module']['palettes'])) {
+	$GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newsarchive']);
+}
+if (array_key_exists('newslist', $GLOBALS['TL_DCA']['tl_module']['palettes'])) {
+	$GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,news_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist']);
+}
+if (array_key_exists('eventlist', $GLOBALS['TL_DCA']['tl_module']['palettes'])) {
+	$GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore,event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist']);
+}
+if (array_key_exists('calendar', $GLOBALS['TL_DCA']['tl_module']['palettes'])) {
+	$GLOBALS['TL_DCA']['tl_module']['palettes']['calendar']  = str_replace('{template_legend', '{showtags_legend},tag_filter,tag_ignore;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar']);
+}
+if (array_key_exists('eventreader', $GLOBALS['TL_DCA']['tl_module']['palettes'])) {
+	$GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader'] = str_replace('{template_legend', '{showtags_legend},event_showtags;{template_legend', $GLOBALS['TL_DCA']['tl_module']['palettes']['eventreader']);
+}
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'tag_topten';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'news_showtags';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'event_showtags';

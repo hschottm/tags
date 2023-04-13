@@ -41,7 +41,9 @@ if (!in_array('tl_member', $disabledObjects))
 {
 	$GLOBALS['TL_DCA']['tl_member']['config']['ondelete_callback'][] = array('tl_member_tags', 'deleteMember');
 	$GLOBALS['TL_DCA']['tl_member']['config']['oncopy_callback'][] = array('tl_member_tags', 'onCopy');
-	$GLOBALS['TL_DCA']['tl_member']['palettes']['default'] = str_replace("{address_legend", "{categories_legend},tags;{address_legend", $GLOBALS['TL_DCA']['tl_member']['palettes']['default']);
+	if (array_key_exists('tl_member', $GLOBALS['TL_DCA'])) {
+		$GLOBALS['TL_DCA']['tl_member']['palettes']['default'] = str_replace("{address_legend", "{categories_legend},tags;{address_legend", $GLOBALS['TL_DCA']['tl_member']['palettes']['default']);
+	}
 }
 
 $GLOBALS['TL_DCA']['tl_member']['fields']['tags'] = array
