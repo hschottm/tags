@@ -373,7 +373,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['event_showtags'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['event_showtags'],
 	'inputType'               => 'checkbox',
-	'eval'                    => array('submitOnChange'=>true),
+	'eval'                    => array('submitOnChange'=>true, 'tl_class' => 'clr'),
 	'sql'                     => "char(1) NOT NULL default ''"
 );
 
