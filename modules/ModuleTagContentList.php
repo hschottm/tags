@@ -5,7 +5,7 @@ namespace Contao;
 /**
  * Contao Open Source CMS - tags extension
  *
- * Copyright (c) 2008-2016 Helmut Schottmüller
+ * Copyright (c) 2008-2024 Helmut Schottmüller
  *
  * @license LGPL-3.0+
  */
@@ -292,16 +292,21 @@ class ModuleTagContentList extends \Module
 	protected function compile()
 	{
 		global $objPage;
-
 		switch ($this->objecttype)
 		{
 			case 'tl_content':
 				$this->Template->contentElements = $this->getContentElements();
+				$this->Template->articles = array();
+				$this->Template->pages = array();
 				break;
 			case 'tl_article':
+				$this->Template->contentElements = array();
 				$this->Template->articles = $this->getArticles();
+				$this->Template->pages = array();
 				break;
 			case 'tl_page':
+				$this->Template->contentElements = array();
+				$this->Template->articles = array();
 				$this->Template->pages = $this->getPages();
 				break;
 		}
