@@ -4,6 +4,7 @@ use Contao\Backend;
 use Contao\DataContainer;
 use Contao\FilesModel;
 use Contao\Database;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 /**
  * Contao Open Source CMS - tags extension

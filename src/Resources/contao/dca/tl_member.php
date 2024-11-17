@@ -11,6 +11,7 @@
 use Contao\Backend;
 use Contao\DataContainer;
 use Contao\Database;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 /**
  * Change tl_member palettes
