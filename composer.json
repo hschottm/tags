@@ -1,8 +1,8 @@
 {
   "name":"hschottm/tags",
   "description":"tags is a Contao extension that provides an architecture to tag any Contao element.",
-  "keywords":["contao", "module", "extension", "tagcloud", "tags"],
-  "type":"contao-module",
+  "keywords":["contao", "module", "extension", "tagcloud", "tags", "bundle"],
+  "type":"contao-bundle",
   "license":["LGPL-3.0-or-later", "CC-BY-NC-SA-4.0"],
   "authors":[
     {
@@ -11,15 +11,28 @@
     }
   ],
   "require":{
-    "php": "^7.4 || ^8.0",
-    "contao/core-bundle": "~4.13",
+    "php": "^8.0",
+    "contao/core-bundle": "~5.3",
     "contao-community-alliance/composer-plugin":"~3.2"
   },
-  "extra":{
-    "contao": {
-      "sources":{
-        "": "system/modules/tags"
-      }
+  "conflict": {
+		"contao/manager-plugin": "<2.0 || >=3.0"
+	},
+  "autoload": {
+		"psr-4": {
+			"Hschottm\\TagsBundle\\": "src/"
+		},
+    "classmap": [
+      "src/Resources/contao/"
+    ],
+    "exclude-from-classmap": [
+      "src/Resources/contao/config/",
+      "src/Resources/contao/dca/",
+      "src/Resources/contao/languages/",
+      "src/Resources/contao/templates/"
+    ]
+    },
+    "extra":{
+      "contao-manager-plugin": "Hschottm\\TagsBundle\\ContaoManager\\Plugin"
     }
-  }
 }

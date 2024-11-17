@@ -1,0 +1,37 @@
+<!-- indexer::stop -->
+<div class="<?php echo $this->class; ?> block tagcloud"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+<?php if ($this->headline): ?>
+<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+<?php endif; ?>
+<?php if (strlen($this->empty_url) && $this->selectedtags > 0): ?>
+<div class="reset"><a href="<?php echo $this->empty_url; ?>"><?php echo $this->lngEmpty; ?></a></div>
+<?php endif; ?>
+<?php if (count($this->relatedtags)): ?>
+<h3><span id="related" class="toggle-button <?php echo (($this->expandedRelated) ? "" : "yes"); ?> off" onclick="TagCloudRequest.toggleTagCloud($(this), '<?php echo $this->pageID; ?>')"><?php echo $this->strRelatedTags; ?></span></h3>
+<ul class="related"<?php echo (($this->topten && !$this->expandedRelated) ? ' style="display: none;"' : ''); ?>>
+<?php foreach ($this->relatedtags as $tag): ?>
+	<li><?php if (strlen($this->jumpTo)): ?><a href="<?php echo $tag['tag_url']; ?>" title="<?php echo $tag['tag_name'] . ' (' . $tag['tag_count'] . ')'; ?>"><span class="reltext"><?php endif; ?>+<?php echo $tag['tag_name']; ?><?php if (strlen($this->jumpTo)): ?></span><span class="relcount"><?php echo $tag['tag_count']; ?></span></a><?php endif; ?></li>
+<?php endforeach; ?>
+</ul>
+<div style="clear: both;"></div>
+<?php endif; ?>
+
+<?php if ($this->topten): ?>
+<h3><span id="topten" class="toggle-button <?php echo (($this->expandedTopTen) ? "" : "yes"); ?> off" onclick="TagCloudRequest.toggleTagCloud($(this), '<?php echo $this->pageID; ?>')"><?php echo $this->strTopTenTags; ?></span></h3>
+<ul class="cloud"<?php echo ((!$this->expandedTopTen) ? ' style="display: none;"' : ''); ?>>
+<?php foreach ($this->toptentags as $tag): ?>
+	<li class="<?php echo $tag['tag_class']; ?>"><?php if (strlen($this->jumpTo)): ?><a href="<?php echo $tag['tag_url']; ?>" title="<?php echo $tag['tag_name'] . ' (' . $tag['tag_count'] . ')'; ?>"><?php endif; ?><?php echo $tag['tag_name']; ?><?php if (strlen($this->jumpTo)): ?></a><?php endif; ?></li>
+<?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<?php if (($this->topten) || (count($this->relatedtags))): ?>
+<h3><span id="alltags" class="toggle-button <?php echo (($this->expandedAll) ? "" : "yes"); ?> off" onclick="TagCloudRequest.toggleTagCloud($(this), '<?php echo $this->pageID; ?>')"><?php echo $this->strAllTags; ?> (<?php echo $this->tagcount; ?>)</span></h3>
+<?php endif; ?>
+<ul class="cloud"<?php echo (($this->topten && !$this->expandedAll) ? ' style="display: none;"' : ''); ?>>
+<?php foreach ($this->tags as $tag): ?>
+	<li class="<?php echo $tag['tag_class']; ?>"><?php if (strlen($this->jumpTo)): ?><a href="<?php echo $tag['tag_url']; ?>" title="<?php echo $tag['tag_name'] . ' (' . $tag['tag_count'] . ')'; ?>"><?php endif; ?><?php echo $tag['tag_name']; ?><?php if (strlen($this->jumpTo)): ?></a><?php endif; ?></li>
+<?php endforeach; ?>
+</ul>
+</div>
+<!-- indexer::continue -->
