@@ -164,7 +164,7 @@ class TagListContentElements extends TagList
 			\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
 			} else {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
-				->execute()->fetchEach('id');
+				->execute($time, $time)->fetchEach('id');
 			$this->arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." ORDER BY sorting")
 				->execute()->fetchEach('id');
 			}
