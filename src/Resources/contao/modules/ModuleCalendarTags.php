@@ -121,9 +121,9 @@ class ModuleCalendarTags extends ModuleCalendar
 			$placeholders = array();
 			foreach ($tags as $tag)
 			{
-				array_push($placeholders, '?');
+				\array_push($placeholders, '?');
 			}
-			array_push($tags, 'tl_calendar_events');
+			\array_push($tags, 'tl_calendar_events');
 			return Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');

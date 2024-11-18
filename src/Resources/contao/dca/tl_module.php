@@ -10,163 +10,8 @@
 
 use Contao\Backend;
 use Contao\Database;
-
-class tl_module_tags extends Backend
-{
-	/**
-	 * Return available tag tables
-	 *
-	 * @return array Array of tag tables
-	 */
-	public function getTagTables()
-	{
-		$objTable = Database::getInstance()->prepare("SELECT DISTINCT(from_table) FROM tl_tag ORDER BY from_table")
-			->execute();
-		$tables = array();
-		if ($objTable->numRows)
-		{
-			while ($objTable->next())
-			{
-				$tables[$objTable->from_table] = $objTable->from_table;
-			}
-		}
-		return $tables;
-	}
-
-	public function getObjectTypes()
-	{
-		return array(
-			'tl_content' => $GLOBALS['TL_LANG']['tl_module']['tl_content'],
-			'tl_article' => $GLOBALS['TL_LANG']['tl_module']['tl_article'],
-			'tl_page' => $GLOBALS['TL_LANG']['tl_module']['tl_page']
-		);
-	}
-
-	public function getContentObjectTagTables()
-	{
-		return array(
-			'tl_content' => 'tl_content',
-			'tl_article' => 'tl_article',
-			'tl_page' => 'tl_page'
-		);
-	}
-
-	/**
-	 * Return all articlelist templates as array
-	 * @param object
-	 * @return array
-	 */
-	public function getArticleListTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_global_');
-	}
-
-	/**
-	 * Return all tag cloud templates as array
-	 * @param object
-	 * @return array
-	 */
-	public function getTagCloudTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_tagcloud');
-	}
-
-	/**
-	 * Return all tag scope templates as array
-	 * @param object
-	 * @return array
-	 */
-	public function getTagScopeTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_tagscope');
-	}
-}
-
-class tl_module_tags_articles extends Backend
-{
-	public function getArticlelistTemplates(DataContainer $dc)
-	{
-		return $this->getTemplateGroup('mod_');
-	}
-
-	public function getArticlelistOrder(DataContainer $dc)
-	{
-		$this->loadLanguageFile('tl_article');
-		return array(
-			'' => '-',
-			'tstamp ASC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'tstamp DESC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
-			'title ASC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'title DESC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
-			'start ASC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'start DESC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
-			'stop ASC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
-			'stop DESC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')'
-		);
-	}
-}
-
-/**
- * Class tl_module_tags_events
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Helmut Schottmüller 2008-2013
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @package    Controller
- */
-class tl_module_tags_events extends Backend
-{
-	/**
-	 * Return available calendars
-	 *
-	 * @return array Array of calendars
-	 */
-	public function getCalendars()
-	{
-		$objTable = Database::getInstance()->prepare("SELECT id, title FROM tl_calendar ORDER BY title")
-			->execute();
-		$tables = array();
-		if ($objTable->numRows)
-		{
-			while ($objTable->next())
-			{
-				$tables[$objTable->id] = $objTable->title;
-			}
-		}
-		return $tables;
-	}
-}
-
-/**
- * Class tl_module_tags_news
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Helmut Schottmüller 2008-2013
- * @author     Helmut Schottmüller <https://github.com/hschottm>
- * @package    Controller
- */
-class tl_module_tags_news extends Backend
-{
-	/**
-	 * Return available news archives
-	 *
-	 * @return array Array of news archives
-	 */
-	public function getNewsArchives()
-	{
-		$objTable = Database::getInstance()->prepare("SELECT id, title FROM tl_news_archive ORDER BY title")
-			->execute();
-		$tables = array();
-		if ($objTable->numRows)
-		{
-			while ($objTable->next())
-			{
-				$tables[$objTable->id] = $objTable->title;
-			}
-		}
-		return $tables;
-	}
-}
+use Contao\System;
+use Contao\Controller;
 
 /**
  * Add palettes to tl_module
@@ -260,7 +105,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_sourcetables'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_forTable'],
 	'inputType'               => 'checkbox',
-	'options_callback'        => array('tl_module_tags', 'getTagTables'),
+	'options_callback' => static function () {
+		$objTable = Database::getInstance()->prepare("SELECT DISTINCT(from_table) FROM tl_tag ORDER BY from_table")
+			->execute();
+		$tables = array();
+		if ($objTable->numRows)
+		{
+			while ($objTable->next())
+			{
+				$tables[$objTable->from_table] = $objTable->from_table;
+			}
+		}
+		return $tables;
+	},
 	'eval'                    => array('multiple'=>true, 'tl_class' => 'full'),
 	'sql'                     => "blob NULL"
 );
@@ -394,7 +251,13 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['objecttype'] = array
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['objecttype'],
 	'filter'                  => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags', 'getObjectTypes'),
+	'options_callback' => static function () {
+		return array(
+			'tl_content' => $GLOBALS['TL_LANG']['tl_module']['tl_content'],
+			'tl_article' => $GLOBALS['TL_LANG']['tl_module']['tl_article'],
+			'tl_page' => $GLOBALS['TL_LANG']['tl_module']['tl_page']
+		);
+	},
 	'eval'                    => array('submitOnChange'=>false, 'tl_class'=>'w50', 'mandatory' => true),
 	'sql'                     => "varchar(100) NOT NULL default ''"
 );
@@ -404,7 +267,13 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tagsource'] = array
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tagsource'],
 	'filter'                  => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags', 'getContentObjectTagTables'),
+	'options_callback' => static function () {
+		return array(
+			'tl_content' => 'tl_content',
+			'tl_article' => 'tl_article',
+			'tl_page' => 'tl_page'
+		);
+	},
 	'eval'                    => array('submitOnChange'=>false, 'tl_class'=>'w50', 'mandatory' => true),
 	'sql'                     => "varchar(100) NOT NULL default ''"
 );
@@ -423,7 +292,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['articlelist_template'] = array
 	'default'                 => 'mod_global_articlelist',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags', 'getArticleListTemplates'),
+	'options_callback' => static function () {
+		return Controller::getTemplateGroup('mod_global_');
+	},
 	'eval'                    => array('tl_class'=>'w50'),
 	'sql'                     => "varchar(32) NOT NULL default ''"
 );
@@ -434,7 +305,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cloud_template'] = array
 	'default'                 => 'mod_tagcloud',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags', 'getTagCloudTemplates'),
+	'options_callback' => static function () {
+		return Controller::getTemplateGroup('mod_tagcloud');
+	},
 	'eval'                    => array('tl_class'=>'w50'),
 	'sql'                     => "varchar(32) NOT NULL default ''"
 );
@@ -445,7 +318,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['scope_template'] = array
 	'default'                 => 'mod_tagscope',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags', 'getTagScopeTemplates'),
+	'options_callback' => static function () {
+		return Controller::getTemplateGroup('mod_tagscope');
+	},
 	'eval'                    => array('tl_class'=>'w50'),
 	'sql'                     => "varchar(32) NOT NULL default ''"
 );
@@ -518,7 +393,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['articlelist_tpl'] = array
 	'default'                 => 'mod_global_articlelist',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags_articles', 'getArticlelistTemplates'),
+	'options_callback' => static function () {
+		return Controller::getTemplateGroup('mod_');
+	},
 	'eval'                    => array('tl_class' => 'w50'),
 	'sql'                     => "varchar(64) NOT NULL default 'mod_global_articlelist'"
 );
@@ -529,7 +406,20 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['articlelist_firstorder'] = array
 	'default'                 => 'title ASC',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags_articles', 'getArticlelistOrder'),
+	'options_callback' => static function () {
+		System::loadLanguageFile('tl_article');
+		return array(
+			'' => '-',
+			'tstamp ASC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'tstamp DESC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'title ASC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'title DESC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'start ASC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'start DESC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'stop ASC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'stop DESC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')'
+		);
+	},
 	'eval'                    => array('tl_class' => 'w50'),
 	'sql'                     => "varchar(64) NOT NULL default 'title ASC'"
 );
@@ -540,7 +430,20 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['articlelist_secondorder'] = array
 	'default'                 => '',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_tags_articles', 'getArticlelistOrder'),
+	'options_callback' => static function () {
+		System::loadLanguageFile('tl_article');
+		return array(
+			'' => '-',
+			'tstamp ASC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'tstamp DESC' => $GLOBALS['TL_LANG']['tl_article']['tstamp'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'title ASC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'title DESC' => $GLOBALS['TL_LANG']['tl_article']['title'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'start ASC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'start DESC' => $GLOBALS['TL_LANG']['tl_article']['start'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')',
+			'stop ASC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['ascending'] . ')',
+			'stop DESC' => $GLOBALS['TL_LANG']['tl_article']['stop'][0] . ' (' . $GLOBALS['TL_LANG']['MSC']['descending'] . ')'
+		);
+	},
 	'eval'                    => array('tl_class' => 'w50'),
 	'sql'                     => "varchar(64) NOT NULL default ''"
 );
@@ -569,7 +472,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_calendars'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_calendars'],
 	'inputType'               => 'checkbox',
-	'options_callback'        => array('tl_module_tags_events', 'getCalendars'),
+	'options_callback' => static function () {
+		$objTable = Database::getInstance()->prepare("SELECT id, title FROM tl_calendar ORDER BY title")
+			->execute();
+		$tables = array();
+		if ($objTable->numRows)
+		{
+			while ($objTable->next())
+			{
+				$tables[$objTable->id] = $objTable->title;
+			}
+		}
+		return $tables;
+	},
 	'eval'                    => array('multiple'=>true),
 	'sql'                     => "blob NULL"
 );
@@ -591,7 +506,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['tag_news_archives'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['tag_news_archives'],
 	'inputType'               => 'checkbox',
-	'options_callback'        => array('tl_module_tags_news', 'getNewsArchives'),
+	'options_callback' => static function () {
+		$objTable = Database::getInstance()->prepare("SELECT id, title FROM tl_news_archive ORDER BY title")
+			->execute();
+		$tables = array();
+		if ($objTable->numRows)
+		{
+			while ($objTable->next())
+			{
+				$tables[$objTable->id] = $objTable->title;
+			}
+		}
+		return $tables;
+	},
 	'eval'                    => array('multiple'=>true),
 	'sql'                     => "blob NULL"
 );

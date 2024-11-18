@@ -5,7 +5,7 @@ use Contao\Backend;
 /**
  * Contao Open Source CMS - tags extension
  *
- * Copyright (c) 2008-2016 Helmut Schottmüller
+ * Copyright (c) 2008-2024 Helmut Schottmüller
  *
  * @license LGPL-3.0+
  */
@@ -19,25 +19,14 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['disabledTagObjects'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_settings']['disabledTagObjects'],
 	'inputType'               => 'checkbox',
-	'options_callback'        => array('tl_settings_tags', 'getTagTables'),
-	'eval'                    => array('multiple'=>true)
-);
-
-class tl_settings_tags extends Backend
-{
-	/**
-	 * Return available tag tables
-	 *
-	 * @return array Array of tag tables
-	 */
-	public function getTagTables()
-	{
+	'options_callback' => static function () {
 		$tables = array();
 		foreach ($GLOBALS['tags_extension']['sourcetable'] as $sourcetable)
 		{
 			$tables[$sourcetable] = $sourcetable;
 		}
 		return $tables;
-	}
-}
+	},
+	'eval'                    => array('multiple'=>true)
+);
 

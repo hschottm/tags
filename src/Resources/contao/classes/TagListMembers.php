@@ -65,7 +65,7 @@ class TagListMembers extends TagList
 						$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND tag = ? AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
 							->execute($objTags->tag, 'tl_member')
 							->fetchAllAssoc());
-						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
 					}
 				}
 			}
@@ -93,7 +93,7 @@ class TagListMembers extends TagList
 					{
 						if ($this->isMemberOf($objTags->groups))
 						{
-							array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
+							\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
 						}
 					}
 				}

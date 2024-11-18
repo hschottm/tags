@@ -2,7 +2,8 @@
 
 namespace Hschottm\TagsBundle;
 
-use \Contao\Database;
+use Contao\Database;
+use Contao\System;
 
 /**
  * Class TagListArticles
@@ -21,6 +22,10 @@ class TagListArticles extends TagList
 
   public function getRelatedTagList($for_tags, $blnExcludeUnpublishedItems = true)
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($for_tags)) return array();
 		if (!count($this->arrArticles)) return array();
 
@@ -33,9 +38,15 @@ class TagListArticles extends TagList
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
 		{
-			$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") AND tag = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY tl_tag.tid ASC")
+			if (!$hasBackendUser) {
+				$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") AND tag = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY tl_tag.tid ASC")
 				->execute('tl_article', $for_tags[$i], time(), time())
 				->fetchEach('tid');
+			} else {
+				$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") AND tag = ?" . " ORDER BY tl_tag.tid ASC")
+				->execute('tl_article', $for_tags[$i])
+				->fetchEach('tid');
+			}
 			if ($i == 0)
 			{
 				$ids = $arr;
@@ -49,8 +60,13 @@ class TagListArticles extends TagList
 		$arrCloudTags = array();
 		if (count($ids))
 		{
-			$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
+			if (!$hasBackendUser) {
+				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
 				->execute('tl_article', time(), time());
+			} else {
+				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
+				->execute('tl_article');
+			}
 			$list = "";
 			$tags = array();
 			if ($objTags->numRows)
@@ -59,10 +75,17 @@ class TagListArticles extends TagList
 				{
 					if (!in_array($objTags->tag, $for_tags))
 					{
-						$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND tag = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
+						if (!$hasBackendUser) {
+							$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND tag = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
 							->execute($objTags->tag, time(), time(), 'tl_article')
 							->fetchAllAssoc());
-						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+							\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						} else {
+							$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND tag = ?" . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
+							->execute($objTags->tag, 'tl_article')
+							->fetchAllAssoc());
+							\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						}
 					}
 				}
 			}
@@ -76,19 +99,28 @@ class TagListArticles extends TagList
 
   public function getTagList($blnExcludeUnpublishedItems = true)
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (count($this->arrCloudTags) == 0)
 		{
 			if (count($this->arrArticles))
 			{
-				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") GROUP BY tag ORDER BY tag ASC")
+				if (!$hasBackendUser) {
+					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_article', time(), time());
+				} else {
+					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . " AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") GROUP BY tag ORDER BY tag ASC")
+					->execute('tl_article');
+				}
 				$list = "";
 				$tags = array();
 				if ($objTags->numRows)
 				{
 					while ($objTags->next())
 					{
-						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
+						\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
 					}
 				}
 				if (count($tags))
@@ -111,7 +143,7 @@ class TagListArticles extends TagList
 		{
 			case 'articles':
 				// find all articles in this page and all subpages
-				array_push($this->arrPages, $varValue[0]);
+				\array_push($this->arrPages, $varValue[0]);
 				$this->getRelevantPages($varValue[0]);
 				$this->getArticlesForPages();
 				break;

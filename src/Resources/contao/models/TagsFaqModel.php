@@ -10,7 +10,8 @@
 
 namespace Hschottm\TagsBundle;
 
-use \Contao\FaqModel;
+use Contao\FaqModel;
+use Contao\System;
 
 class TagsFaqModel extends FaqModel
 {
@@ -24,6 +25,10 @@ class TagsFaqModel extends FaqModel
 	 */
 	public static function findPublishedByPidsAndIds($arrPids, $arrIds, array $arrOptions=array())
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($arrPids) || empty($arrPids))
 		{
 			return null;
@@ -33,7 +38,7 @@ class TagsFaqModel extends FaqModel
 		$arrColumns = array("$t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
 		if (is_array($arrIds) && count($arrIds) > 0) $arrColumns[] = "$t.id IN(" . implode(',', array_map('intval', $arrIds)) . ")";
 
-		if (!BE_USER_LOGGED_IN)
+		if (!$hasBackendUser)
 		{
 			$arrColumns[] = "$t.published=1";
 		}

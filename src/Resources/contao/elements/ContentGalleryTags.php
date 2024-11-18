@@ -52,7 +52,7 @@ class ContentGalleryTags extends ContentGallery
 			}
 			while ($this->objFiles->next()) {
 				if ($this->objFiles->type == 'file') {
-					if (in_array($this->objFiles->id, $tagids)) array_push($newMultiSRC, $this->objFiles->uuid);
+					if (in_array($this->objFiles->id, $tagids)) \array_push($newMultiSRC, $this->objFiles->uuid);
 				} else {
 					$objSubfiles = FilesModel::findByPid($this->objFiles->uuid);
 					if ($objSubfiles === null) {
@@ -60,7 +60,7 @@ class ContentGalleryTags extends ContentGallery
 					}
 
 					while ($objSubfiles->next()) {
-						if (in_array($objSubfiles->id, $tagids)) array_push($newMultiSRC, $objSubfiles->uuid);
+						if (in_array($objSubfiles->id, $tagids)) \array_push($newMultiSRC, $objSubfiles->uuid);
 					}
 				}
 			}
@@ -79,9 +79,9 @@ class ContentGalleryTags extends ContentGallery
 			$tags = preg_split("/,/", $this->tag_filter);
 			$placeholders = array();
 			foreach ($tags as $tag) {
-				array_push($placeholders, '?');
+				\array_push($placeholders, '?');
 			}
-			array_push($tags, 'tl_files');
+			\array_push($tags, 'tl_files');
 			return Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
 				->execute($tags)
 				->fetchEach('tid');

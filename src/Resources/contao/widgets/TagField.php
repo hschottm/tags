@@ -54,7 +54,7 @@ class TagField extends TextField
 		{
 			while ($tags->next())
 			{
-				array_push($arrTags, $tags->tag);
+				\array_push($arrTags, $tags->tag);
 			}
 		}
 		return count($arrTags) ? implode(",", $arrTags) : '';

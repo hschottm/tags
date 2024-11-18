@@ -10,7 +10,9 @@
 
 namespace Hschottm\TagsBundle;
 
-use \Contao\NewsModel;
+use Contao\NewsModel;
+use Contao\System;
+use Symfony\Component\HttpFoundation\Request;
 
 class TagsNewsModel extends NewsModel
 {
@@ -24,6 +26,10 @@ class TagsNewsModel extends NewsModel
 	 */
 	public static function countPublishedByPidsAndIds($arrPids, $arrIds, $blnFeatured=null)
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($arrPids) || empty($arrPids))
 		{
 			return 0;
@@ -41,7 +47,7 @@ class TagsNewsModel extends NewsModel
 			$arrColumns[] = "$t.featured=''";
 		}
 
-		if (!BE_USER_LOGGED_IN)
+		if (!$hasBackendUser)
 		{
 			$time = time();
 			$arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
@@ -62,6 +68,10 @@ class TagsNewsModel extends NewsModel
 	 */
 	public static function findPublishedByPidsAndIds($arrPids, $arrIds, $blnFeatured=null, $intLimit=0, $intOffset=0, array $arrOptions=array())
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($arrPids) || empty($arrPids))
 		{
 			return null;
@@ -81,7 +91,7 @@ class TagsNewsModel extends NewsModel
 		}
 
 		// Never return unpublished elements in the back end, so they don't end up in the RSS feed
-		if (!BE_USER_LOGGED_IN || TL_MODE == 'BE')
+		if (!$hasBackendUser || (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))))
 		{
 			$time = time();
 			$arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
@@ -109,6 +119,10 @@ class TagsNewsModel extends NewsModel
 	 */
 	public static function countPublishedFromToByPidsAndIds($intFrom, $intTo, $arrPids, $arrIds)
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($arrPids) || empty($arrPids))
 		{
 			return null;
@@ -118,7 +132,7 @@ class TagsNewsModel extends NewsModel
 		$arrColumns = array("$t.date>=? AND $t.date<=? AND $t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
 		$arrColumns[] = "$t.id IN(" . implode(',', array_map('intval', $arrIds)) . ")";
 
-		if (!BE_USER_LOGGED_IN)
+		if (!$hasBackendUser)
 		{
 			$time = time();
 			$arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
@@ -140,6 +154,10 @@ class TagsNewsModel extends NewsModel
 	 */
 	public static function findPublishedFromToByPidsAndIds($intFrom, $intTo, $arrPids, $arrIds, $intLimit=0, $intOffset=0, array $arrOptions=array())
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($arrPids) || empty($arrPids))
 		{
 			return null;
@@ -149,7 +167,7 @@ class TagsNewsModel extends NewsModel
 		$arrColumns = array("$t.date>=? AND $t.date<=? AND $t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
 		$arrColumns[] = "$t.id IN(" . implode(',', array_map('intval', $arrIds)) . ")";
 
-		if (!BE_USER_LOGGED_IN)
+		if (!$hasBackendUser)
 		{
 			$time = time();
 			$arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";

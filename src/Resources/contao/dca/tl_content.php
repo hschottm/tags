@@ -38,7 +38,6 @@ if (!in_array('tl_content', $disabledObjects))
 	unset($palette);
 
 	$GLOBALS['TL_DCA']['tl_content']['palettes']['headline'] = str_replace('guests','guests,tagsonly', $GLOBALS['TL_DCA']['tl_content']['palettes']['headline']);
-	$GLOBALS['TL_DCA']['tl_content']['config']['oncopy_callback'][] = array('tl_content_tags', 'onCopy');
 	$GLOBALS['TL_DCA']['tl_content']['palettes']['gallery'] = str_replace('numberOfItems','numberOfItems,tag_filter,tag_ignore;', $GLOBALS['TL_DCA']['tl_content']['palettes']['gallery']);
 }
 

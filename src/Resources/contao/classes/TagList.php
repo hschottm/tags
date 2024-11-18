@@ -10,8 +10,9 @@ namespace Hschottm\TagsBundle;
  * @license LGPL-3.0+
  */
 
-use \Contao\System;
-use \Contao\Database;
+use Contao\System;
+use Contao\Database;
+use Contao\StringUtil;
 
 class TagList extends System
 {
@@ -128,7 +129,7 @@ class TagList extends System
 				$values = array();
 				for ($i = 0; $i < count($this->forTable); $i++)
 				{
-					array_push($keys, 'from_table = ?');
+					\array_push($keys, 'from_table = ?');
 				}
 				$objTags = Database::getInstance()->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . implode(" OR ", $keys) . ") AND tid IN (" . implode(",", $ids) . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
 					->execute($this->forTable);
@@ -161,7 +162,7 @@ class TagList extends System
 							$values = array();
 							for ($i = 0; $i < count($this->forTable); $i++)
 							{
-								array_push($keys, 'from_table = ?');
+								\array_push($keys, 'from_table = ?');
 							}
 							$count = count(Database::getInstance()->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND (" . implode(" OR ", $keys) . ") AND tid IN (" . implode(",", $ids) . ")")
 								->execute(array_merge(array($objTags->tag), $this->forTable))
@@ -182,7 +183,7 @@ class TagList extends System
 									->fetchAllAssoc());
 							}
 						}
-						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
 					}
 				}
 			}
@@ -260,7 +261,7 @@ class TagList extends System
 			{
 				while ($objTags->next())
 				{
-					array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
+					\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
 				}
 			}
 			if (count($tags))
@@ -341,12 +342,12 @@ class TagList extends System
 	 */
 	protected function getTagNameClass($tag)
 	{
-		return \Contao\StringUtil::convertEncoding(\Contao\StringUtil::standardize($tag), "ASCII");
+		return StringUtil::convertEncoding(StringUtil::standardize($tag), "ASCII");
 	}
 
 	public static function _getTagNameClass($tag)
 	{
-		return \Contao\StringUtil::convertEncoding(\Contao\StringUtil::standardize($tag), "ASCII");
+		return StringUtil::convertEncoding(StringUtil::standardize($tag), "ASCII");
 	}
 
 	protected function getRelevantPages($page_id)
@@ -357,7 +358,7 @@ class TagList extends System
 		{
 			if ($objPageWithId->published && (strlen($objPageWithId->start) == 0 || $objPageWithId->start < time()) && (strlen($objPageWithId->end) == 0 || $objPageWithId->end > time()))
 			{
-				array_push($this->arrPages, $objPageWithId->id);
+				\array_push($this->arrPages, $objPageWithId->id);
 			}
 			$this->getRelevantPages($objPageWithId->id);
 		}
@@ -370,23 +371,38 @@ class TagList extends System
 		{
 			$time = time();
 
+			$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+			$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+			$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+			
 			// Get published articles
 			$pids = implode(",", $this->arrPages);
 			if (strlen($this->inColumn))
 			{
-				$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
-											  ->execute($this->inColumn, $time, $time);
+				if (!$hasBackendUser) {
+					$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
+						->execute($this->inColumn, $time, $time);
+				} else {
+					$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . " ORDER BY sorting")
+						->execute($this->inColumn);
+				}
 			}
 			else
 			{
-				$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE pid IN (" . $pids . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
-											  ->execute($time, $time);
+				if (!$hasBackendUser) {
+					$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
+					->execute($time, $time);
+				} else {
+					$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE pid IN (" . $pids . ") " . " ORDER BY sorting")
+					->execute();
+				}
 			}
 			if ($objArticles->numRows < 1)
 			{
 				return;
 			}
 
+			$intCount = 0;
 			while ($objArticles->next())
 			{
 				// Skip first article
@@ -395,10 +411,10 @@ class TagList extends System
 					continue;
 				}
 
-				$cssID = \Contao\StringUtil::deserialize($objArticles->cssID, true);
+				$cssID = StringUtil::deserialize($objArticles->cssID, true);
 				$alias = strlen($objArticles->alias) ? $objArticles->alias : $objArticles->title;
 
-				array_push($this->arrArticles, $objArticles->id);
+				\array_push($this->arrArticles, $objArticles->id);
 			}
 		}
 	}
@@ -435,7 +451,7 @@ class TagList extends System
 		switch ($strKey)
 		{
 			case 'pagesource':
-				array_push($this->arrPages, $varValue[0]);
+				\array_push($this->arrPages, $varValue[0]);
 				$this->getRelevantPages($varValue[0]);
 				$this->getArticlesForPages();
 				break;

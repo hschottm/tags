@@ -67,7 +67,7 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 		{
 			if ($objPageWithId->published && (strlen($objPageWithId->start) == 0 || $objPageWithId->start < time()) && (strlen($objPageWithId->end) == 0 || $objPageWithId->end > time()))
 			{
-				array_push($this->arrPages, $objPageWithId->id);
+				\array_push($this->arrPages, $objPageWithId->id);
 			}
 			$this->getRelevantPages($objPageWithId->id);
 		}
@@ -75,6 +75,10 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 
 	protected function getArticlesForPages()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$this->arrArticles = array();
 		if (count($this->arrPages))
 		{
@@ -96,15 +100,15 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 				// Note however, after creating a new page, you still have to set the article start date explicitly, because the Contao core
 				// auto inserts an article for you and doesn't check for mandatory fields. As soon as you edit the article settings,
 				// e.g. to add tags :) you'll be forced to also fill in the 'start' field.
-				array_push($orders, 'start ' . $GLOBALS['MISC']['tag_articles_id'][$this->id]['ORDER_BY_START'] . ', title ASC');
+				\array_push($orders, 'start ' . $GLOBALS['MISC']['tag_articles_id'][$this->id]['ORDER_BY_START'] . ', title ASC');
 			}
 			if (strlen($this->articlelist_firstorder))
 			{
-				array_push($orders, $this->articlelist_firstorder);
+				\array_push($orders, $this->articlelist_firstorder);
 			}
 			if (strlen($this->articlelist_secondorder))
 			{
-				array_push($orders, $this->articlelist_secondorder);
+				\array_push($orders, $this->articlelist_secondorder);
 			}
 			$order_by = '';
 			if (count($orders))
@@ -114,13 +118,23 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 
 			if ($this->show_in_column)
 			{
-				$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . $order_by)
-											  ->execute($this->inColumn, $time, $time);
+				if (!$hasBackendUser) {
+					$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1"  . $order_by)
+					->execute($this->inColumn, $time, $time);
+} else {
+	$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " .  $order_by)
+	->execute($this->inColumn);
+}
 			}
 			else
 			{
-				$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE pid IN (" . $pids . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . $order_by)
-											  ->execute($time, $time);
+				if (!$hasBackendUser) {
+					$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . $order_by)
+					->execute($time, $time);
+} else {
+	$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE pid IN (" . $pids . ") " . $order_by)
+	->execute();
+}
 			}
 			if ($objArticles->numRows < 1)
 			{
@@ -156,7 +170,7 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 					}
 				}
 
-				array_push($this->arrArticles, $objArticles->row());
+				\array_push($this->arrArticles, $objArticles->row());
 			}
 		}
 	}
@@ -195,7 +209,7 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 		$time = time();
 
 		if (strlen($this->tag_articles)) $arrArticles = StringUtil::deserialize($this->tag_articles, TRUE);
-		array_push($this->arrPages, $arrArticles[0]);
+		\array_push($this->arrPages, $arrArticles[0]);
 		$this->getRelevantPages($arrArticles[0]);
 		$this->getArticlesForPages();
 

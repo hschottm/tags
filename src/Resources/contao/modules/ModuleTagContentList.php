@@ -52,6 +52,11 @@ class ModuleTagContentList extends Module
 	protected function getArticlesForTagSource($sourcetable)
 	{
 		global $objPage;
+
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$articles = array();
 		$id = $objPage->id;
 
@@ -60,8 +65,13 @@ class ModuleTagContentList extends Module
 		$time = time();
 
 		// Get published articles
-		$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" . (!BE_USER_LOGGED_IN ? " WHERE (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY title")
+		if (!$hasBackendUser) {
+			$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" . " WHERE (start='' OR start<?) AND (stop='' OR stop>?) AND published=1"  . " ORDER BY title")
 			->execute($time, $time);
+		} else {
+			$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" .  " ORDER BY title")
+			->execute();
+		}
 
 		$tagids = array();
 		if (strlen(TagHelper::decode(Input::get('tag'))))
@@ -75,7 +85,7 @@ class ModuleTagContentList extends Module
 			{
 				while ($objIds->next())
 				{
-					array_push($tagids, $objIds->tid);
+					\array_push($tagids, $objIds->tid);
 				}
 			}
 		}
@@ -176,7 +186,7 @@ class ModuleTagContentList extends Module
 		{
 			if ($objPageWithId->published && (strlen($objPageWithId->start) == 0 || $objPageWithId->start < time()) && (strlen($objPageWithId->end) == 0 || $objPageWithId->end > time()))
 			{
-				array_push($this->arrPages, $objPageWithId->id);
+				\array_push($this->arrPages, $objPageWithId->id);
 			}
 			$this->getRelevantPages($objPageWithId->id);
 		}
@@ -184,19 +194,35 @@ class ModuleTagContentList extends Module
 
 	protected function getContentElementsForArticleTags()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$arrArticles = array();
 		$ctes = array();
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',', $this->arrTags) . ") AND pid IN (" . implode(',', $this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',', $this->arrTags) . ") AND pid IN (" . implode(',', $this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)
 				->fetchEach('id');
+			} else {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',', $this->arrTags) . ") AND pid IN (" . implode(',', $this->arrPages) . ") " .  " ORDER BY sorting")
+				->execute()
+				->fetchEach('id');
+			}
 			if (count($arrArticles))
 			{
-				$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				if (!$hasBackendUser) {
+					$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." AND invisible<>1" . " ORDER BY sorting")
 					->execute()
 					->fetchAllAssoc();
+				} else {
+					$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " . " ORDER BY sorting")
+					->execute()
+					->fetchAllAssoc();
+				}
 			}
 		}
 		return $ctes;
@@ -204,17 +230,32 @@ class ModuleTagContentList extends Module
 
 	protected function getContentElementsForContentTags()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$ctes = array();
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " ." AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1". " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
+			} else {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . " ORDER BY sorting")
+				->execute()->fetchEach('id');
+			}
 			if (count($arrArticles))
 			{
-				$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				if (!$hasBackendUser) {
+					$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . " AND invisible<>1" . " ORDER BY sorting")
 					->execute()
 					->fetchAllAssoc();
+				} else {
+					$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " .  " ORDER BY sorting")
+					->execute()
+					->fetchAllAssoc();
+				}
 			}
 		}
 		return $ctes;
@@ -222,29 +263,53 @@ class ModuleTagContentList extends Module
 
 	protected function getArticlesForArticleTags()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$articles = array();
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$articles = Database::getInstance()->prepare("SELECT DISTINCT id, tl_article.* FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$articles = Database::getInstance()->prepare("SELECT DISTINCT id, tl_article.* FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1". " ORDER BY sorting")
 				->execute($time, $time)
 				->fetchAllAssoc();
+			} else {
+				$articles = Database::getInstance()->prepare("SELECT DISTINCT id, tl_article.* FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " .  " ORDER BY sorting")
+				->execute()
+				->fetchAllAssoc();
+			}
 		}
 		return $articles;
 	}
 
 	protected function getArticlesForContentTags()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$articles = array();
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
+			} else {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " ." ORDER BY sorting")
+				->execute()->fetchEach('id');
+			}
 			if (count($arrArticles))
 			{
-				$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				if (!$hasBackendUser) {
+					$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " .  " AND invisible<>1"  . " ORDER BY sorting")
 					->execute()->fetchEach('id');
+				} else {
+					$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " .  " ORDER BY sorting")
+					->execute()->fetchEach('id');
+				}
 				if (count($arrContentElements))
 				{
 					$articles = Database::getInstance()->prepare("SELECT DISTINCT tl_article.id, tl_article.* FROM tl_article, tl_content WHERE tl_content.id IN (" . implode(',',$arrContentElements) . ") AND tl_content.pid = tl_article.id ORDER BY tl_article.sorting")
@@ -258,12 +323,21 @@ class ModuleTagContentList extends Module
 
 	protected function getPagesForArticleTags()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$pages = array();
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
+			} else {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . " ORDER BY sorting")
+				->execute()->fetchEach('id');
+			}
 			if (count($arrArticles))
 			{
 				$pages = Database::getInstance()->prepare("SELECT DISTINCT tl_page.id, tl_page.* FROM tl_page, tl_article WHERE tl_article.id IN (" . implode(',',$arrArticles) . ") AND tl_article.pid = tl_page.id ORDER BY tl_page.sorting")
@@ -275,16 +349,30 @@ class ModuleTagContentList extends Module
 
 	protected function getPagesForContentTags()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$pages = array();
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
+			} else {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " .  " ORDER BY sorting")
+				->execute()->fetchEach('id');
+			}
 			if (count($arrArticles))
 			{
-				$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+				if (!$hasBackendUser) {
+					$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . " AND invisible<>1". " ORDER BY sorting")
 					->execute()->fetchEach('id');
+				} else {
+					$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " .  " ORDER BY sorting")
+					->execute()->fetchEach('id');
+				}
 				if (count($arrContentElements))
 				{
 					$pages = Database::getInstance()->prepare("SELECT DISTINCT tl_page.id, tl_page.* FROM tl_page, tl_article, tl_content WHERE tl_content.id IN (" . implode(',',$arrContentElements) . ") AND tl_content.pid = tl_article.id  AND tl_article.pid = tl_page.id ORDER BY tl_page.sorting")

@@ -85,15 +85,15 @@ use Contao\StringUtil;
 		$arrParams = array();
 		if (strlen($objInput->get('year')))
 		{
-			array_push($arrParams, 'year=' . $objInput->get('year'));
+			\array_push($arrParams, 'year=' . $objInput->get('year'));
 		}
 		if (strlen($objInput->get('month')))
 		{
-			array_push($arrParams, 'month=' . $objInput->get('month'));
+			\array_push($arrParams, 'month=' . $objInput->get('month'));
 		}
 		if (strlen($objInput->get('day')))
 		{
-			array_push($arrParams, 'day=' . $objInput->get('day'));
+			\array_push($arrParams, 'day=' . $objInput->get('day'));
 		}
 		if (count($arrParams))
 		{

@@ -56,6 +56,10 @@ class ModuleGlobalArticlelist extends Module
 	{
 		global $objPage;
 
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		// block this method to prevent recursive call of getArticle if the HTML of an article is the same as the current article
 		if ($this->block)
 		{
@@ -71,8 +75,13 @@ class ModuleGlobalArticlelist extends Module
 		$time = time();
 
 		// Get published articles
-		$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" . (!BE_USER_LOGGED_IN ? " WHERE (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY title")
+		if (!$hasBackendUser) {
+			$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" ." WHERE (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY title")
 			->execute($time, $time);
+		} else {
+			$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" .  " ORDER BY title")
+			->execute();
+		}
 
 		$tagids = array();
 		if (strlen(TagHelper::decode(Input::get('tag'))))
@@ -86,7 +95,7 @@ class ModuleGlobalArticlelist extends Module
 			{
 				while ($objIds->next())
 				{
-					array_push($tagids, $objIds->tid);
+					\array_push($tagids, $objIds->tid);
 				}
 			}
 		}

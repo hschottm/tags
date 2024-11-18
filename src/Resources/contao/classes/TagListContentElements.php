@@ -2,7 +2,8 @@
 
 namespace Hschottm\TagsBundle;
 
-use \Contao\Database;
+use Contao\Database;
+use Contao\System;
 
 /**
  * Class TagListContentElements
@@ -20,6 +21,10 @@ class TagListContentElements extends TagList
 
   public function getRelatedTagList($for_tags, $blnExcludeUnpublishedItems = true)
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (!is_array($for_tags)) return array();
 		if (!count($this->arrContentElements)) return array();
 
@@ -32,9 +37,15 @@ class TagListContentElements extends TagList
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
 		{
-			$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") AND tag = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" : "") . " ORDER BY tl_tag.tid ASC")
+			if (!$hasBackendUser) {
+				$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") AND tag = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" . " ORDER BY tl_tag.tid ASC")
 				->execute('tl_content', $for_tags[$i], time(), time())
 				->fetchEach('tid');
+			} else {
+				$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") AND tag = ?" .  " ORDER BY tl_tag.tid ASC")
+				->execute('tl_content', $for_tags[$i])
+				->fetchEach('tid');
+			}
 			if ($i == 0)
 			{
 				$ids = $arr;
@@ -48,8 +59,13 @@ class TagListContentElements extends TagList
 		$arrCloudTags = array();
 		if (count($ids))
 		{
-			$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" : "") . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
+			if (!$hasBackendUser) {
+				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1"  . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
 				->execute('tl_content', time(), time());
+			} else {
+				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" .  " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
+				->execute('tl_content');
+			}
 			$list = "";
 			$tags = array();
 			if ($objTags->numRows)
@@ -58,10 +74,17 @@ class TagListContentElements extends TagList
 				{
 					if (!in_array($objTags->tag, $for_tags))
 					{
-						$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND tag = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" : "") . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
+						if (!$hasBackendUser) {
+							$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND tag = ?" .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
 							->execute($objTags->tag, 'tl_content', time(), time())
 							->fetchAllAssoc());
-						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						} else {
+							$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND tag = ?" .  " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
+							->execute($objTags->tag, 'tl_content')
+							->fetchAllAssoc());
+						\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+						}
 					}
 				}
 			}
@@ -75,19 +98,29 @@ class TagListContentElements extends TagList
 
   public function getTagList($blnExcludeUnpublishedItems = true)
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		if (count($this->arrCloudTags) == 0)
 		{
 			if (count($this->arrContentElements))
 			{
-				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" : "") . " AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") GROUP BY tag ORDER BY tag ASC")
+				if (!$hasBackendUser) {
+					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1"  . " AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_content', time(), time());
+				\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+				} else {
+					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" .  " AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") GROUP BY tag ORDER BY tag ASC")
+					->execute('tl_content');
+				}
 				$list = "";
 				$tags = array();
 				if ($objTags->numRows)
 				{
 					while ($objTags->next())
 					{
-						array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
+						\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
 					}
 				}
 				if (count($tags))
@@ -107,7 +140,7 @@ class TagListContentElements extends TagList
 		{
 			if ($objPageWithId->published && (strlen($objPageWithId->start) == 0 || $objPageWithId->start < time()) && (strlen($objPageWithId->end) == 0 || $objPageWithId->end > time()))
 			{
-				array_push($this->arrPages, $objPageWithId->id);
+				\array_push($this->arrPages, $objPageWithId->id);
 			}
 			$this->getRelevantPages($objPageWithId->id);
 		}
@@ -115,14 +148,26 @@ class TagListContentElements extends TagList
 
 	protected function getContentElementsForPages()
 	{
+		$hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
+		$showUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$hasFrontendUser = System::getContainer()->get('contao.security.token_checker')->hasFrontendUser();
+
 		$this->arrContentElements = array();
 		if (count($this->arrPages))
 		{
 			$time = time();
-			$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" : "") . " ORDER BY sorting")
+			if (!$hasBackendUser) {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1"  . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
-			$this->arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " . (!BE_USER_LOGGED_IN ? " AND invisible<>1" : "") . " ORDER BY sorting")
+			$this->arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." ORDER BY sorting")
 				->execute()->fetchEach('id');
+			\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
+			} else {
+				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
+				->execute()->fetchEach('id');
+			$this->arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." ORDER BY sorting")
+				->execute()->fetchEach('id');
+			}
 		}
 	}
 

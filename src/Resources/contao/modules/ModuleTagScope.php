@@ -48,7 +48,7 @@ class ModuleTagScope extends Module
 		$this->arrTags = array();
 		if (strlen(TagHelper::decode(Input::get('tag'))))
 		{
-			array_push($this->arrTags, TagHelper::decode(Input::get('tag')));
+			\array_push($this->arrTags, TagHelper::decode(Input::get('tag')));
 			$relatedlist = (strlen(TagHelper::decode(Input::get('related')))) ? preg_split("/,/", TagHelper::decode(Input::get('related'))) : array();
 			$this->arrTags = array_merge($this->arrTags, $relatedlist);
 		}
@@ -126,7 +126,7 @@ class ModuleTagScope extends Module
 					{
 						if ($idxnew != $idx)
 						{
-							array_push($newarr, $tagnew);
+							\array_push($newarr, $tagnew);
 						}
 					}
 					$tagpath = '/tag/' . $newarr[0];
