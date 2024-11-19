@@ -10,6 +10,10 @@
 
  namespace Hschottm\TagsBundle;
 
+ use Contao\Database;
+ use Contao\System;
+ use Contao\StringUtil;
+
 /**
  * Class TagListMembers
  *
@@ -79,11 +83,11 @@ class TagListMembers extends TagList
 
   public function getTagList($blnExcludeUnpublishedItems = true)
 	{
-		if (count($this->arrCloudTags) == 0)
-		{
+//		if (count($this->arrCloudTags) == 0)
+//		{
 			if (count($this->arrMembergroups) > 0)
 			{
-				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count, tl_member.groups FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND from_table = ? GROUP BY tag ORDER BY tag ASC")
+				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_member WHERE tl_tag.tid = tl_member.id AND from_table = ? GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_member');
 				$list = "";
 				$tags = array();
@@ -91,18 +95,19 @@ class TagListMembers extends TagList
 				{
 					while ($objTags->next())
 					{
-						if ($this->isMemberOf($objTags->groups))
-						{
+						//if ($this->isMemberOf($objTags->groups))
+						//{
 							\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $objTags->count));
-						}
+						//}
 					}
 				}
+
 				if (count($tags))
 				{
 					$this->arrCloudTags = $this->cloud_tags($tags);
 				}
 			}
-		}
+//		}
 		return $this->arrCloudTags;
 	}
 
@@ -113,7 +118,7 @@ class TagListMembers extends TagList
 	 */
 	protected function isMemberOf($taggroups)
 	{
-		$groups = \Contao\StringUtil::deserialize($taggroups);
+		$groups = StringUtil::deserialize($taggroups);
 
 		// No groups assigned
 		if (!is_array($groups) || count($groups) < 1)

@@ -63,11 +63,11 @@ class TagList extends System
 			{
 				if ($blnExcludeUnpublishedItems && Database::getInstance()->fieldExists('published', $strTable))
 				{
-					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') AND $tagfield = ?";
+					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') AND $tagfield = '?'";
 				}
 				else
 				{
-					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable WHERE from_table='$strTable' AND $tagfield = ?";
+					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable WHERE from_table='$strTable' AND $tagfield = '?'";
 				}
 			}
 
@@ -75,14 +75,12 @@ class TagList extends System
 			for ($i = 0; $i < count($for_tags); $i++)
 			{
 				$arrSql = array();
-				$values = array();
 				foreach ($arrTableSql as $sql)
 				{
-					$arrSql[] = $sql;
-					$values[] = $for_tags[$i];
+					$arrSql[] = str_replace("?", $for_tags[$i], $sql);
 				}
 				$arr = Database::getInstance()->prepare(implode(" UNION ", $arrSql))
-					->execute($values)
+					->execute()
 					->fetchEach('tid');
 				if ($i == 0)
 				{
@@ -129,10 +127,10 @@ class TagList extends System
 				$values = array();
 				for ($i = 0; $i < count($this->forTable); $i++)
 				{
-					\array_push($keys, 'from_table = ?');
+					\array_push($keys, "from_table = '" . $this->forTable[$i] . "'");
 				}
 				$objTags = Database::getInstance()->prepare("SELECT $tagfield, COUNT($tagfield) as count FROM $tagtable WHERE (" . implode(" OR ", $keys) . ") AND tid IN (" . implode(",", $ids) . ") GROUP BY $tagfield ORDER BY $tagfield ASC")
-					->execute($this->forTable);
+					->execute();
 			}
 			else
 			{
@@ -162,10 +160,10 @@ class TagList extends System
 							$values = array();
 							for ($i = 0; $i < count($this->forTable); $i++)
 							{
-								\array_push($keys, 'from_table = ?');
+								\array_push($keys, "from_table = '" . $this->forTable[$i] . "'");
 							}
 							$count = count(Database::getInstance()->prepare("SELECT tid FROM $tagtable WHERE $tagfield = ? AND (" . implode(" OR ", $keys) . ") AND tid IN (" . implode(",", $ids) . ")")
-								->execute(array_merge(array($objTags->tag), $this->forTable))
+								->execute($objTags->tag)
 								->fetchAllAssoc());
 						}
 						else
@@ -226,16 +224,16 @@ class TagList extends System
 				{
 					if ($blnExcludeUnpublishedItems && Database::getInstance()->fieldExists('published', $strTable))
 					{
-						$arrSql[] = "SELECT $tagfield, from_table, COUNT($tagfield) AS count FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') GROUP BY $tagfield";
+						$arrSql[] = "SELECT $tagfield, COUNT($tagfield) AS count FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') GROUP BY $tagfield";
 					}
 					else
 					{
-						$arrSql[] = "SELECT $tagfield, from_table, COUNT($tagfield) AS count FROM $tagtable	WHERE from_table='$strTable' GROUP BY $tagfield";
+						$arrSql[] = "SELECT $tagfield, COUNT($tagfield) AS count FROM $tagtable	WHERE from_table='$strTable' GROUP BY $tagfield";
 					}
 				}
 				if (count($arrSql) > 1)
 				{
-					$sql = "SELECT $tagfield AS tag, from_table, SUM(count) AS count FROM (" . implode(" UNION ", $arrSql). ") temp GROUP BY tag";
+					$sql = "SELECT $tagfield AS tag, SUM(count) AS count FROM (" . implode(" UNION ", $arrSql). ") temp GROUP BY tag";
 				}
 				else
 				{

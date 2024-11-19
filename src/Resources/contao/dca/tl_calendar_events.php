@@ -3,6 +3,7 @@
 use Contao\Backend;
 use Contao\DataContainer;
 use Contao\Database;
+use Contao\StringUtil;
 
 /**
  * Contao Open Source CMS - tags extension
@@ -12,8 +13,8 @@ use Contao\Database;
  * @license LGPL-3.0+
  */
 
- if (array_key_exists('tl_calendar_events', $GLOBALS['TL_DCA']))
- {
+
+if (array_key_exists('tl_calendar_events', $GLOBALS['TL_DCA'])) {
 
 	/*
 if (is_array($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onload_callback']))
@@ -28,12 +29,11 @@ if (is_array($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onload_callback
 }
 */
 
-
 	/**
 	 * Change tl_calendar_events palettes
 	 */
 	if (isset($GLOBALS['TL_CONFIG']['disabledTagObjects'])) {
-		$disabledObjects = \Contao\StringUtil::deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
+		$disabledObjects = StringUtil::deserialize($GLOBALS['TL_CONFIG']['disabledTagObjects'], true);
 	} else {
 		$disabledObjects = array();
 	}

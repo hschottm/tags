@@ -5,9 +5,14 @@ namespace Hschottm\TagsBundle;
 use Contao\Database;
 use Contao\System;
 use Contao\Module;
+use Contao\Environment;
 use Contao\BackendTemplate;
+use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\StringUtil;
+use Contao\PageModel;
+use Contao\CoreBundle\Routing\ContentUrlGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @copyright  Helmut Schottmüller 2009-2024
@@ -157,16 +162,20 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 				$objArticles->cssID = StringUtil::deserialize($objArticles->cssID, true);
 				// ??? $alias = strlen($objArticles->alias) ? $objArticles->alias : $objArticles->title;
 				$objArticles->startDate = (intval($objArticles->start) > 0) ? $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], intval($objArticles->start)) : '';
-				$objArticles->teaser = $this->replaceInsertTags($objArticles->teaser);
+				$teaser = $objArticles->teaser;
+				if (isset($teaser)) {
+					$insertTagParser = System::getContainer()->get('contao.insert_tag.parser');
+					$teaser = $insertTagParser->replace($teaser);
+				}
 				if (!empty($format))
 				{
 					if ($format == 'xhtml')
 					{
-						$objArticles->teaser = StringUtil::toXhtml($objArticles->teaser);
+						$objArticles->teaser = StringUtil::toXhtml($teaser);
 					}
 					else
 					{
-						$objArticles->teaser = StringUtil::toHtml5($objArticles->teaser);
+						$objArticles->teaser = StringUtil::toHtml5($teaser);
 					}
 				}
 
@@ -204,7 +213,7 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 		$articles = array();
 		$id = $objPage->id;
 
-		$this->Template->request = $this->Environment->request;
+		$this->Template->request = Environment::get('request');
 
 		$time = time();
 
@@ -260,16 +269,19 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 						if (count($pageArr) == 0)
 						{
 							$items = '';
-							if (strlen($this->Input->get('items')))
+							if (strlen(Input::get('items')))
 							{
-								$items = '/items/' . $this->Input->get('items');
+								$items = '/items/' . Input::get('items');
 							}
 							$pageArr = $objPage->row();
 						}
 						$tags = $this->getTags($arrArticle['id']);
+						//$contentUrlGenerator = System::getContainer()->get('contao.routing.content_url_generator');
 						foreach ($tags as $id => $tag)
 						{
-							$strUrl = ampersand($this->generateFrontendUrl($pageArr, $items . '/tag/' . TagHelper::encode($tag)));
+							//$pageModel = PageModel::findPublishedByIdOrAlias("48");
+							//$strUrl = StringUtil::ampersand($pageModel->getFrontendUrl('/tag/' . TagHelper::encode($tag['tag_name'])));
+							$strUrl = '{{article_url::' . $arrArticle['id'] . '}}';
 							$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 						}
 						$objTemplate->tags = $tags;

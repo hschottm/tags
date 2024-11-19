@@ -23,7 +23,7 @@ class TagsUsedInsertTag implements InsertTagResolverNestedResolvedInterface
             $relatedlist = (strlen(TagHelper::decode(Input::get('related')))) ? preg_split("/,/", TagHelper::decode(Input::get('related'))) : array();
             if (strlen(TagHelper::decode(Input::get('tag'))))
             {
-                $headlinetags = array_merge($headlinetags, array($this->Input->get('tag')));
+                $headlinetags = array_merge($headlinetags, array(Input::get('tag')));
                 if (count($relatedlist))
                 {
                     $headlinetags = array_merge($headlinetags, $relatedlist);

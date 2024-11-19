@@ -70,7 +70,7 @@ class ModuleTagListByCategory extends Module
 			$marks = array();
 			foreach ($this->sourcetables as $table)
 			{
-				\array_push($marks, '?');
+				\array_push($marks, $table);
 			}
 			foreach ($alltags as $tag)
 			{
@@ -78,8 +78,8 @@ class ModuleTagListByCategory extends Module
 				{
 					if (count($tagids))
 					{
-						$found = Database::getInstance()->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table IN (" . implode(',', $marks) . ") AND tag = ? AND tid IN (" . implode(",",$tagids) . ")")
-							->execute(array_merge($this->sourcetables, array($tag)))
+						$found = Database::getInstance()->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table IN ('" . implode("', '", $marks) . "')" . " AND tag = ? AND tid IN (" . implode(",",$tagids) . ")")
+							->execute($tag)
 							->fetchAllAssoc();
 						foreach ($found as $data)
 						{
@@ -90,8 +90,8 @@ class ModuleTagListByCategory extends Module
 					}
 					else if ($first)
 					{
-						$found = Database::getInstance()->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table IN (" . implode(',', $marks) . ") AND tag = ?")
-							->execute(array_merge($this->sourcetables, array($tag)))
+						$found = Database::getInstance()->prepare("SELECT tid, from_table FROM tl_tag WHERE from_table IN ('" . implode("', '", $marks) . "')" . "  AND tag = ?")
+							->execute($tag)
 							->fetchAllAssoc();
 						foreach ($found as $data)
 						{

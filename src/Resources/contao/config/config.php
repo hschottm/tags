@@ -69,47 +69,37 @@ $GLOBALS['TL_MODELS']['tl_tag'] = Hschottm\TagsBundle\TagModel::class;
 $GLOBALS['TL_CTE']['texts']['headline'] = Hschottm\TagsBundle\ContentHeadlineTags::class;
 $GLOBALS['TL_CTE']['media']['gallery'] = Hschottm\TagsBundle\ContentGalleryTags::class;
 
+// previously css and js have been added only to the backend
+/*
 if (System::getContainer()->get('contao.routing.scope_matcher')
     ->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))
 ) 
 {
-	/**
-	 * CSS files
-	 */
-
-    if (isset($GLOBALS['TL_CSS']) && \is_array($GLOBALS['TL_CSS']))
-	{
-		\Contao\ArrayUtil::arrayInsert($GLOBALS['TL_CSS'], 1, 'bundles/hschottmtags/css/tag.css');
-	}
-	else
-	{
-		$GLOBALS['TL_CSS'] = array('bundles/hschottmtags/css/tag.css');
-	}
-
-	/**
-	 * JavaScript files
-	 */
-    if (isset($GLOBALS['TL_JAVASCRIPT']) && \is_array($GLOBALS['TL_JAVASCRIPT']))
-    {
-        \Contao\ArrayUtil::arrayInsert($GLOBALS['TL_JAVASCRIPT'], 1, 'bundles/hschottmtags/js/tag.js');
-    }
-    else
-    {
-        $GLOBALS['TL_JAVASCRIPT'] = array('bundles/hschottmtags/js/tag.js');
-    }
 }
+*/
 
+/**
+ * CSS files
+ */
+
+$GLOBALS['TL_CSS'][] = 'bundles/hschottmtags/css/tag.css';
+
+/**
+ * JavaScript files
+ */
+$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/hschottmtags/js/tag.js';
+ 
 /**
  * Hooks
  */
 
-//$GLOBALS['TL_HOOKS']['reviseTable'][] = array(Hschottm\TagsBundle\TagHelper::class, 'deleteIncompleteRecords');
-//$GLOBALS['TL_HOOKS']['reviseTable'][] = array(Hschottm\TagsBundle\TagHelper::class, 'deleteUnusedTagsForTable');
-//$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array(Hschottm\TagsBundle\TagHelper::class, 'replaceTagInsertTags');
-//$GLOBALS['TL_HOOKS']['parseArticles'][] = array(Hschottm\TagsBundle\TagHelper::class, 'parseArticlesHook');
-//$GLOBALS['TL_HOOKS']['compileArticle'][] = array(Hschottm\TagsBundle\TagHelper::class, 'compileArticleHook');
+//$GLOBALS['TL_HOOKS']['reviseTable'][] = array(Hschottm\TagsBundle\TagHelper::class, 'deleteIncompleteRecords'); -> see ReviseTableListener
+//$GLOBALS['TL_HOOKS']['reviseTable'][] = array(Hschottm\TagsBundle\TagHelper::class, 'deleteUnusedTagsForTable'); -> see ReviseTableListener
+//$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array(Hschottm\TagsBundle\TagHelper::class, 'replaceTagInsertTags'); -> see InsertTag namespace
+//$GLOBALS['TL_HOOKS']['parseArticles'][] = array(Hschottm\TagsBundle\TagHelper::class, 'parseArticlesHook'); -> see ParseArticlesListener
+//$GLOBALS['TL_HOOKS']['compileArticle'][] = array(Hschottm\TagsBundle\TagHelper::class, 'compileArticleHook'); -> see CompileArticleListener
 // for contao-memberlist
-//$GLOBALS['TL_HOOKS']['setMemberlistOptions'][] = array(Hschottm\TagsBundle\TagMemberHelper::class, 'setMemberlistOptions');
+//$GLOBALS['TL_HOOKS']['setMemberlistOptions'][] = array(Hschottm\TagsBundle\TagMemberHelper::class, 'setMemberlistOptions'); -> TBD, extension is no longer working with Contao 5
 
 
 /**

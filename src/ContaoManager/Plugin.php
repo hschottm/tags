@@ -35,10 +35,7 @@ class Plugin implements BundlePluginInterface
     {
         return [
              BundleConfig::create(HschottmTagsBundle::class)
-             ->setLoadAfter([ContaoCoreBundle::class])
-             ->setLoadAfter([ContaoNewsBundle::class])
-             ->setLoadAfter([ContaoCalendarBundle::class])
-             ->setLoadAfter([ContaoFaqBundle::class])
+             ->setLoadAfter([ContaoCoreBundle::class, ContaoNewsBundle::class, ContaoCalendarBundle::class, ContaoFaqBundle::class])
              ->setReplace(['tags']),
          ];
     }

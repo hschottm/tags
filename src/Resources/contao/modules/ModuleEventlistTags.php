@@ -4,8 +4,15 @@ namespace Hschottm\TagsBundle;
 
 use Contao\ModuleEventlist;
 use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\CoreBundle\Exception\OutOfBoundsException;
 use Contao\Database;
 use Contao\Input;
+use Contao\Date;
+use Contao\FilesModel;
+use Contao\FrontendTemplate;
+use Contao\StringUtil;
+use Contao\Events;
+use Contao\CalendarEventsModel;
 
 /**
  * Contao Open Source CMS - tags extension
