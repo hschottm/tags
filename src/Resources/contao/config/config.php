@@ -69,25 +69,21 @@ $GLOBALS['TL_MODELS']['tl_tag'] = Hschottm\TagsBundle\TagModel::class;
 $GLOBALS['TL_CTE']['texts']['headline'] = Hschottm\TagsBundle\ContentHeadlineTags::class;
 $GLOBALS['TL_CTE']['media']['gallery'] = Hschottm\TagsBundle\ContentGalleryTags::class;
 
-// previously css and js have been added only to the backend
-/*
 if (System::getContainer()->get('contao.routing.scope_matcher')
     ->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))
 ) 
 {
+	/**
+	 * CSS files
+	 */
+
+	$GLOBALS['TL_CSS'][] = 'bundles/hschottmtags/css/tag.css';
+
+	/**
+	 * JavaScript files
+	*/
+	$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/hschottmtags/js/tag.js';
 }
-*/
-
-/**
- * CSS files
- */
-
-$GLOBALS['TL_CSS'][] = 'bundles/hschottmtags/css/tag.css';
-
-/**
- * JavaScript files
- */
-$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/hschottmtags/js/tag.js';
  
 /**
  * Hooks
