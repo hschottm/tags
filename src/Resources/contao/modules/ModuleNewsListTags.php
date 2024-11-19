@@ -42,11 +42,10 @@ class ModuleNewsListTags extends ModuleNewsList
 			$placeholders = array();
 			foreach ($tags as $tag)
 			{
-				\array_push($placeholders, '?');
+				\array_push($placeholders, "'" . $tag . "'");
 			}
-			\array_push($tags, 'tl_news');
 			return Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
-				->execute($tags)
+				->execute('tl_news')
 				->fetchEach('tid');
 		}
 		else
