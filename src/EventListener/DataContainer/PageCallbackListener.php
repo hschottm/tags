@@ -5,18 +5,19 @@ namespace Hschottm\TagsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[AsCallback(table: 'tl_page', target: 'config.ondelete')]
-class PageDeleteCallbackListener
+class PageCallbackListener
 {
-    private $db;
-
-    public function __construct(Connection $db)
+    public function __construct(
+        private readonly TranslatorInterface $translator, 
+        private readonly Connection $db,
+    )
     {
-        $this->db = $db;
     }
 
-    public function __invoke(DataContainer $dc, int $undoId): void
+	#[AsCallback(table: 'tl_page', target: 'config.ondelete')]
+    public function onDeletePage(DataContainer $dc, int $undoId): void
     {
         if (!$dc->id) {
             return;
@@ -24,18 +25,17 @@ class PageDeleteCallbackListener
 
 		// remove tags of all articles in the page
 		$arrArticles = $this->db->prepare("SELECT DISTINCT id FROM tl_article WHERE pid = ?")
-			->execute($dc->id)->fetchEach('id');
-		foreach ($arrArticles as $id)
-		{
+			->executeQuery(array($dc->id));
+		while (($row = $arrArticles->fetchAssociative()) !== false) {
 			$arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ?")
-				->execute($id)->fetchEach('id');
-			foreach ($arrContentElements as $cte_id)
+				->executeQuery(array($row['id']));
+			while (($crow = $arrContentElements->fetchAssociative()) !== false) 
 			{
 				$this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
-					->execute('tl_content', $cte_id);
+					->executeQuery(array('tl_content', $crow['id']));
 			}
 			$this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
-				->execute('tl_article', $id);
+				->executeQuery(array('tl_article', $row['id']));
 		}
     }
 }

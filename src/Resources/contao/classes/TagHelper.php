@@ -8,6 +8,7 @@ use Contao\Input;
 use Contao\Database;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\FrontendTemplate;
 
 /**
  * Contao Open Source CMS - tags extension

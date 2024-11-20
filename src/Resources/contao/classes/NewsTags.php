@@ -10,8 +10,9 @@
 
  namespace Hschottm\TagsBundle;
 
-use \Contao\News;
-use \Contao\Database;
+use Contao\News;
+use Contao\Database;
+use Contao\FrontendTemplate;
 
 class NewsTags extends News
 {

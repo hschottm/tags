@@ -2,8 +2,9 @@
 
 namespace Hschottm\TagsBundle;
 
-use \Contao\Calendar;
-use \Contao\Database;
+use Contao\Calendar;
+use Contao\Database;
+use Contao\FrontendTemplate;
 
 /**
  * Contao Open Source CMS - tags extension

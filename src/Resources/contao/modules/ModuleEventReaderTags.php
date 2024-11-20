@@ -8,6 +8,7 @@ use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\Comments;
+use Contao\FrontendTemplate;
 
 /**
  * Contao Open Source CMS - tags extension
