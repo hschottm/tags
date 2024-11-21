@@ -7,6 +7,7 @@ use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Contao\ContentModel;
 
 
 class NewsCallbackListener
