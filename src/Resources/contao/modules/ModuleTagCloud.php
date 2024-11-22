@@ -113,7 +113,7 @@ class ModuleTagCloud extends Module
 
 		if ($this->keep_url_params)
 		{
-			$strParams = TagHelper::getSavedURLParams($this->Input);
+			$strParams = TagHelper::getSavedURLParams();
 		}
 
 		$relatedlist = (strlen(TagHelper::decode(Input::get('related')))) ? preg_split("/,/", TagHelper::decode(Input::get('related'))) : array();
