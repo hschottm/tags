@@ -5,7 +5,7 @@ namespace Hschottm\TagsBundle;
 use Contao\ModuleNewsList;
 use Contao\Database;
 use Contao\Input;
-use Contao\TagsModel;
+use Contao\NewsModel;
 use Contao\Environment;
 use Contao\Pagination;
 use Contao\Config;
@@ -129,6 +129,36 @@ class ModuleNewsListTags extends ModuleNewsList
 			$objPagination = new Pagination($total, $this->perPage, Config::get('maxPaginationLinks'), $id);
 			$this->Template->pagination = $objPagination->generate("\n  ");
 		}
+
+        $t = NewsModel::getTable();
+        $order = '';
+
+        if ($this->news_featured == 'featured_first')
+        {
+            $order .= "$t.featured DESC, ";
+        }
+
+        switch ($this->news_order)
+        {
+            case 'order_headline_asc':
+                $order .= "$t.headline";
+                break;
+
+            case 'order_headline_desc':
+                $order .= "$t.headline DESC";
+                break;
+
+            case 'order_random':
+                $order .= "RAND()";
+                break;
+
+            case 'order_date_asc':
+                $order .= "$t.date";
+                break;
+
+            default:
+                $order .= "$t.date DESC";
+        }
 
 		$objArticles = TagsNewsModel::findPublishedByPidsAndIds($this->news_archives, $arrIds, $blnFeatured, $limit ?: 0, $offset, array('order'=>$order));
 
