@@ -2,6 +2,15 @@
 
 namespace Hschottm\TagsBundle;
 
+use Contao\Calendar;
+use Contao\CalendarEventsModel;
+use Contao\CalendarModel;
+use Contao\ContentModel;
+use Contao\CoreBundle\Util\UrlUtil;
+use Contao\Date;
+use Contao\Environment;
+use Contao\Events;
+use Contao\Input;
 use Contao\ModuleEventReader;
 use Contao\CoreBundle\Exception\InternalServerErrorException;
 use Contao\CoreBundle\Exception\PageNotFoundException;
@@ -9,6 +18,12 @@ use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\Comments;
 use Contao\FrontendTemplate;
+use Contao\PageModel;
+use Contao\StringUtil;
+use Contao\System;
+use Contao\Template;
+use Contao\UserModel;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Contao Open Source CMS - tags extension

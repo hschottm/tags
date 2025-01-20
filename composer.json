@@ -15,6 +15,11 @@
     "contao/core-bundle": "~5.3",
     "contao-community-alliance/composer-plugin":"~3.2"
   },
+  "require-dev": {
+    "contao/calendar-bundle": "~5.3",
+    "contao/comments-bundle": "~5.3",
+    "contao/faq-bundle": "~5.3"
+  },
   "conflict": {
 		"contao/manager-plugin": "<2.0 || >=3.0"
 	},

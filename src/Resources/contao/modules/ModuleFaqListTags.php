@@ -2,8 +2,11 @@
 
 namespace Hschottm\TagsBundle;
 
+use Contao\FaqCategoryModel;
 use Contao\ModuleFaqList;
 use Contao\Database;
+use Contao\StringUtil;
+use Contao\System;
 
 /**
  * Contao Open Source CMS - tags extension
