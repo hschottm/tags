@@ -5,13 +5,11 @@ namespace Hschottm\TagsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 class CalendarCallbackListener
 {
     public function __construct(
-        private readonly TranslatorInterface $translator, 
         private readonly Connection $db,
     )
     {
