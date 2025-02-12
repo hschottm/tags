@@ -24,49 +24,41 @@ services:
     contao.listener.data_container.article:
         class: Hschottm\TagsBundle\EventListener\DataContainer\ArticleCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 
     contao.listener.data_container.calendar:
         class: Hschottm\TagsBundle\EventListener\DataContainer\CalendarCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 
     contao.listener.data_container.content:
         class: Hschottm\TagsBundle\EventListener\DataContainer\ContentCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 
     contao.listener.data_container.faq:
         class: Hschottm\TagsBundle\EventListener\DataContainer\FaqCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 
     contao.listener.data_container.file:
         class: Hschottm\TagsBundle\EventListener\DataContainer\FileCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 
     contao.listener.data_container.member:
-        class: Hschottm\TagsBundle\EventListener\DataContainer\MemberrCallbackListener
+        class: Hschottm\TagsBundle\EventListener\DataContainer\MemberCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 
     contao.listener.data_container.news:
         class: Hschottm\TagsBundle\EventListener\DataContainer\NewsCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
             - '@request_stack'
 
     contao.listener.data_container.page:
         class: Hschottm\TagsBundle\EventListener\DataContainer\PageCallbackListener
         arguments:
-            - '@translator'
             - '@database_connection'
 

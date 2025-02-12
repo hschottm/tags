@@ -5,12 +5,10 @@ namespace Hschottm\TagsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PageCallbackListener
 {
     public function __construct(
-        private readonly TranslatorInterface $translator, 
         private readonly Connection $db,
     )
     {
@@ -29,7 +27,7 @@ class PageCallbackListener
 		while (($row = $arrArticles->fetchAssociative()) !== false) {
 			$arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ?")
 				->executeQuery(array($row['id']));
-			while (($crow = $arrContentElements->fetchAssociative()) !== false) 
+			while (($crow = $arrContentElements->fetchAssociative()) !== false)
 			{
 				$this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 					->executeQuery(array('tl_content', $crow['id']));
