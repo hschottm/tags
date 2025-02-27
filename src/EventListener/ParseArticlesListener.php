@@ -15,9 +15,9 @@ class ParseArticlesListener
     public function __invoke(FrontendTemplate $template, array $newsEntry, Module $module): void
     {
 		global $objPage;
-		$news_showtags = TagHelper::$config['news_showtags'];
-		$news_jumpto = TagHelper::$config['news_jumpto'];
-		$tag_named_class = TagHelper::$config['news_tag_named_class'];
+		$news_showtags = TagHelper::$config['news_showtags'] ?? null;
+		$news_jumpto = TagHelper::$config['news_jumpto'] ?? null;
+		$tag_named_class = TagHelper::$config['news_tag_named_class'] ?? null;
 		if ($news_showtags)
 		{
 			$pageObj = TagHelper::getPageObj($news_jumpto);
