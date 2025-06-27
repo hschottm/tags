@@ -3,6 +3,7 @@
 namespace Hschottm\TagsBundle;
 
 use Contao\Backend;
+use Contao\Environment;
 use Contao\Module;
 use Contao\Input;
 use Contao\Database;
@@ -262,9 +263,9 @@ use Contao\FrontendTemplate;
 		$taglist = array();
 		foreach ($tags as $id => $tag)
 		{
-			$strUrl = \Contao\StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . TagHelper::encode($tag)));
-			if (strlen(Contao\Environment::get('queryString'))) $strUrl .= "?" . \Contao\Environment::get('queryString');
-			$tags[$id] = '<a href="' . $strUrl . '">' . \Contao\StringUtil::specialchars($tag) . '</a>';
+			$strUrl = StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . TagHelper::encode($tag)));
+			if (strlen(Environment::get('queryString'))) $strUrl .= "?" . Environment::get('queryString');
+			$tags[$id] = '<a href="' . $strUrl . '">' . StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
 				'url' => $tags[$id],
 				'tag' => $tag,
