@@ -100,6 +100,47 @@ class ModuleEventlistTags extends ModuleEventlist
 		return $arrAllEvents;
 	}
 
+    /**
+     * Liefert Event-IDs (tl_calendar_events.id), die dem im Modul gesetzten tag_filter entsprechen.
+     *
+     * @return int[] Eindeutige, sortierte Liste von Event-IDs
+     */
+    protected function getFilterTags(): array
+    {
+        $tagids = [];
+
+        $filter = (string) $this->tag_filter;
+        if ($filter === '') {
+            return $tagids;
+        }
+
+        $tags = preg_split('/,/', $filter) ?: [];
+        $tags = array_filter(array_map('trim', $tags));
+
+        if (!$tags) {
+            return $tagids;
+        }
+
+        $db = Database::getInstance();
+
+        foreach ($tags as $tag) {
+            // tl_tag.tid referenziert den Primärschlüssel des Datensatzes (hier: tl_calendar_events.id)
+            $ids = $db->prepare('SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?')
+                ->execute('tl_calendar_events', $tag)
+                ->fetchEach('tid');
+
+            if (!empty($ids)) {
+                $tagids = array_merge($tagids, $ids);
+            }
+        }
+
+        // Deduplizieren, auf int casten, sortieren
+        $tagids = array_values(array_unique(array_map('intval', $tagids)));
+        sort($tagids);
+
+        return $tagids;
+    }
+
 	/**
 	 * Generate the module
 	 */
