@@ -3,6 +3,7 @@
 namespace Hschottm\TagsBundle;
 
 use Contao\ModuleCalendar;
+use Contao\Database;
 use Contao\Input;
 
 /**
