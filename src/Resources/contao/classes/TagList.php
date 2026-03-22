@@ -26,6 +26,7 @@ class TagList extends System
 	protected $arrPages = array();
 	protected $arrArticles = array();
 	protected $intTopNumber = 10;
+	protected $arrForTable = array();
 
 	function __construct($forTable = "")
 	{
@@ -47,6 +48,7 @@ class TagList extends System
 		}
 
 		$ids = array();
+		$arrForTable = array();
 		if (is_array($this->forTable))
 		{
 			$arrForTable = $this->forTable;
@@ -56,7 +58,7 @@ class TagList extends System
 			$arrForTable = (array) $this->forTable;
 		}
 
-		if (is_array($arrForTable))
+		if (count($arrForTable))
 		{
 			$arrTableSql = array();
 			foreach ($arrForTable as $strTable)
@@ -209,6 +211,7 @@ class TagList extends System
 			$sql = '';
 			$arrSql = array();
 
+			$arrForTable = array();
 			if (is_array($this->forTable))
 			{
 				$arrForTable = $this->forTable;
@@ -218,7 +221,7 @@ class TagList extends System
 				$arrForTable = (array) $this->forTable;
 			}
 
-			if (is_array($arrForTable))
+			if (count($arrForTable))
 			{
 				foreach ($arrForTable as $strTable)
 				{
