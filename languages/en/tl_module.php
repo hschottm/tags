@@ -2,7 +2,7 @@
 
 /**
  * TYPOlight webCMS
- * Copyright (C) 2005 Leo Feyer
+ * Copyright (C) 2005-2025 Leo Feyer
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  * Software Foundation website at http://www.gnu.org/licenses/.
  *
  * PHP version 5
- * @copyright  Helmut Schottmüller 2008-2010
+ * @copyright  Helmut Schottmüller 2008-2025
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    tags
  * @license    LGPL

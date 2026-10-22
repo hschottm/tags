@@ -5,7 +5,7 @@ namespace Contao;
 /**
  * Contao Open Source CMS - tags extension
  *
- * Copyright (c) 2008-2016 Helmut Schottmüller
+ * Copyright (c) 2008-2025 Helmut Schottmüller
  *
  * @license LGPL-3.0+
  */
