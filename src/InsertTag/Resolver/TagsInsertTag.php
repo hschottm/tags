@@ -33,13 +33,13 @@ class TagsInsertTag
         $parameter = $insertTag->getParameters()->get(0);
 
         return match ($insertTag->getName()) {
-            'tags_article' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_article', $parameter, false), OutputType::text),
-            'tags_article_url' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_article_url', $parameter, false), OutputType::text),
-            'tags_content' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_content', $parameter, false), OutputType::text),
-            'tags_event' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_calendar_events', $parameter, false), OutputType::text),
-            'tags_faq' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_faq', $parameter, false), OutputType::text),
-            'tags_file' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_files', $parameter, false), OutputType::text),
-            'tags_news' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_news', $parameter, false), OutputType::text),
+            'tags_article' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_article', $parameter, false), OutputType::html),
+            'tags_article_url' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_article', $parameter, true), OutputType::html),
+            'tags_content' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_content', $parameter, false), OutputType::html),
+            'tags_event' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_calendar_events', $parameter, false), OutputType::html),
+            'tags_faq' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_faq', $parameter, false), OutputType::html),
+            'tags_file' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_files', $parameter, false), OutputType::html),
+            'tags_news' => new InsertTagResult(TagHelper::tagsForTableAndId('tl_news', $parameter, false), OutputType::html),
             default => throw new InvalidInsertTagException(),
         };
 

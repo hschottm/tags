@@ -1,0 +1,7 @@
+{% if showTags and tags %}
+<ul class="tag-chain">
+    {% for tag in tags %}
+        <li class="tag-chain-item{{ loop.first ? ' first' : '' }}{{ loop.last ? ' last' : '' }}">{{ tag|raw }}</li>
+    {% endfor %}
+</ul>
+{% endif %}

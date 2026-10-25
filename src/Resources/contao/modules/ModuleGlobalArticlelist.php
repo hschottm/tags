@@ -75,7 +75,7 @@ class ModuleGlobalArticlelist extends Module
 		$time = time();
 
 		// Get published articles
-		if (!$hasBackendUser) {
+		if (!$showUnpublished) {
 			$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" ." WHERE (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY title")
 			->execute($time, $time);
 		} else {

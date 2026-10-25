@@ -4,3 +4,9 @@ services:
 
     contao.insert_tag.resolver.tags:
         class: Hschottm\TagsBundle\InsertTag\Resolver\TagsInsertTag
+
+    Hschottm\TagsBundle\Service\TagFilter:
+        arguments: ['@database_connection']
+        public: true
+
+    Hschottm\TagsBundle\Service\TagView: ~

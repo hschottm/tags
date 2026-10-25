@@ -1,34 +1,40 @@
 {
-  "name":"hschottm/tags",
-  "description":"tags is a Contao extension that provides an architecture to tag any Contao element.",
-  "keywords":["contao", "module", "extension", "tagcloud", "tags", "bundle"],
-  "type":"contao-bundle",
-  "license":["LGPL-3.0-or-later", "CC-BY-NC-SA-4.0"],
-  "authors":[
+  "name": "hschottm/tags",
+  "description": "tags is a Contao extension that provides an architecture to tag any Contao element.",
+  "keywords": [
+    "contao",
+    "module",
+    "extension",
+    "tagcloud",
+    "tags",
+    "bundle"
+  ],
+  "type": "contao-bundle",
+  "license": [
+    "LGPL-3.0-or-later",
+    "CC-BY-NC-SA-4.0"
+  ],
+  "authors": [
     {
-      "name":"Helmut Schottmüller",
-      "homepage":"https://github.com/hschottm"
+      "name": "Helmut Schottm\u00fcller",
+      "homepage": "https://github.com/hschottm"
     }
   ],
-  "require":{
-    "php": "^8.1",
-    "contao/core-bundle": "~5.3",
-    "contao-community-alliance/composer-plugin":"~3.2"
+  "require": {
+    "php": "^8.3",
+    "contao/core-bundle": "^5.7",
+    "contao/manager-plugin": "^2.0"
   },
   "require-dev": {
-    "contao/calendar-bundle": "~5.3",
-    "contao/comments-bundle": "~5.3",
-    "contao/faq-bundle": "~5.3",
-    "contao/news-bundle": "~5.3",
-    "contao/manager-plugin": "^2.13"
+    "contao/calendar-bundle": "^5.7",
+    "contao/comments-bundle": "^5.7",
+    "contao/faq-bundle": "^5.7",
+    "contao/news-bundle": "^5.7"
   },
-  "conflict": {
-		"contao/manager-plugin": "<2.0 || >=3.0"
-	},
   "autoload": {
-		"psr-4": {
-			"Hschottm\\TagsBundle\\": "src/"
-		},
+    "psr-4": {
+      "Hschottm\\TagsBundle\\": "src/"
+    },
     "classmap": [
       "src/Resources/contao/"
     ],
@@ -38,8 +44,8 @@
       "src/Resources/contao/languages/",
       "src/Resources/contao/templates/"
     ]
-    },
-    "extra":{
-      "contao-manager-plugin": "Hschottm\\TagsBundle\\ContaoManager\\Plugin"
-    }
+  },
+  "extra": {
+    "contao-manager-plugin": "Hschottm\\TagsBundle\\ContaoManager\\Plugin"
+  }
 }

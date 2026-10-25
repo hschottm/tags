@@ -25,7 +25,7 @@ class PageCallbackListener
 		$arrArticles = $this->db->prepare("SELECT DISTINCT id FROM tl_article WHERE pid = ?")
 			->executeQuery(array($dc->id));
 		while (($row = $arrArticles->fetchAssociative()) !== false) {
-			$arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ?")
+			$arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ? AND ptable = 'tl_article'")
 				->executeQuery(array($row['id']));
 			while (($crow = $arrContentElements->fetchAssociative()) !== false)
 			{

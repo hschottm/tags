@@ -65,7 +65,7 @@ class ModuleTagContentList extends Module
 		$time = time();
 
 		// Get published articles
-		if (!$hasBackendUser) {
+		if (!$showUnpublished) {
 			$objArticles = Database::getInstance()->prepare("SELECT id, title, inColumn, cssID FROM tl_article" . " WHERE (start='' OR start<?) AND (stop='' OR stop>?) AND published=1"  . " ORDER BY title")
 			->execute($time, $time);
 		} else {
@@ -203,7 +203,7 @@ class ModuleTagContentList extends Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',', $this->arrTags) . ") AND pid IN (" . implode(',', $this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)
 				->fetchEach('id');
@@ -214,7 +214,7 @@ class ModuleTagContentList extends Module
 			}
 			if (count($arrArticles))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." AND invisible<>1" . " ORDER BY sorting")
 					->execute()
 					->fetchAllAssoc();
@@ -238,7 +238,7 @@ class ModuleTagContentList extends Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " ." AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1". " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			} else {
@@ -247,7 +247,7 @@ class ModuleTagContentList extends Module
 			}
 			if (count($arrArticles))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$ctes = Database::getInstance()->prepare("SELECT DISTINCT id, tl_content.* FROM tl_content WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . " AND invisible<>1" . " ORDER BY sorting")
 					->execute()
 					->fetchAllAssoc();
@@ -271,7 +271,7 @@ class ModuleTagContentList extends Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$articles = Database::getInstance()->prepare("SELECT DISTINCT id, tl_article.* FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1". " ORDER BY sorting")
 				->execute($time, $time)
 				->fetchAllAssoc();
@@ -294,7 +294,7 @@ class ModuleTagContentList extends Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			} else {
@@ -303,7 +303,7 @@ class ModuleTagContentList extends Module
 			}
 			if (count($arrArticles))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " .  " AND invisible<>1"  . " ORDER BY sorting")
 					->execute()->fetchEach('id');
 				} else {
@@ -331,7 +331,7 @@ class ModuleTagContentList extends Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			} else {
@@ -357,7 +357,7 @@ class ModuleTagContentList extends Module
 		if (count($this->arrPages) && count($this->arrTags))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',',$this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			} else {
@@ -366,7 +366,7 @@ class ModuleTagContentList extends Module
 			}
 			if (count($arrArticles))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE  id IN (" . implode(',',$this->arrTags) . ") AND pid IN (" . implode(',',$arrArticles) . ") " . " AND invisible<>1". " ORDER BY sorting")
 					->execute()->fetchEach('id');
 				} else {

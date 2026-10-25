@@ -16,18 +16,6 @@ use Contao\StringUtil;
 
 if (array_key_exists('tl_calendar_events', $GLOBALS['TL_DCA'])) {
 
-	/*
-if (is_array($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onload_callback']))
-{
-	foreach ($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onload_callback'] as $key => $arr)
-	{
-		if (is_array($arr) && strcmp($arr[0], 'tl_calendar_events') == 0 && strcmp($arr[1], 'generateFeed') == 0)
-		{
-//			$GLOBALS['TL_DCA']['tl_calendar_events']['config']['onload_callback'][$key] = array('TagHelper', 'generateEventFeed');
-		}
-	}
-}
-*/
 
 	/**
 	 * Change tl_calendar_events palettes

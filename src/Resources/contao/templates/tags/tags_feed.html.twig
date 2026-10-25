@@ -1,0 +1,5 @@
+<ul class="tagged">
+{% for tag in tags %}
+    <li>{% if url|default %}<a href="{{ url }}">{% endif %}{{ tag.tag }}{% if url|default %}</a>{% endif %}</li>
+{% endfor %}
+</ul>

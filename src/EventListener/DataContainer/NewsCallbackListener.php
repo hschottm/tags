@@ -5,15 +5,12 @@ namespace Hschottm\TagsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Contao\ContentModel;
 
 
 class NewsCallbackListener
 {
     public function __construct(
         private readonly Connection $db,
-        private readonly RequestStack $requestStack
     )
     {
     }
@@ -44,26 +41,6 @@ class NewsCallbackListener
 
 		$this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
 			->executeQuery(array($dc->table, $dc->id));
-    }
-
-    #[AsCallback(table: 'tl_news', target: 'config.onload')]
-    public function onLoadNews(DataContainer|null $dc = null): void
-    {
-        if (null === $dc || !$dc->id || 'edit' !== $this->requestStack->getCurrentRequest()->query->get('act')) {
-            return;
-        }
-
-        $element = ContentModel::findById($dc->id);
-
-        /*
-        if (null === $element || 'my_content_element' !== $element->type) {
-            return;
-        }
-
-        $GLOBALS['TL_DCA']['tl_content']['fields']['text']['eval']['mandatory'] = false;
-        */
-
-        //NewsTags::generateFeedsByArchive($dc->id);
     }
 
 }

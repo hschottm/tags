@@ -13,6 +13,12 @@ use Contao\System;
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
+/**
+ * INTERNAL ADAPTATION: getTagList()/getRelatedTagList() repeat the aggregation
+ * flow from classes/TagList.php with source-specific queries. Keep shared fixes
+ * in sync; these are Tags-internal copies, not Contao core methods.
+ * See docs/UPSTREAM.md for the complete inheritance audit.
+ */
 class TagListContentElements extends TagList
 {
 	protected $arrContentElements = array();
@@ -37,7 +43,7 @@ class TagListContentElements extends TagList
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
 		{
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") AND tag = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" . " ORDER BY tl_tag.tid ASC")
 				->execute('tl_content', $for_tags[$i], time(), time())
 				->fetchEach('tid');
@@ -59,7 +65,7 @@ class TagListContentElements extends TagList
 		$arrCloudTags = array();
 		if (count($ids))
 		{
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1"  . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
 				->execute('tl_content', time(), time());
 			} else {
@@ -74,7 +80,7 @@ class TagListContentElements extends TagList
 				{
 					if (!in_array($objTags->tag, $for_tags))
 					{
-						if (!$hasBackendUser) {
+						if (!$showUnpublished) {
 							$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND tag = ?" .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1" . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
 							->execute($objTags->tag, 'tl_content', time(), time())
 							->fetchAllAssoc());
@@ -106,7 +112,7 @@ class TagListContentElements extends TagList
 		{
 			if (count($this->arrContentElements))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1"  . " AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_content', time(), time());
 				\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
@@ -132,6 +138,7 @@ class TagListContentElements extends TagList
 		return $this->arrCloudTags;
 	}
 
+	// INTERNAL COPY: TagList::getRelevantPages() in classes/TagList.php.
 	protected function getRelevantPages($page_id)
 	{
 		$objPageWithId = Database::getInstance()->prepare("SELECT id, published, start, stop FROM tl_page WHERE pid=? ORDER BY sorting")
@@ -156,7 +163,7 @@ class TagListContentElements extends TagList
 		if (count($this->arrPages))
 		{
 			$time = time();
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " .  " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1"  . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
 			$this->arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." ORDER BY sorting")

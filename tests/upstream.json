@@ -1,0 +1,16 @@
+[
+    {
+        "class": "Contao\\ModuleNewsArchive",
+        "method": "compile",
+        "version": "5.7.15",
+        "adaptation": "src/Resources/contao/modules/ModuleNewsArchiveTags.php",
+        "sha256": "f61afbf8762adf0cfc10ac2b6783a84f114fb49ba0ad127f0a211f035666b424"
+    },
+    {
+        "class": "Contao\\ModuleNewsList",
+        "method": "fetchItems",
+        "version": "5.7.15",
+        "adaptation": "src/EventListener/NewsListListener.php",
+        "sha256": "8a482220e03075e86488e8e4e45f958f28a1ab923ba93176009b84e9156724b1"
+    }
+]

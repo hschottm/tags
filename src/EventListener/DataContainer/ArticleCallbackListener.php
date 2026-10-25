@@ -41,7 +41,7 @@ class ArticleCallbackListener
 
         $this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
             ->executeQuery(array($dc->table, $dc->id));
-        $arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ?")
+        $arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ? AND ptable = 'tl_article'")
             ->executeQuery(array($dc->id));
             while (($row = $arrContentElements->fetchAssociative()) !== false) {
                 $this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")

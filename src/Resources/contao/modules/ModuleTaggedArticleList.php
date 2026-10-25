@@ -31,6 +31,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
+/**
+ * INTERNAL ADAPTATION: generate()/compile() reuse parts of
+ * ModuleGlobalArticlelist (same directory): backend wildcard, recursion guard,
+ * article/page output and active-tag metadata, with scoped queries and tag lists.
+ * See docs/UPSTREAM.md; this is not a copy of Contao\Module::compile().
+ */
 class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 {
 	/**
@@ -123,7 +129,7 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 
 			if ($this->show_in_column)
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1"  . $order_by)
 					->execute($this->inColumn, $time, $time);
 } else {
@@ -133,7 +139,7 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 			}
 			else
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$objArticles = Database::getInstance()->prepare("SELECT id, pid, title, alias, inColumn, cssID, teaser, start FROM tl_article WHERE pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . $order_by)
 					->execute($time, $time);
 } else {
@@ -161,23 +167,13 @@ class ModuleTaggedArticleList extends ModuleGlobalArticlelist
 
 				$objArticles->cssID = StringUtil::deserialize($objArticles->cssID, true);
 				// ??? $alias = strlen($objArticles->alias) ? $objArticles->alias : $objArticles->title;
-				$objArticles->startDate = (intval($objArticles->start) > 0) ? $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], intval($objArticles->start)) : '';
+				$objArticles->startDate = (intval($objArticles->start) > 0) ? \Contao\Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], intval($objArticles->start)) : '';
 				$teaser = $objArticles->teaser;
 				if (isset($teaser)) {
 					$insertTagParser = System::getContainer()->get('contao.insert_tag.parser');
 					$teaser = $insertTagParser->replace($teaser);
 				}
-				if (!empty($format))
-				{
-					if ($format == 'xhtml')
-					{
-						$objArticles->teaser = StringUtil::toXhtml($teaser);
-					}
-					else
-					{
-						$objArticles->teaser = StringUtil::toHtml5($teaser);
-					}
-				}
+				$objArticles->teaser = $teaser;
 
 				\array_push($this->arrArticles, $objArticles->row());
 			}

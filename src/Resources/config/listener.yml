@@ -1,25 +1,16 @@
 services:
     _defaults:
         autoconfigure: true
+        autowire: true
 
     contao.listener.compile_article:
         class: Hschottm\TagsBundle\EventListener\CompileArticleListener
-        arguments:
-            - '@translator'
-            - '@database_connection'
 
     contao.listener.parse_articles:
         class: Hschottm\TagsBundle\EventListener\ParseArticlesListener
-        arguments:
-            - '@translator'
-            - '@database_connection'
 
     contao.listener.revise_table:
         class: Hschottm\TagsBundle\EventListener\ReviseTableListener
-        arguments:
-            - '@translator'
-            - '@database_connection'
-            - '@request_stack'
 
     contao.listener.data_container.article:
         class: Hschottm\TagsBundle\EventListener\DataContainer\ArticleCallbackListener
@@ -55,10 +46,14 @@ services:
         class: Hschottm\TagsBundle\EventListener\DataContainer\NewsCallbackListener
         arguments:
             - '@database_connection'
-            - '@request_stack'
 
     contao.listener.data_container.page:
         class: Hschottm\TagsBundle\EventListener\DataContainer\PageCallbackListener
         arguments:
             - '@database_connection'
 
+
+    Hschottm\TagsBundle\EventListener\NewsListListener: ~
+    Hschottm\TagsBundle\EventListener\CalendarEventsListener: ~
+    Hschottm\TagsBundle\EventListener\EventReaderTemplateListener:
+        public: true

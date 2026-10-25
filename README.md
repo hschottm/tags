@@ -1,3 +1,31 @@
+## Contao 5.7 LTS
+
+This branch requires **Contao ^5.7 and PHP ^8.3**. News, calendar, comments and FAQ bundles remain optional at runtime. The obsolete Contao Composer plugin is no longer required.
+
+Install the development branch with `composer require hschottm/tags:dev-contao57`. With a path repository, the local checkout must be on that branch (or have an explicit version in the repository configuration). Refresh the Contao cache and public bundle assets, and run the database migration through the Contao Manager after installation.
+
+All eleven bundled frontend templates now use Twig (`.html.twig`) with the same template names. Custom `.html5` overrides are not converted automatically; port them to Twig to use the updated rendering. Article and news templates reuse the Contao 5.7 core templates. Tag selection and tag cloud toggles work without MooTools or jQuery. Custom tag cloud styles should target `.toggle-button` rather than `span.toggle-button`; toggles are now keyboard-accessible buttons.
+
+Tag filters distinguish “no filter” from “no matching records”. Multiple selected tags are intersected, configured filter values are bound SQL parameters, and unpublished content follows Contao preview mode. Existing tags and the `tl_tag` schema are retained.
+
+### Core integrations
+
+News list filtering and news/event tag output now use Contao hooks. Small module wrappers retain only tag metadata and the event reader's scoped template context; the FAQ list filters core-generated data. The remaining news archive copy and small news sorting adaptation are marked with source/version comments and documented in [docs/UPSTREAM.md](docs/UPSTREAM.md).
+
+### Verification
+
+With dependencies installed (including optional bundles for the complete class check):
+
+```sh
+php tests/run.php
+php tests/upstream.php
+node tests/javascript.cjs
+```
+
+For integration tests against an existing Contao 5.7 application, set `TAGS_TEST_APP` to its directory and run `php tests/integration.php`. The script uses a separate kernel cache under `/tmp/contao-tags-test-cache`, renders the Twig templates, loads the DCAs, and tests filters, file callbacks, widget validation, core pagination, recurring events, FAQ grouping and nested reader contexts. Database tests use connection-local temporary tables; existing application records are not modified. The database user needs permission to create temporary tables. `TAGS_TEST_AUTOLOAD` can point the standalone smoke test to an external Composer autoloader.
+
+---
+
 Contao tags extension
 =====================
 

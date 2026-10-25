@@ -14,6 +14,12 @@ use Contao\System;
  * @package    Controller
  */
 
+/**
+ * INTERNAL ADAPTATION: getTagList()/getRelatedTagList() repeat the aggregation
+ * flow from classes/TagList.php with source-specific queries. Keep shared fixes
+ * in sync; these are Tags-internal copies, not Contao core methods.
+ * See docs/UPSTREAM.md for the complete inheritance audit.
+ */
 class TagListArticles extends TagList
 {
 	protected $arrArticles = array();
@@ -38,7 +44,7 @@ class TagListArticles extends TagList
 		$ids = array();
 		for ($i = 0; $i < count($for_tags); $i++)
 		{
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$arr = Database::getInstance()->prepare("SELECT DISTINCT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?  AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") AND tag = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY tl_tag.tid ASC")
 				->execute('tl_article', $for_tags[$i], time(), time())
 				->fetchEach('tid');
@@ -60,7 +66,7 @@ class TagListArticles extends TagList
 		$arrCloudTags = array();
 		if (count($ids))
 		{
-			if (!$hasBackendUser) {
+			if (!$showUnpublished) {
 				$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " AND tl_tag.tid IN (" . implode(",", $ids) . ") GROUP BY tag ORDER BY tag ASC")
 				->execute('tl_article', time(), time());
 			} else {
@@ -75,7 +81,7 @@ class TagListArticles extends TagList
 				{
 					if (!in_array($objTags->tag, $for_tags))
 					{
-						if (!$hasBackendUser) {
+						if (!$showUnpublished) {
 							$count = count(Database::getInstance()->prepare("SELECT tl_tag.tid FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND tag = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " AND from_table = ? AND tl_tag.tid IN (" . implode(",", $ids) . ")")
 							->execute($objTags->tag, time(), time(), 'tl_article')
 							->fetchAllAssoc());
@@ -107,7 +113,7 @@ class TagListArticles extends TagList
 		{
 			if (count($this->arrArticles))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_article WHERE tl_tag.tid = tl_article.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " AND tl_tag.tid IN (" . implode(',', $this->arrArticles) . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_article', time(), time());
 				} else {
