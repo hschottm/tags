@@ -8,6 +8,7 @@ use Contao\Input;
 use Contao\Database;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\FrontendTemplate;
 
 /**
  * Contao Open Source CMS - tags extension
@@ -29,6 +30,13 @@ use Contao\StringUtil;
 		parent::__construct();
 	}
 
+    /** Null means no filter; an empty array means that no record matches. */
+    public static function findTaggedIds(string $table, string $configured = '', bool $ignoreRequest = false): ?array
+    {
+        return \Contao\System::getContainer()->get(\Hschottm\TagsBundle\Service\TagFilter::class)
+            ->findIds($table, $configured, $ignoreRequest);
+    }
+
 	public static function getPageObj($jumpTo = null)
 	{
 		global $objPage;
@@ -44,12 +52,12 @@ use Contao\StringUtil;
 
 	public static function encode($tag)
 	{
-		return str_replace('/', 'x2F', $tag);
+		return str_replace('/', 'x2F', (string) $tag);
 	}
 
 	public static function decode($tag)
 	{
-		return str_replace('x2F', '/', $tag);
+		return str_replace('x2F', '/', (string) $tag);
 	}
 
 	public function getAllEvents($arrEvents, $arrCalendars, $intStart, $intEnd, $caller)
@@ -79,21 +87,21 @@ use Contao\StringUtil;
 		}
 	}
 	
-	public static function getSavedURLParams($objInput)
+	public static function getSavedURLParams()
 	{
 		$strParams = '';
 		$arrParams = array();
-		if (strlen($objInput->get('year')))
+		if (strlen(Input::get('year')))
 		{
-			\array_push($arrParams, 'year=' . $objInput->get('year'));
+			\array_push($arrParams, 'year=' . Input::get('year'));
 		}
-		if (strlen($objInput->get('month')))
+		if (strlen(Input::get('month')))
 		{
-			\array_push($arrParams, 'month=' . $objInput->get('month'));
+			\array_push($arrParams, 'month=' . Input::get('month'));
 		}
-		if (strlen($objInput->get('day')))
+		if (strlen(Input::get('day')))
 		{
-			\array_push($arrParams, 'day=' . $objInput->get('day'));
+			\array_push($arrParams, 'day=' . Input::get('day'));
 		}
 		if (count($arrParams))
 		{
@@ -134,7 +142,7 @@ use Contao\StringUtil;
 		$arrTags = Database::getInstance()->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
 			->execute($table, $id)
 			->fetchAllAssoc();
-		$res = false;
+		$res = '';
 		if (count($arrTags))
 		{
 			$arrTagsWithCount = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as tagcount FROM tl_tag WHERE from_table = ? GROUP BY tag ORDER BY tag ASC")
@@ -165,7 +173,7 @@ use Contao\StringUtil;
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = \Contao\StringUtil::ampersand($pageModel->current()->getFrontendUrl('/tag/' . $tag['tag']));
+						$arrTags[$idx]['url'] = \Contao\StringUtil::ampersand($pageModel->getFrontendUrl('/tag/' . $tag['tag']));
 					}
 				}
 			}
@@ -183,13 +191,12 @@ use Contao\StringUtil;
 						}
 						else
 						{
-							$pageObj = TagHelper::getPageObj($objArticle->tags_jumpto);
+							$pageObj = PageModel::findById($objArticle->id);
+                            if ($pageObj === null) break;
 							foreach ($arrTags as $idx => $tag)
 							{
-								$arrTags[$idx]['url'] = $pageObj->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
+								$arrTags[$idx]['url'] = $pageObj->getFrontendUrl();
 							}
-							// Whats up here?
-							$objTemplate->url = $pageObj->getFrontendUrl('/articles/' . ((!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($objArticle->aAlias)) ? $objArticle->aAlias : $objArticle->aId));
 						}
 						break;
 				}
@@ -210,7 +217,7 @@ use Contao\StringUtil;
 		$arrTags = Database::getInstance()->prepare("SELECT * FROM tl_tag WHERE from_table = ? AND tid = ? ORDER BY tag ASC")
 			->execute($table, $id)
 			->fetchAllAssoc();
-		$res = false;
+		$res = '';
 		if (count($arrTags))
 		{
 			if ($max_tags > 0)
@@ -245,7 +252,8 @@ use Contao\StringUtil;
 				{
 					foreach ($arrTags as $idx => $tag)
 					{
-						$arrTags[$idx]['url'] = StringUtil::ampersand($objPage->getFrontendUrl('/tag/' . TagHelper::encode($tag['tag'])));
+						$targetPage = PageModel::findById($objFoundPage->id);
+                        if ($targetPage !== null) $arrTags[$idx]['url'] = StringUtil::ampersand($targetPage->getFrontendUrl('/tag/' . TagHelper::encode($tag['tag'])));
 					}
 				}
 			}
@@ -262,7 +270,7 @@ use Contao\StringUtil;
 		foreach ($tags as $id => $tag)
 		{
 			$strUrl = \Contao\StringUtil::ampersand($pageObj->getFrontendUrl('/tag/' . TagHelper::encode($tag)));
-			if (strlen(Contao\Environment::get('queryString'))) $strUrl .= "?" . \Contao\Environment::get('queryString');
+			if (strlen(\Contao\Environment::get('queryString'))) $strUrl .= "?" . \Contao\Environment::get('queryString');
 			$tags[$id] = '<a href="' . $strUrl . '">' . \Contao\StringUtil::specialchars($tag) . '</a>';
 			$taglist[$id] = array(
 				'url' => $tags[$id],
@@ -275,23 +283,4 @@ use Contao\StringUtil;
 			'taglist' => $taglist
 		);
 	}
-	
-	/**
-	 * Check for modified calendar feeds and update the XML files if necessary
-	 */
-	public function generateEventFeed()
-	{
-		//$this->import('CalendarTags');
-		//$this->CalendarTags->generateFeedsByCalendar($id);
-	}
-
-	/**
-	 * Check for modified news feeds and update the XML files if necessary
-	 */
-	public function generateNewsFeed()
-	{
-		//$this->import('NewsTags');
-		//$this->NewsTags->generateFeedsByArchive($id);
-	}
 }
-

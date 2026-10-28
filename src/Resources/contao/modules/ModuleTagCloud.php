@@ -113,7 +113,7 @@ class ModuleTagCloud extends Module
 
 		if ($this->keep_url_params)
 		{
-			$strParams = TagHelper::getSavedURLParams($this->Input);
+			$strParams = TagHelper::getSavedURLParams();
 		}
 
 		$relatedlist = (strlen(TagHelper::decode(Input::get('related')))) ? preg_split("/,/", TagHelper::decode(Input::get('related'))) : array();
@@ -185,7 +185,7 @@ class ModuleTagCloud extends Module
 		}
 		$this->Template->pageID = $this->id;
 		$this->Template->tags = $this->arrTags;
-		$this->Template->jumpTo = $this->jumpTo;
+		$this->Template->jumpTo = $pageObj !== null;
 		$this->Template->relatedtags = $this->arrRelated;
 		$this->Template->strRelatedTags = $GLOBALS['TL_LANG']['tl_module']['tag_relatedtags'];
 		$this->Template->strAllTags = $GLOBALS['TL_LANG']['tl_module']['tag_alltags'];
@@ -242,9 +242,9 @@ class ModuleTagCloud extends Module
 				$expandedAll = "";
 				$expandedRelated = "";
 				if (array_key_exists($this->id, static::$tagCloudStates)) {
-					$topten = static::$tagCloudStates[$this->id]['topten'];
-					$expandedAll = static::$tagCloudStates[$this->id]['alltags'];
-					$expandedRelated = static::$tagCloudStates[$this->id]['related'];
+					$topten = static::$tagCloudStates[$this->id]['topten'] ?? '';
+					$expandedAll = static::$tagCloudStates[$this->id]['alltags'] ?? '';
+					$expandedRelated = static::$tagCloudStates[$this->id]['related'] ?? '';
 				}
 				$this->Template->expandedTopTen = (strlen($topten)) ? ((strcmp($topten, 'none') == 0) ? 0 : 1) : $this->tag_topten_expanded;
 				$this->Template->expandedAll = (strlen($expandedAll)) ? ((strcmp($expandedAll, 'none') == 0) ? 0 : 1) : $this->tag_all_expanded;

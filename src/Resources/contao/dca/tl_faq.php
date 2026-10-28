@@ -23,7 +23,7 @@ if (array_key_exists('tl_faq', $GLOBALS['TL_DCA']))
 	} else {
 		$disabledObjects = array();
 	}
-	if (!in_array('tl_article', $disabledObjects))
+	if (!in_array('tl_faq', $disabledObjects))
 	{
 		if (array_key_exists('tl_faq', $GLOBALS['TL_DCA'])) {
 			$GLOBALS['TL_DCA']['tl_faq']['palettes']['default'] = str_replace("author", "author,tags", $GLOBALS['TL_DCA']['tl_faq']['palettes']['default']);

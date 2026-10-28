@@ -10,7 +10,7 @@
 
 namespace Hschottm\TagsBundle;
 
-use \Contao\FormTextField;
+use \Contao\FormText;
 use \Contao\Database;
 use \Contao\FrontendUser;
 
@@ -22,11 +22,12 @@ use \Contao\FrontendUser;
  * @author     Helmut Schottmüller <https://github.com/hschottm/tags_members>
  * @package    Controller
  */
-class TagFieldMemberFrontend extends FormTextField
+class TagFieldMemberFrontend extends FormText
 {
 	protected $blnSubmitInput = true;
 	protected $strTagTable = "";
 	protected $intMaxTags = 0;
+	private bool $renderingTagInput = false;
 
 	/**
 	 * Save tags to database
@@ -35,7 +36,7 @@ class TagFieldMemberFrontend extends FormTextField
 	 */
 	protected function saveTags($value)
 	{
-		if ($this->blnSubmitInput)
+		if ($this->blnSubmitInput && FrontendUser::getInstance()->id)
 		{
 			$user = FrontendUser::getInstance();
 			Database::getInstance()->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
@@ -44,7 +45,7 @@ class TagFieldMemberFrontend extends FormTextField
 			foreach ($tags as $tag)
 			{
 				Database::getInstance()->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")
-					->execute($ser->id, $tag, 'tl_member');
+					->execute($user->id, $tag, 'tl_member');
 			}
 			return "";
 		}
@@ -77,7 +78,7 @@ class TagFieldMemberFrontend extends FormTextField
 				$this->strTagTable = $varValue;
 				break;
 			case 'value':
-				$this->varValue = implode(",", array_filter(\Contao\StringUtil::trimsplit(",", $varValue), 'strlen'));
+				$this->varValue = implode(",", array_filter(\Contao\StringUtil::trimsplit(",", (string) $varValue), 'strlen'));
 				break;
 			case 'maxtags':
 				$this->intMaxTags = $varValue;
@@ -102,7 +103,7 @@ class TagFieldMemberFrontend extends FormTextField
 				return strlen($this->strTagTable) ? $this->strTagTable : $this->strTable;
 				break;
 			case 'value':
-				return $this->varValue;
+				return $this->renderingTagInput ? parent::__get($strKey) : '';
 				break;
 			case 'maxtags':
 				return $this->intMaxTags;
@@ -120,17 +121,7 @@ class TagFieldMemberFrontend extends FormTextField
 	 */
 	public function generate()
 	{
-		/**
-		 * JavaScript files
-		 */
-		if (is_array($GLOBALS['TL_JAVASCRIPT']))
-		{
-			\Contao\ArrayUtil::arrayInsert($GLOBALS['TL_JAVASCRIPT'], 1, 'system/modules/tags/assets/tag.js');
-		}
-		else
-		{
-			$GLOBALS['TL_JAVASCRIPT'] = array('system/modules/tags/assets/tag.js');
-		}
+		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/hschottmtags/js/tag.js';
 		$taglist = new TagList('tl_member');
 		$taglist->maxtags = $this->intMaxTags;
 		$tags = $taglist->getTagList();
@@ -138,20 +129,22 @@ class TagFieldMemberFrontend extends FormTextField
 		foreach ($tags as $tag)
 		{
 			$list .= '<li class="' . $tag['tag_class'] . '">';
-			$list .= '<a href="javascript:Tag.selectedTag(\'' . $tag['tag_name'] . '\', \'ctrl_' . $this->strId . '\');" title="' . $tag['tag_name'] . ' (' . $tag['tag_count'] . ')' . '">' . $tag['tag_name'] . '</a>';
+			$list .= '<a href="#" data-tag-target="ctrl_' . \Contao\StringUtil::specialchars($this->strId) . '" data-tag="' . \Contao\StringUtil::specialchars($tag['tag_name']) . '" title="' . \Contao\StringUtil::specialchars($tag['tag_name'] . ' (' . $tag['tag_count'] . ')') . '">' . \Contao\StringUtil::specialchars($tag['tag_name']) . '</a>';
 			$list .= '</li> ';
 		}
 		$list .= '</ul></div>';
-		$value = $this->readTags();
-		return sprintf($list.'<input type="%s" name="%s" id="ctrl_%s" class="text%s%s" value="%s"%s%s',
-						$this->type,
-						$this->strName,
-						$this->strId,
-						($this->hideInput ? ' password' : ''),
-						(($this->strClass != '') ? ' ' . $this->strClass : ''),
-						\Contao\StringUtil::specialchars($this->value),
-						$this->getAttributes(),
-						$this->strTagEnding) . $this->addSubmit();
+		// Render through the installed Contao parent, keeping its escaping, attributes
+		// and markup current. Display values must not change the persistence value.
+		$previousValue = $this->varValue;
+		$previousRendering = $this->renderingTagInput;
+		try {
+			$this->varValue = $this->hasErrors() ? $previousValue : $this->readTags();
+			$this->renderingTagInput = true;
+			return $list . parent::generate();
+		} finally {
+			$this->varValue = $previousValue;
+			$this->renderingTagInput = $previousRendering;
+		}
 	}
 
 	/**
@@ -159,8 +152,9 @@ class TagFieldMemberFrontend extends FormTextField
 	 */
 	public function validate()
 	{
-		$varInput = $this->validator(\Contao\StringUtil::deserialize($this->getPost($this->strName)));
-		$this->saveTags(implode(",", array_filter(\Contao\StringUtil::trimsplit(",", $varInput), 'strlen')));
-		parent::validate();
+        parent::validate();
+        if (!$this->hasErrors()) {
+            $this->saveTags((string) $this->varValue);
+        }
 	}
 }

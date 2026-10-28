@@ -1,0 +1,16 @@
+<div class="{{ class }} block tagscope"{{ cssID|raw }}>
+    <ul>
+        <li class="reset"><div class="inner"><a href="{{ empty_url }}">{{ lngTags }}</a></div></li>
+        {% if arrTags %}
+            <li class="tags"><ul>
+            {% for tag in arrTags %}
+                <li class="tag{{ loop.first ? ' first' : '' }}{{ loop.last ? ' last' : '' }}"><div class="inner">
+                    <a class="onlytag" href="{{ tag_urls[tag] }}">{{ tag }}</a>
+                    <a class="removetag" href="{{ delete_urls[tag] }}"><span>[x]</span></a>
+                </div></li>
+            {% endfor %}
+            </ul></li>
+        {% endif %}
+    </ul>
+</div>
+<div style="clear: both;"></div>

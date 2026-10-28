@@ -73,7 +73,7 @@ class TagField extends TextField
 				$this->strTagTable = $varValue;
 				break;
 			case 'value':
-				$this->varValue = implode(",", array_filter(StringUtil::trimsplit(",", $varValue), 'strlen'));
+				$this->varValue = implode(",", array_filter(StringUtil::trimsplit(",", (string) $varValue), 'strlen'));
 				break;
 			case 'maxtags':
 				$this->intMaxTags = $varValue;
@@ -123,17 +123,19 @@ class TagField extends TextField
 		foreach ($tags as $tag)
 		{
 			$list .= '<li class="' . $tag['tag_class'] . '">';
-			$list .= '<a href="javascript:Tag.selectedTag(\'' . $tag['tag_name'] . '\', \'ctrl_' . $this->strId . '\');" title="' . $tag['tag_name'] . ' (' . $tag['tag_count'] . ')' . '">' . $tag['tag_name'] . '</a>';
+			$list .= '<a href="#" data-tag-target="ctrl_' . \Contao\StringUtil::specialchars($this->strId) . '" data-tag="' . \Contao\StringUtil::specialchars($tag['tag_name']) . '" title="' . \Contao\StringUtil::specialchars($tag['tag_name'] . ' (' . $tag['tag_count'] . ')') . '">' . \Contao\StringUtil::specialchars($tag['tag_name']) . '</a>';
 			$list .= '</li> ';
 		}
 		$list .= '</ul></div>';
-		$value = $this->readTags();
-		return $list.sprintf('<input type="text" name="%s" id="ctrl_%s" class="tl_text%s" value="%s"%s onfocus="Backend.getScrollOffset();" />',
-						$this->strName,
-						$this->strId,
-						(strlen($this->strClass) ? ' ' . $this->strClass : ''),
-						StringUtil::specialchars($value),
-						$this->getAttributes());
+		// Render through the installed Contao parent, keeping its escaping, attributes
+		// and markup current. Display values must not change the persistence value.
+		$previousValue = $this->varValue;
+		try {
+			$this->varValue = $this->hasErrors() ? $previousValue : $this->readTags();
+			return $list . parent::generate();
+		} finally {
+			$this->varValue = $previousValue;
+		}
 	}
 
 	/**
@@ -141,8 +143,9 @@ class TagField extends TextField
 	 */
 	public function validate()
 	{
-		$varInput = $this->validator(StringUtil::deserialize($this->getPost($this->strName)));
-		$this->saveTags(implode(",", array_filter(StringUtil::trimsplit(",", $varInput), 'strlen')));
-		parent::validate();
+        parent::validate();
+        if (!$this->hasErrors()) {
+            $this->saveTags((string) $this->varValue);
+        }
 	}
 }

@@ -1,0 +1,59 @@
+services:
+    _defaults:
+        autoconfigure: true
+        autowire: true
+
+    contao.listener.compile_article:
+        class: Hschottm\TagsBundle\EventListener\CompileArticleListener
+
+    contao.listener.parse_articles:
+        class: Hschottm\TagsBundle\EventListener\ParseArticlesListener
+
+    contao.listener.revise_table:
+        class: Hschottm\TagsBundle\EventListener\ReviseTableListener
+
+    contao.listener.data_container.article:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\ArticleCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.calendar:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\CalendarCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.content:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\ContentCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.faq:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\FaqCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.file:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\FileCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.member:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\MemberCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.news:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\NewsCallbackListener
+        arguments:
+            - '@database_connection'
+
+    contao.listener.data_container.page:
+        class: Hschottm\TagsBundle\EventListener\DataContainer\PageCallbackListener
+        arguments:
+            - '@database_connection'
+
+
+    Hschottm\TagsBundle\EventListener\NewsListListener: ~
+    Hschottm\TagsBundle\EventListener\CalendarEventsListener: ~
+    Hschottm\TagsBundle\EventListener\EventReaderTemplateListener:
+        public: true

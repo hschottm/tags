@@ -1,0 +1,20 @@
+<!-- indexer::stop -->
+<div class="{{ class }} block tagcloud"{{ cssID|raw }}{% if style|default %} style="{{ style }}"{% endif %}>
+{% if headline %}<{{ hl }}>{{ headline }}</{{ hl }}>{% endif %}
+{% if empty_url|default and selectedtags > 0 %}<div class="reset"><a href="{{ empty_url }}">{{ lngEmpty }}</a></div>{% endif %}
+{% for section in [
+    {id: 'related', title: strRelatedTags, entries: relatedtags, enabled: relatedtags is not empty, toggle: true, expanded: not topten or expandedRelated, css: 'related'},
+    {id: 'topten', title: strTopTenTags, entries: toptentags, enabled: topten, toggle: true, expanded: expandedTopTen, css: 'cloud'},
+    {id: 'alltags', title: strAllTags ~ ' (' ~ tagcount ~ ')', entries: tags, enabled: true, toggle: topten or relatedtags is not empty, expanded: not topten or expandedAll, css: 'cloud'}
+] %}
+    {% if section.enabled %}
+        {% if section.toggle %}<h3><button type="button" class="toggle-button" aria-expanded="true" aria-controls="tags-{{ pageID }}-{{ section.id }}" data-tagcloud-toggle data-expanded="{{ section.expanded ? '1' : '0' }}">{{ section.title }}</button></h3>{% endif %}
+        <ul id="tags-{{ pageID }}-{{ section.id }}" class="{{ section.css }}">
+        {% for tag in section.entries %}
+            <li class="{{ tag.tag_class|default }}">{% if jumpTo %}<a href="{{ tag.tag_url }}" title="{{ tag.tag_name }} ({{ tag.tag_count }})">{% endif %}{% if section.id == 'related' %}<span class="reltext">+{{ tag.tag_name }}</span><span class="relcount">{{ tag.tag_count }}</span>{% else %}{{ tag.tag_name }}{% endif %}{% if jumpTo %}</a>{% endif %}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}
+</div>
+<!-- indexer::continue -->

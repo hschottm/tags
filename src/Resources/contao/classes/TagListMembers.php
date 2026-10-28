@@ -22,6 +22,12 @@
  * @author     Helmut Schottmüller <https://github.com/hschottm/tags_members>
  * @package    Controller
  */
+/**
+ * INTERNAL ADAPTATION: getTagList()/getRelatedTagList() repeat the aggregation
+ * flow from classes/TagList.php with source-specific queries. Keep shared fixes
+ * in sync; these are Tags-internal copies, not Contao core methods.
+ * See docs/UPSTREAM.md for the complete inheritance audit.
+ */
 class TagListMembers extends TagList
 {
 	protected $arrMembergroups = array();

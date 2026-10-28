@@ -47,6 +47,7 @@ class TagList extends System
 		}
 
 		$ids = array();
+        $arrForTable = null;
 		if (is_array($this->forTable))
 		{
 			$arrForTable = $this->forTable;
@@ -63,11 +64,11 @@ class TagList extends System
 			{
 				if ($blnExcludeUnpublishedItems && Database::getInstance()->fieldExists('published', $strTable))
 				{
-					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') AND $tagfield = '?'";
+					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable, $strTable WHERE (from_table='$strTable' AND tid=$strTable.id AND published='1') AND $tagfield = ?";
 				}
 				else
 				{
-					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable WHERE from_table='$strTable' AND $tagfield = '?'";
+					$arrTableSql[] = "SELECT DISTINCT tid FROM $tagtable WHERE from_table='$strTable' AND $tagfield = ?";
 				}
 			}
 
@@ -77,10 +78,10 @@ class TagList extends System
 				$arrSql = array();
 				foreach ($arrTableSql as $sql)
 				{
-					$arrSql[] = str_replace("?", $for_tags[$i], $sql);
+					$arrSql[] = $sql;
 				}
 				$arr = Database::getInstance()->prepare(implode(" UNION ", $arrSql))
-					->execute()
+					->execute(...array_fill(0, count($arrSql), $for_tags[$i]))
 					->fetchEach('tid');
 				if ($i == 0)
 				{
@@ -209,6 +210,7 @@ class TagList extends System
 			$sql = '';
 			$arrSql = array();
 
+			$arrForTable = null;
 			if (is_array($this->forTable))
 			{
 				$arrForTable = $this->forTable;
@@ -377,7 +379,7 @@ class TagList extends System
 			$pids = implode(",", $this->arrPages);
 			if (strlen($this->inColumn))
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE inColumn = ? AND pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 						->execute($this->inColumn, $time, $time);
 				} else {
@@ -387,7 +389,7 @@ class TagList extends System
 			}
 			else
 			{
-				if (!$hasBackendUser) {
+				if (!$showUnpublished) {
 					$objArticles = Database::getInstance()->prepare("SELECT id, title, alias, inColumn, cssID FROM tl_article WHERE pid IN (" . $pids . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 					->execute($time, $time);
 				} else {

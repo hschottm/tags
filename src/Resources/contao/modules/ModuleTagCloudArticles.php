@@ -23,6 +23,11 @@ use Contao\Input;
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Controller
  */
+/**
+ * INTERNAL ADAPTATION: generate() repeats ModuleTagCloud::generate() with a
+ * specialized TagList. It deliberately calls Module::generate() to bypass the
+ * generic tag query in its immediate parent. See docs/UPSTREAM.md.
+ */
 class ModuleTagCloudArticles extends ModuleTagCloud
 {
 	/**

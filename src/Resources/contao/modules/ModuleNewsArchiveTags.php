@@ -3,55 +3,41 @@
 namespace Hschottm\TagsBundle;
 
 use Contao\ModuleNewsArchive;
-use Contao\Database;
+use Contao\NewsModel;
 use Contao\Input;
 use Contao\Date;
 use Contao\Environment;
-use Contao\CoreBundle\Exception\OutOfBoundsException;
+use Contao\System;
 use Contao\CoreBundle\Exception\PageNotFoundException;
-use Contao\Pagination;
 use Contao\Config;
-use Contao\NewsModel;
+use Contao\Pagination;
+use Hschottm\TagsBundle\Service\TagFilter;
 
 /**
- * Contao Open Source CMS - tags extension
- *
- * Copyright (c) 2008-2024 Helmut Schottmüller
- *
- * @license LGPL-3.0+
+ * Contains an adapted Contao core method, (c) Leo Feyer, LGPL-3.0-or-later.
+ * See docs/UPSTREAM.md for the source revision and maintenance procedure.
  */
-
 class ModuleNewsArchiveTags extends ModuleNewsArchive
 {
-	/**
-	 * Read tags from database
-	 * @return string
-	 */
-	protected function getFilterTags()
-	{
-		if (strlen($this->tag_filter))
-		{
-			$tags = preg_split("/,/", $this->tag_filter);
-			$placeholders = array();
-			foreach ($tags as $tag)
-			{
-				\array_push($placeholders, "'" . $tag . "'");
-			}
-			return Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
-				->execute('tl_news')
-				->fetchEach('tid');
-		}
-		else
-		{
-			return array();
-		}
-	}
+    protected function compile()
+    {
+        $filter = System::getContainer()->get(TagFilter::class);
+        $ids = $filter->findIds('tl_news', (string) $this->tag_filter, (bool) $this->tag_ignore);
+        if ($ids === null) {
+            parent::compile();
+        } else {
+            $this->compileFromParent($ids);
+        }
+        $this->Template->tags_activetags = $filter->activeTags((string) $this->tag_filter, (bool) $this->tag_ignore);
+    }
 
-	/**
-	 * Generate the module
-	 */
-	protected function compileFromParent($arrIds)
+	protected function compileFromParent(array $ids)
 	{
+        // BEGIN CORE ADAPTATION: Contao\ModuleNewsArchive::compile(), Contao 5.3.52.
+        // Source: contao/news-bundle/contao/modules/ModuleNewsArchive.php
+        // There are no count/fetch hooks in this module. Keep the core control flow
+        // (date range, pagination, order and rendering); TAGS markers identify changes.
+        // The upstream method fingerprint is checked by tests/upstream.php.
 		global $objPage;
 
 		$limit = null;
@@ -122,11 +108,16 @@ class ModuleNewsArchiveTags extends ModuleNewsArchive
 
 		$this->Template->articles = array();
 
+        // TAGS BEGIN: expose a total even when pagination is disabled.
+        $tagTotal = TagsNewsModel::countPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $ids);
+        $this->Template->tags_total_found = $tagTotal;
+        // TAGS END
+
 		// Split the result
 		if ($this->perPage > 0)
 		{
 			// Get the total number of items
-			$intTotal = TagsNewsModel::countPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $arrIds);
+			$intTotal = $tagTotal; // TAGS: filtered count calculated above.
 
 			if ($intTotal > 0)
 			{
@@ -181,11 +172,13 @@ class ModuleNewsArchiveTags extends ModuleNewsArchive
 		// Get the news items
 		if (isset($limit))
 		{
-			$objArticles = TagsNewsModel::findPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $arrIds, $limit, $offset);
+			// TAGS: add ID constraint; retain core limit, offset and sorting.
+			$objArticles = TagsNewsModel::findPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $ids, $limit, $offset, $arrOptions);
 		}
 		else
 		{
-			$objArticles = TagsNewsModel::findPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $arrIds);
+			// TAGS: same ID constraint when pagination is disabled.
+			$objArticles = TagsNewsModel::findPublishedFromToByPidsAndIds($intBegin, $intEnd, $this->news_archives, $ids, 0, 0, $arrOptions);
 		}
 
 		// Add the articles
@@ -194,82 +187,9 @@ class ModuleNewsArchiveTags extends ModuleNewsArchive
 			$this->Template->articles = $this->parseArticles($objArticles);
 		}
 
-		$headlinetags = array();
-
-		if (strlen(TagHelper::decode(Input::get('tag'))))
-		{
-			$headlinetags = array_merge($headlinetags, array(TagHelper::decode(Input::get('tag'))));
-			if (!empty($relatedlist))
-			{
-				$headlinetags = array_merge($headlinetags, $relatedlist);
-			}
-		}
-
-		$this->Template->tags_total_found = $total;
-		$this->Template->tags_activetags = $headlinetags;
 		$this->Template->headline = trim($this->headline);
 		$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
 		$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['empty'];
-		
-	}
-	
-	/**
-	 * Generate module
-	 */
-	protected function compile()
-	{
-		TagHelper::$config['news_showtags'] = $this->news_showtags;
-		TagHelper::$config['news_jumpto'] = $this->tag_jumpTo;
-		TagHelper::$config['news_tag_named_class'] = $this->tag_named_class;
-		if ((strlen(TagHelper::decode(Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter)))
-		{
-			$tagids = array();
-			
-			$relatedlist = (strlen(TagHelper::decode(Input::get('related')))) ? preg_split("/,/", TagHelper::decode(Input::get('related'))) : array();
-			$alltags = array_merge(array(TagHelper::decode(Input::get('tag'))), $relatedlist);
-			$first = true;
-			if (strlen($this->tag_filter))
-			{
-				$headlinetags = preg_split("/,/", $this->tag_filter);
-				$tagids = $this->getFilterTags();
-				$first = false;
-			}
-			else
-			{
-				$headlinetags = array();
-			}
-			foreach ($alltags as $tag)
-			{
-				if (strlen(trim($tag)))
-				{
-					if (count($tagids))
-					{
-						$tagids = Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
-							->execute('tl_news', $tag)
-							->fetchEach('tid');
-					}
-					else if ($first)
-					{
-						$tagids = Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-							->execute('tl_news', $tag)
-							->fetchEach('tid');
-						$first = false;
-					}
-				}
-			}
-			if (count($tagids))
-			{
-				$this->compileFromParent($tagids);
-			}
-			else
-			{
-				parent::compile();
-			}
-		}
-		else
-		{
-			parent::compile();
-		}
+        // END CORE ADAPTATION
 	}
 }
-

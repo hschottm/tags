@@ -1,54 +1,22 @@
-(function($, undef) {
-// jQuery
-	if(!$) return;
+'use strict';
 
-	TagCloudRequest={
-		toggleTagCloud:
-			function(el,pageID)
-			{
-				el.blur();
-				var display=(el.parent().next().css('display')=='none')?'block':'none';
-				el.parent().next().css('display',display);
-				(display=='none')?el.addClass('yes'):el.removeClass('yes');
-				return false
-			}
-		};
-	
-	
-	$(document).ready(
-		function()
-		{
-			$('span').each(
-				function(index)
-				{
-					if ($(this).hasClass('toggle-button'))
-					{
-						$(this).removeClass('off');
-					}
-				}
-			);
-		}
-	);
-})(window.jQuery);
-
-(function($, $$, undef) {
-// Mootools
-	if(!$) return;
-
-	TagCloudRequest =
-	{
-		toggleTagCloud: function(el, pageID)
-		{
-			el.blur();
-			display = (el.getParent().getNext().getStyle('display') == 'none') ? 'block' : 'none';
-			el.getParent().getNext().setStyle('display', display); 
-			(display == 'none') ? el.addClass('yes') : el.removeClass('yes');
-			new Request({url: window.location.href, data: 'toggleTagCloud=1&cloudPageID=' + pageID + '&cloudID=' + el.id + '&display=' + display}).send();
-			return false;
-		}
-	};
-
-	window.addEvent('domready', function() {
-	  $(document.body).getElements('span').each(function(item, index){ if (item.hasClass('toggle-button')) { item.removeClass('off');  } });
-	});
-})(document.id, window.$$);
+(() => {
+    function setExpanded(button, expanded) {
+        const list = document.getElementById(button.getAttribute('aria-controls'));
+        if (!list) return;
+        list.hidden = !expanded;
+        button.setAttribute('aria-expanded', String(expanded));
+        button.classList.toggle('yes', !expanded);
+    }
+    function initialize() {
+        document.querySelectorAll('[data-tagcloud-toggle]').forEach(button => {
+            setExpanded(button, button.dataset.expanded === '1');
+        });
+    }
+    document.addEventListener('click', event => {
+        const button = event.target.closest('[data-tagcloud-toggle]');
+        if (button) setExpanded(button, button.getAttribute('aria-expanded') !== 'true');
+    });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize);
+    else initialize();
+})();

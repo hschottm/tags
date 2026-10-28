@@ -1,0 +1,14 @@
+<div class="{{ class }} block"{{ cssID|raw }}{% if style|default %} style="{{ style }}"{% endif %}>
+{% if headline %}<{{ hl }}>{{ headline }}</{{ hl }}>{% endif %}
+
+{% for group in [{kind: 'news', title: lngNews, entries: news}, {kind: 'event', title: lngEvents, entries: events}, {kind: 'link', title: lngPages, entries: pages}] %}
+    {% if group.entries %}
+        <h3>{{ group.title }}</h3>
+        <ul>{% for entry in group.entries %}<li>{{ ('{{' ~ group.kind ~ '::' ~ entry.alias ~ '}}')|insert_tag_raw }}</li>{% endfor %}</ul>
+    {% endif %}
+{% endfor %}
+{% if other_pages %}
+    <h3>{{ lngOtherPages }}</h3>
+    <ul>{% for url in other_pages %}<li>{{ url|insert_tag_raw }}</li>{% endfor %}</ul>
+{% endif %}
+</div>

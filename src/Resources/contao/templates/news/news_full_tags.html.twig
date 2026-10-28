@@ -1,0 +1,8 @@
+{{ include('@Contao/news_full.html.twig') }}
+{% if showTags and taglist %}
+<ul class="tag-chain">
+    {% for tag in taglist %}
+        <li class="tag-chain-item{{ loop.first ? ' first' : '' }}{{ loop.last ? ' last' : '' }}{% if showTagClass %} {{ tag.class }}{% endif %}">{{ tag.url|raw }}</li>
+    {% endfor %}
+</ul>
+{% endif %}

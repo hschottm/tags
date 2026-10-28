@@ -5,6 +5,7 @@ namespace Hschottm\TagsBundle;
 use \Contao\ContentGallery;
 use \Contao\Input;
 use \Contao\Database;
+use Contao\FilesModel;
 
 /**
  * Contao Open Source CMS - tags extension
@@ -23,33 +24,8 @@ class ContentGalleryTags extends ContentGallery
 	{
 		$newMultiSRC = array();
 
-		if ((strlen(TagHelper::decode(Input::get('tag'))) && (!$this->tag_ignore)) || (strlen($this->tag_filter))) {
-			$tagids = array();
-
-			$relatedlist = (strlen(TagHelper::decode(Input::get('related')))) ? preg_split("/,/", TagHelper::decode(Input::get('related'))) : array();
-			$alltags = array_merge(array(TagHelper::decode(Input::get('tag'))), $relatedlist);
-			$first = true;
-			if (strlen($this->tag_filter)) {
-				$headlinetags = preg_split("/,/", $this->tag_filter);
-				$tagids = $this->getFilterTags();
-				$first = false;
-			} else {
-				$headlinetags = array();
-			}
-			foreach ($alltags as $tag) {
-				if (strlen(trim($tag))) {
-					if (count($tagids)) {
-						$tagids = Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ? AND tid IN (" . implode(",", $tagids) . ")")
-							->execute('tl_files', $tag)
-							->fetchEach('tid');
-					} else if ($first) {
-						$tagids = Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE from_table = ? AND tag = ?")
-							->execute('tl_files', $tag)
-							->fetchEach('tid');
-						$first = false;
-					}
-				}
-			}
+        $tagids = TagHelper::findTaggedIds('tl_files', (string) $this->tag_filter, (bool) $this->tag_ignore);
+        if ($tagids !== null && $this->objFiles !== null) {
 			while ($this->objFiles->next()) {
 				if ($this->objFiles->type == 'file') {
 					if (in_array($this->objFiles->id, $tagids)) \array_push($newMultiSRC, $this->objFiles->uuid);
@@ -79,10 +55,10 @@ class ContentGalleryTags extends ContentGallery
 			$tags = preg_split("/,/", $this->tag_filter);
 			$placeholders = array();
 			foreach ($tags as $tag) {
-				\array_push($placeholders, "'" . $tag . "'");
+				$placeholders[] = '?';
 			}
 			return Database::getInstance()->prepare("SELECT tid FROM tl_tag WHERE tag IN (" . implode(',', $placeholders) . ") AND from_table = ? ORDER BY tag ASC")
-				->execute('tl_files')
+				->execute(...array_merge($tags, ['tl_files']))
 				->fetchEach('tid');
 		} else {
 			return array();

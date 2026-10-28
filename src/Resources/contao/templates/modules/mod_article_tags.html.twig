@@ -1,0 +1,13 @@
+{% extends '@Contao/mod_article.html.twig' %}
+{% block content %}
+    {{ parent() }}
+    {% if show_tags and tags %}
+        <div class="tags-article">
+            <ul class="tag-chain">
+                {% for tag in tags %}
+                    <li class="tag-chain-item{{ loop.first ? ' first' : '' }}{{ loop.last ? ' last' : '' }}">{% if tag.url|default %}<a href="{{ tag.url }}" title="{{ tag.tag }} ({{ tag.tagcount }})">{% endif %}{{ tag.tag }}{% if tag.url|default %}</a>{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

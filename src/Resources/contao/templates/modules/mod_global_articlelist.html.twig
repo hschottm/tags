@@ -1,0 +1,10 @@
+<div class="{{ class }} block"{{ cssID|raw }}{% if style|default %} style="{{ style }}"{% endif %}>
+{% if headline or tags_activetags %}
+    <{{ hl }}>{{ headline ?: tags_activetags|join('+') }}{% if articles %} ({{ articles|length }}){% endif %}</{{ hl }}>
+{% endif %}
+{% if articles %}
+    <ul>{% for article in articles %}<li>{{ article.content|insert_tag_raw }}{% if showTags %}{{ article.tags|insert_tag_raw }}{% endif %}</li>{% endfor %}</ul>
+{% else %}
+    <p class="empty">{{ empty }}</p>
+{% endif %}
+</div>

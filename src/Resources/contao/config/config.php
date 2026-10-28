@@ -29,6 +29,7 @@ $GLOBALS['TL_FFL']['tag'] = Hschottm\TagsBundle\TagFieldMemberFrontend::class;
 /**
  * Front end modules
  */
+$GLOBALS['FE_MOD']['tags'] ??= [];
 \Contao\ArrayUtil::arrayInsert($GLOBALS['FE_MOD']['tags'], 1, array
 (
 	'tagcloud'            => Hschottm\TagsBundle\ModuleTagCloud::class,
@@ -47,18 +48,23 @@ $GLOBALS['TL_FFL']['tag'] = Hschottm\TagsBundle\TagFieldMemberFrontend::class;
 	'globalArticleList'    => Hschottm\TagsBundle\ModuleGlobalArticlelist::class
 ));
 
-$GLOBALS['FE_MOD']['news']['newslist'] = Hschottm\TagsBundle\ModuleNewsListTags::class;
-$GLOBALS['FE_MOD']['news']['newsarchive'] = Hschottm\TagsBundle\ModuleNewsArchiveTags::class;
-$GLOBALS['FE_MOD']['news']['newsreader'] = Hschottm\TagsBundle\ModuleNewsReaderTags::class;
-$GLOBALS['FE_MOD']['events']['calendar'] = Hschottm\TagsBundle\ModuleCalendarTags::class;
-$GLOBALS['FE_MOD']['events']['eventlist'] = Hschottm\TagsBundle\ModuleEventlistTags::class;
-$GLOBALS['FE_MOD']['events']['eventreader'] = Hschottm\TagsBundle\ModuleEventReaderTags::class;
-$GLOBALS['FE_MOD']['faq']['faqlist'] = Hschottm\TagsBundle\ModuleFaqListTags::class;
+foreach ([
+    'news' => ['newslist' => Hschottm\TagsBundle\ModuleNewsListTags::class, 'newsarchive' => Hschottm\TagsBundle\ModuleNewsArchiveTags::class],
+    'events' => ['eventlist' => Hschottm\TagsBundle\ModuleEventlistTags::class, 'eventreader' => Hschottm\TagsBundle\ModuleEventReaderTags::class],
+    'faq' => ['faqlist' => Hschottm\TagsBundle\ModuleFaqListTags::class],
+] as $group => $modules) {
+    foreach ($modules as $type => $class) {
+        if (isset($GLOBALS['FE_MOD'][$group][$type])) {
+            $GLOBALS['FE_MOD'][$group][$type] = $class;
+        }
+    }
+}
 
-if (array_key_exists('last_events', $GLOBALS['FE_MOD']['events']))
-{
-	// add support for last_events extension
-	$GLOBALS['FE_MOD']['events']['last_events'] = Hschottm\TagsBundle\ModuleFaqListTags::class;
+if (!class_exists(Contao\NewsModel::class)) {
+    unset($GLOBALS['FE_MOD']['tags']['tagcloudnews']);
+}
+if (!class_exists(Contao\CalendarEventsModel::class)) {
+    unset($GLOBALS['FE_MOD']['tags']['tagcloudevents']);
 }
 
 $GLOBALS['TL_MODELS']['tl_tag'] = Hschottm\TagsBundle\TagModel::class;
@@ -107,7 +113,7 @@ $GLOBALS['tags_extension']['sourcetable'][] = 'tl_content';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_news';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_member';
 $GLOBALS['tags_extension']['sourcetable'][] = 'tl_faq';
-$GLOBALS['tags_extension']['sourcetable'][] = 'fl_files';
+$GLOBALS['tags_extension']['sourcetable'][] = 'tl_files';
 
 /**
 * Add 'tag' to the URL keywords to prevent problems with URL manipulating modules like folderurl
@@ -117,5 +123,4 @@ if (isset($GLOBALS['TL_CONFIG']['urlKeywords'])) {
 } else {
 	$GLOBALS['TL_CONFIG']['urlKeywords'] = 'tag';
 }
-$GLOBALS['tags']['showInFeeds'] = true;
 

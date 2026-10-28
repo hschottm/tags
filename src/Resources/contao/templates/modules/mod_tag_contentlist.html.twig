@@ -1,0 +1,13 @@
+<div class="{{ class }} block"{{ cssID|raw }}{% if style|default %} style="{{ style }}"{% endif %}>
+{% if headline %}<{{ hl }}>{{ headline }}</{{ hl }}>{% endif %}
+
+{% for kind, entries in {link: pages, article: articles, insert_content: contentElements} %}
+    {% if entries %}
+        <ul>
+        {% for entry in entries %}
+            <li>{{ ('{{' ~ kind ~ '::' ~ (kind == 'insert_content' ? entry.id : entry.alias) ~ '}}')|insert_tag_raw }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}
+</div>

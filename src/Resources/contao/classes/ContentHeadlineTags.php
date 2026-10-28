@@ -23,7 +23,7 @@ class ContentHeadlineTags extends ContentHeadline
 	{
 		$request = \Contao\System::getContainer()->get('request_stack')->getCurrentRequest();
 		if ($request && \Contao\System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest($request)) {
-			if ($this->tagsonly) if (!strlen(TagHelper::decode(Input::get('tag')))) return;
+			if ($this->tagsonly) if (!strlen(TagHelper::decode(Input::get('tag')))) return '';
 		}
 		return parent::generate();
 	}
