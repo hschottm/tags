@@ -22,18 +22,14 @@ class PageCallbackListener
         }
 
 		// remove tags of all articles in the page
-		$arrArticles = $this->db->prepare("SELECT DISTINCT id FROM tl_article WHERE pid = ?")
-			->executeQuery(array($dc->id));
+		$arrArticles = $this->db->executeQuery("SELECT DISTINCT id FROM tl_article WHERE pid = ?", array($dc->id));
 		while (($row = $arrArticles->fetchAssociative()) !== false) {
-			$arrContentElements = $this->db->prepare("SELECT DISTINCT id FROM tl_content WHERE pid = ? AND ptable = 'tl_article'")
-				->executeQuery(array($row['id']));
+			$arrContentElements = $this->db->executeQuery("SELECT DISTINCT id FROM tl_content WHERE pid = ? AND ptable = 'tl_article'", array($row['id']));
 			while (($crow = $arrContentElements->fetchAssociative()) !== false)
 			{
-				$this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
-					->executeQuery(array('tl_content', $crow['id']));
+				$this->db->executeStatement("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?", array('tl_content', $crow['id']));
 			}
-			$this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
-				->executeQuery(array('tl_article', $row['id']));
+			$this->db->executeStatement("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?", array('tl_article', $row['id']));
 		}
     }
 }

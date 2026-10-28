@@ -22,13 +22,13 @@ class ContentCallbackListener
             return;
         }
 
-		$objTags = $this->db->prepare("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?")->executeQuery(array($dc->id, $dc->table));
+		$objTags = $this->db->executeQuery("SELECT * FROM tl_tag WHERE tid = ? AND from_table = ?", array($dc->id, $dc->table));
 		$tags = array();
         while (($row = $objTags->fetchAssociative()) !== false) {
 			\array_push($tags, array("table" => $dc->table, "tag" => $row['tag']));
 		}
 		foreach ($tags as $entry) {
-			$this->db->prepare("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)")->executeQuery(array($insertId, $entry['tag'], $entry['table']));
+			$this->db->executeStatement("INSERT INTO tl_tag (tid, tag, from_table) VALUES (?, ?, ?)", array($insertId, $entry['tag'], $entry['table']));
 		}
     }
 
@@ -39,7 +39,6 @@ class ContentCallbackListener
             return;
         }
 
-        $this->db->prepare("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?")
-            ->executeQuery(array($dc->table, $dc->id));
+        $this->db->executeStatement("DELETE FROM tl_tag WHERE from_table = ? AND tid = ?", array($dc->table, $dc->id));
     }
 }
