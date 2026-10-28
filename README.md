@@ -1,39 +1,8 @@
-## Contao 5.7 LTS
-
-This branch requires **Contao ^5.7 and PHP ^8.3**. News, calendar, comments and FAQ bundles remain optional at runtime. The obsolete Contao Composer plugin is no longer required.
-
-Install the development branch with `composer require hschottm/tags:dev-contao57`. With a path repository, the local checkout must be on that branch (or have an explicit version in the repository configuration). Refresh the Contao cache and public bundle assets, and run the database migration through the Contao Manager after installation.
-
-All eleven bundled frontend templates now use Twig (`.html.twig`) with the same template names. Custom `.html5` overrides are not converted automatically; port them to Twig to use the updated rendering. Article and news templates reuse the Contao 5.7 core templates. Tag selection and tag cloud toggles work without MooTools or jQuery. Custom tag cloud styles should target `.toggle-button` rather than `span.toggle-button`; toggles are now keyboard-accessible buttons.
-
-Tag filters distinguish “no filter” from “no matching records”. Multiple selected tags are intersected, configured filter values are bound SQL parameters, and unpublished content follows Contao preview mode. Existing tags and the `tl_tag` schema are retained.
-
-### Core integrations
-
-News list filtering and news/event tag output now use Contao hooks. Small module wrappers retain only tag metadata and the event reader's scoped template context; the FAQ list filters core-generated data. The remaining news archive copy and small news sorting adaptation are marked with source/version comments and documented in [docs/UPSTREAM.md](docs/UPSTREAM.md).
-
-### Verification
-
-With dependencies installed (including optional bundles for the complete class check):
-
-```sh
-php tests/run.php
-php tests/upstream.php
-node tests/javascript.cjs
-```
-
-For integration tests against an existing Contao 5.7 application, set `TAGS_TEST_APP` to its directory and run `php tests/integration.php`. The script uses a separate kernel cache under `/tmp/contao-tags-test-cache`, renders the Twig templates, loads the DCAs, and tests filters, file callbacks, widget validation, core pagination, recurring events, FAQ grouping and nested reader contexts. Database tests use connection-local temporary tables; existing application records are not modified. The database user needs permission to create temporary tables. `TAGS_TEST_AUTOLOAD` can point the standalone smoke test to an external Composer autoloader.
-
----
-
-Contao tags extension
-=====================
-
 # tags extension
 
 tags is a Contao extension that provides an architecture to tag any Contao element. It comes with a generalized database structure to save the tags and it can be used to visualize existing tags. tags also comes with ready-to-use tag support for Contao articles, news articles and calendar events.
 
-Developers may use the tags architecture to add tag support for their components as well. The module provides an input field widget for the actual data container and supports storing and retrieving of tags from the database. With JavaScript activated it is also possible to add and remove tags with a simple mouse click in the backend tag input field.
+With JavaScript enabled, tags can be added and removed with a simple mouse click in the backend tag input field.
 
 ![tag input field in the Contao backend](https://cloud.githubusercontent.com/assets/873113/12077851/a925f4fa-b1f8-11e5-9cc9-711ab8341217.png)
 
@@ -76,7 +45,7 @@ In the datasource settings you need to select the Contao source tables to genera
 
 ![Expert settings of the tag cloud module](https://cloud.githubusercontent.com/assets/873113/12077866/158fa15e-b1f9-11e5-8c60-6bf0834e5a83.png)
 
-The expert settings should only be changed if you use your own datasources to feed the tag cloud. If you use the default solution coming with the tags module, please ignore this setting. Developers may define a different database table and a different database table field as a source for the tag cloud. You may also define additional CSS classes or ID's for your tag cloud to style the cloud with your custom CSS code.
+The expert settings should only be changed if you use your own datasources to feed the tag cloud. If you use the default solution coming with the tags module, please ignore this setting. The source table and field can be configured for custom tag sources. You may also define additional CSS classes or ID's for your tag cloud to style the cloud with your custom CSS code.
 
 If you've done anything by the book, you should see a similar output on your page:
 
@@ -244,40 +213,37 @@ This creates a list of links to pages that is created from article tags. Only li
 
 ![Tag object list settings](https://cloud.githubusercontent.com/assets/873113/12077878/70aa1f88-b1f9-11e5-8a3e-5773eef28869.png)
 
-## Hints for extension developers
+## Requirements
 
-Users who just want to use the tags extension can skip the following paragraph.
+* Contao 5.7 (`^5.7`)
+* PHP 8.3 or newer
 
-### Adding tag support for Contao data containers
+The news, calendar, comments and FAQ bundles are optional and only needed for
+the corresponding features.
 
-To add tag support in the Contao backend, you need to complete the following steps:
+## Release history
 
-1. To show a tag input field, you must create a database field for the data container. You only need a small database field because the tags are saved in a separate table but you need the field to embedd the input field in the data container. All tags will be saved in the database table tl_tag which is provided by the tags extension.
-2. You need to embed the input field in the DCA configuration array of your module
+### Contao 5.7 support
 
-```php
-$GLOBALS['TL_DCA']['tl_literature']['palettes']['default'] = 'title,author,description,tags,content';
-```
+* Added support for Contao 5.7 and PHP 8.3 or newer.
+* Removed the dependency on the obsolete Contao Composer plugin.
+* Migrated all eleven bundled frontend templates to Twig while retaining their base names.
+* Updated article and news rendering for Contao 5.7.
+* Updated tag selection and tag cloud controls to work without MooTools or jQuery.
+* Made tag cloud toggle buttons accessible by keyboard.
+* Improved tag filtering: selecting multiple tags shows only records matching all selected tags, and filters without matches return no records.
+* Aligned unpublished content visibility with Contao preview mode.
+* Preserved existing tags and the database schema.
 
-```php
-$GLOBALS['TL_DCA']['tl_literature']['fields']['tags'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['MSC']['tags'],
-	'inputType'               => 'tag',
-	'eval'                    => array('tl_class'=>'clr long'),
-	'sql'                     => "char(1) NOT NULL default ''"
-);
-```
+## Updating existing installations
 
-The tags extension already provides the language variable `$GLOBALS['TL_LANG']['MSC']['tags']` as a default identifier for tag fields. You may change this of course to another value.
+After updating the extension, refresh the Contao cache and public bundle assets,
+and run the database migrations through the Contao Manager.
 
-During the validation in the save process the tags module automatically saves the entered tags in the database table tl_tag. For every tag it stores the ID of the actual data container (table field "id"), the name of the data container (table field "from_table"), and the tag value (table field "tag").
+Custom `.html5` template overrides must be converted to Twig to use the updated
+rendering; they are not converted automatically. The bundled templates use the
+`.html.twig` extension. The PHP template examples above describe legacy templates
+and must be adapted when used in Twig.
 
-### Options of the eval array of a tag widget
-
-| Key        | Value           | Description  |
-| ---------- |-------------| -----|
-| table      | Source table `string` | Name of the source table of the tag data. Default is the name of the actual DCA data container. |
-| maxtags    | Count `integer`      |    The maximum number of tags that should be shown above the input field. This may be helpful if you have a large number of tags. If the maximum number is lower than the number of all tags, the component takes the tags with the most selections first and hides tags which are used rarely. |
-
-
+Custom tag cloud styles should target `.toggle-button` instead of
+`span.toggle-button`, as the toggles now use buttons.
