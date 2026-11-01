@@ -22,7 +22,7 @@
  * @copyright  Helmut Schottmüller 2008
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    memberextensions
- * @license    LGPL
+ * @license    LGPL-3.0-or-later
  * @filesource
  */
 

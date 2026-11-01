@@ -6,7 +6,7 @@ declare(strict_types=1);
  * @copyright  Helmut Schottmüller 2008-2024 <http://github.com/hschottm>
  * @author     Helmut Schottmüller (hschottm)
  * @package    tags
- * @license    LGPL-3.0+, CC-BY-NC-3.0
+ * @license    LGPL-3.0-or-later
  * @see	      https://github.com/hschottm/tags
  */
 

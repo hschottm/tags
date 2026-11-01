@@ -10,10 +10,7 @@
     "bundle"
   ],
   "type": "contao-bundle",
-  "license": [
-    "LGPL-3.0-or-later",
-    "CC-BY-NC-SA-4.0"
-  ],
+  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "Helmut Schottm\u00fcller",

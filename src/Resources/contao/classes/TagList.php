@@ -7,7 +7,7 @@ namespace Hschottm\TagsBundle;
  *
  * Copyright (c) 2008-2024 Helmut Schottmüller
  *
- * @license LGPL-3.0+
+ * @license LGPL-3.0-or-later
  */
 
 use Contao\System;

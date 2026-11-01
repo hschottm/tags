@@ -247,3 +247,8 @@ and must be adapted when used in Twig.
 
 Custom tag cloud styles should target `.toggle-button` instead of
 `span.toggle-button`, as the toggles now use buttons.
+
+## License
+
+This extension is licensed under the GNU Lesser General Public License, version 3
+or (at your option) any later version (`LGPL-3.0-or-later`). See [LICENSE](LICENSE).

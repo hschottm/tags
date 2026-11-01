@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2009-2024 Helmut Schottmüller
  *
- * @license LGPL-3.0+
+ * @license LGPL-3.0-or-later
  */
 
  namespace Hschottm\TagsBundle;

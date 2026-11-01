@@ -7,7 +7,7 @@
  * German translation file
  *
  * Copyright : &copy; Helmut Schottmüller
- * License   : GNU Lesser Public License (LGPL)
+ * License   : LGPL-3.0-or-later
  * Author    : Helmut Schottmüller (hschottm), https://github.com/hschottm
  * Translator: Helmut Schottmüller (hschottm), https://github.com/hschottm
  *

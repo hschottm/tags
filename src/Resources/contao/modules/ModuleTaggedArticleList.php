@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @copyright  Helmut Schottmüller 2009-2024
  * @author     Helmut Schottmüller <https://github.com/hschottm>
  * @package    Frontend
- * @license    LGPL
+ * @license    LGPL-3.0-or-later
  * @filesource
  */
 

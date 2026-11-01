@@ -9,7 +9,7 @@ use Contao\Database;
  *
  * Copyright (c) 2008-2016 Helmut Schottmüller
  *
- * @license LGPL-3.0+
+ * @license LGPL-3.0-or-later
  */
 
 if (array_key_exists('tl_faq', $GLOBALS['TL_DCA']))
