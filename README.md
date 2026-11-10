@@ -223,26 +223,9 @@ This creates a list of links to pages that is created from article tags. Only li
 The news, calendar, comments and FAQ bundles are optional and only needed for
 the corresponding features.
 
-## Release history
+## Changelog
 
-### Contao 5.3 compatibility update
-
-* Added the improved tag filters, Twig templates and translations in 14 languages to the Contao 5.3 version.
-* Adapted news archive pagination to Contao 5.3, including filtered totals, sorting and invalid page handling.
-* Retained existing tags and the database schema.
-* Verified compatibility with Contao 5.3.52.
-
-### Contao 5.7 support
-
-* Added support for Contao 5.7 and PHP 8.3 or newer.
-* Removed the dependency on the obsolete Contao Composer plugin.
-* Migrated all eleven bundled frontend templates to Twig while retaining their base names.
-* Updated article and news rendering for Contao 5.7.
-* Updated tag selection and tag cloud controls to work without MooTools or jQuery.
-* Made tag cloud toggle buttons accessible by keyboard.
-* Improved tag filtering: selecting multiple tags shows only records matching all selected tags, and filters without matches return no records.
-* Aligned unpublished content visibility with Contao preview mode.
-* Preserved existing tags and the database schema.
+See [CHANGELOG.md](CHANGELOG.md) for changes grouped by release tag.
 
 ## Updating existing installations
 
