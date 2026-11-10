@@ -115,20 +115,13 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 
 - `Added array key checks to prevent PHP warnings` ([commit](https://github.com/hschottm/tags/commit/9fde5ad783f40ecf59c7251d6db9ca577e2a430b)).
 - `Removed an unused function` ([commit](https://github.com/hschottm/tags/commit/1121e894441085336aa766d29c8847b5f08418b9)).
+- `Added default template variables to prevent crash in mod_tag_listbycategory` ([commit](https://github.com/hschottm/tags/commit/a72cec2d36d15f8653b200b04b5ada59a573f289)).
+- `Fixed error that can occur with PHP 8 when a value is too short` ([commit](https://github.com/hschottm/tags/commit/8d476987e16159f2cca7bebbc8a73a0cdfec5dfe)).
+- `Updated to Contao 4.13 FAQ list` ([commit](https://github.com/hschottm/tags/commit/2153603d1c27d3bb65b1306281a7b6b7056c74a5)).
 
 ### [4.9.13] - 2023-02-02
 
-- `Fixed parent call of getAllEvents and added missing $blnFeatured parameter` ([commit](https://github.com/hschottm/tags/commit/6301b7e9380aa4053565cdb9c845dc9e0f0ea1c2)).
-- `Fixed an issue that page metadata wasn't changed for event detail pages` ([commit](https://github.com/hschottm/tags/commit/d9e1700293a884d87cc4973c473fef3392bcff40)).
-- `Added default template variables to prevent crashes when using mod_tag_listbycategory` ([commit](https://github.com/hschottm/tags/commit/006fef7feec456cfac80b77286d37324427724ed)).
-- `Added missing SQL statement to FAQ tags` ([commit](https://github.com/hschottm/tags/commit/423ded4f4cc7db5a0c8a27a294a2a3f87ec510e7)).
-- `French translation (thanks to Renaud Kaczmarek)` ([commit](https://github.com/hschottm/tags/commit/85ce698960411c649eb27e89a50dc2e1b7b593b1)).
-- `Added first version of French translation` ([commit](https://github.com/hschottm/tags/commit/cbca490bf1e621e9208a5074d2f6bb8ffbb10730)).
-- `Added related class for chosen related tags in all tag clouds.` ([commit](https://github.com/hschottm/tags/commit/48ab98966d8b3ca7bcd4b7a6c648dbfd81a56331)).
-- `Fixed a critical error calling getFrontendUrl` ([commit](https://github.com/hschottm/tags/commit/ef759f02354437ff2a52f966d07063efd939e793)).
-- `Extended tags_used insert tag with a parameter that will be printed when tags are used` ([commit](https://github.com/hschottm/tags/commit/993056189cc1734594949b3edd6bfcff15d2788e)).
-- `Added missing tables tl_faq and tl_files to global tags settings` ([commit](https://github.com/hschottm/tags/commit/35817cdf44c6807154ee1ed91385bd54ee0a5c5a)).
-- `Fixed an error that can occur in PHP 8 when a value is too short` ([commit](https://github.com/hschottm/tags/commit/100a40177b9813c4c564c743bd02705724b149a1)).
+- Release integration snapshot with no additional non-merge commits since `4.9.12`.
 
 ### [4.9.12] - 2023-02-02
 
@@ -173,6 +166,7 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.9.3] - 2022-06-13
 
 - `Fixed error that can occur with PHP 8 when a value is too short` ([commit](https://github.com/hschottm/tags/commit/8d476987e16159f2cca7bebbc8a73a0cdfec5dfe)).
+- `Updated to Contao 4.13 FAQ list` ([commit](https://github.com/hschottm/tags/commit/2153603d1c27d3bb65b1306281a7b6b7056c74a5)).
 
 ### [4.9.2] - 2022-06-01
 
@@ -218,6 +212,17 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.6.5] - 2022-11-28
 
 - `Added default template variables to prevent crash with mod_tag_listbycategory` ([commit](https://github.com/hschottm/tags/commit/1d3dda1ecf032200c383be995eb1c17f4c2e22bc)).
+- `Merge changes from master` ([commit](https://github.com/hschottm/tags/commit/5c9637007bb9198bd3f958ba374b40dac5efe331)).
+- `Added french translation` ([commit](https://github.com/hschottm/tags/commit/77e67d2b088d8e8438832c62a1edb250a2cc38b2)).
+- `Fixed an error that can occur in PHP 8 when a value is too short` ([commit](https://github.com/hschottm/tags/commit/1207d4f016b1a5ca15e9ab15907b938a6ff8ff13)).
+- `Added fixes for Contao 4.9` ([commit](https://github.com/hschottm/tags/commit/f5f2ba657e549caa23b430cea4f066b20742fb17)).
+- `Fixed event reader crash by adding a private function from Contao source` ([commit](https://github.com/hschottm/tags/commit/a8029bfd42a200114c831e8f4f30cdf3797a8d5d)).
+- `Removed Contao 4.10 call` ([commit](https://github.com/hschottm/tags/commit/ef48b9040483f5a1e7ba686213361edfb78cb9dc)).
+- `Various compatibility fixes` ([commit](https://github.com/hschottm/tags/commit/a0c155f8a1cc1cfcf27893b090b605a1d8eed4d4)).
+- `Replaced non existing Contao 4.10 calls to encode ampersands with PHP calls` ([commit](https://github.com/hschottm/tags/commit/a36e01ee8e386f1f2b003301cbce201502f27cd1)).
+- `Added Contao version specific calls for Contao 4.9` ([commit](https://github.com/hschottm/tags/commit/10f1e053d85afc42eb6112b403911dca72f6ce9e)).
+- `Added Contao version specific calls for Contao 4.8` ([commit](https://github.com/hschottm/tags/commit/a94c49cf275526237f154be8aefca53a379afd3a)).
+- `Added Contao version specific calls for Contao 4.7` ([commit](https://github.com/hschottm/tags/commit/7a9d6e0dc33755eed3580f838429706143777232)).
 
 ### [4.6.4] - 2020-10-09
 
@@ -235,6 +240,11 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.6.1] - 2020-09-22
 
 - `Update getAllEvents parameter declaration` ([commit](https://github.com/hschottm/tags/commit/cce967b738fd0a7c3fe2fdd02a14e419f27773a1)).
+- `Update composer.json` ([commit](https://github.com/hschottm/tags/commit/0189d26615702c08b037993ed2198c8f821d955f)).
+- `Replace öäüß& in class names` ([commit](https://github.com/hschottm/tags/commit/f57957a558d1bd3ba2f8dc8023c77ba7cbe88853)).
+- `Replace all $objPage with correct page model object` ([commit](https://github.com/hschottm/tags/commit/2a172899adb11d7b498ff0b6032d9d6b454c288e)).
+- `Add helper method, to get page id of jumpTo or global objPage` ([commit](https://github.com/hschottm/tags/commit/cb140e323b5241baaab2914caa39ed6946b3c4dd)).
+- `Is this correct page object, or should it be tl_page.id = article.pid?` ([commit](https://github.com/hschottm/tags/commit/faf131e347fc824c30810b59836eedf90d385f5b)).
 
 ### [4.6.0] - 2020-09-14
 
@@ -277,6 +287,10 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.5.3] - 2020-09-23
 
 - `Various compatibility fixes` ([commit](https://github.com/hschottm/tags/commit/a0c155f8a1cc1cfcf27893b090b605a1d8eed4d4)).
+- `Replaced non existing Contao 4.10 calls to encode ampersands with PHP calls` ([commit](https://github.com/hschottm/tags/commit/a36e01ee8e386f1f2b003301cbce201502f27cd1)).
+- `Added Contao version specific calls for Contao 4.9` ([commit](https://github.com/hschottm/tags/commit/10f1e053d85afc42eb6112b403911dca72f6ce9e)).
+- `Added Contao version specific calls for Contao 4.8` ([commit](https://github.com/hschottm/tags/commit/a94c49cf275526237f154be8aefca53a379afd3a)).
+- `Added Contao version specific calls for Contao 4.7` ([commit](https://github.com/hschottm/tags/commit/7a9d6e0dc33755eed3580f838429706143777232)).
 
 ### [4.5.2] - 2020-09-22
 
@@ -289,6 +303,7 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 - `Replace all $objPage with correct page model object` ([commit](https://github.com/hschottm/tags/commit/2a172899adb11d7b498ff0b6032d9d6b454c288e)).
 - `Add helper method, to get page id of jumpTo or global objPage` ([commit](https://github.com/hschottm/tags/commit/cb140e323b5241baaab2914caa39ed6946b3c4dd)).
 - `Is this correct page object, or should it be tl_page.id = article.pid?` ([commit](https://github.com/hschottm/tags/commit/faf131e347fc824c30810b59836eedf90d385f5b)).
+- `Updated version requirements` ([commit](https://github.com/hschottm/tags/commit/b72c1df78d0d5ea60749e73086b317b7001eb44b)).
 
 ### [4.5.0] - 2020-09-15
 
@@ -363,14 +378,12 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.0.22] - 2020-09-15
 
 - `Replaced non existing Contao 4.10 calls with PHP calls` ([commit](https://github.com/hschottm/tags/commit/d6b8eefd095c1bd8023b39dd0e85e8034f12a46c)).
+- `Updated compatibility requirements` ([commit](https://github.com/hschottm/tags/commit/ec005f1a331a7b0ef8150d4895fcfa2d86104c43)).
+- `Updated function calls based on Contao 4.4` ([commit](https://github.com/hschottm/tags/commit/caa2305176ad8672b0cb4e1dfb8b7b90ba82ffff)).
 
 ### [4.0.21] - 2020-09-14
 
 - `Updated version requirements` ([commit](https://github.com/hschottm/tags/commit/b72c1df78d0d5ea60749e73086b317b7001eb44b)).
-- `Prevent 'Warning: count(): Parameter must be an array or an object that implements Countable'` ([commit](https://github.com/hschottm/tags/commit/e6a34a1d240d017915e60b9ad8b922ce98b16059)).
-- `https://github.com/hschottm/tags/issues/60` ([commit](https://github.com/hschottm/tags/commit/92952d8ee28ab6547e2dd1533fa69f2dd7fbd42f)).
-- `Fix addImageToTemplate for contao 4.10` ([commit](https://github.com/hschottm/tags/commit/529d38f914b5e333eabce78f9446540a502caadf)).
-- `Update ModuleTagCloud.php` ([commit](https://github.com/hschottm/tags/commit/8d39f8f47279f2c3835dc5be180a721b484d23c6)).
 
 ### [4.0.20] - 2020-09-14
 
@@ -383,10 +396,6 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.0.18] - 2020-09-14
 
 - `Added Contao version specific calls for Contao 4.7` ([commit](https://github.com/hschottm/tags/commit/7a9d6e0dc33755eed3580f838429706143777232)).
-- `Prevent 'Warning: count(): Parameter must be an array or an object that implements Countable'` ([commit](https://github.com/hschottm/tags/commit/e6a34a1d240d017915e60b9ad8b922ce98b16059)).
-- `https://github.com/hschottm/tags/issues/60` ([commit](https://github.com/hschottm/tags/commit/92952d8ee28ab6547e2dd1533fa69f2dd7fbd42f)).
-- `Fix addImageToTemplate for contao 4.10` ([commit](https://github.com/hschottm/tags/commit/529d38f914b5e333eabce78f9446540a502caadf)).
-- `Update ModuleTagCloud.php` ([commit](https://github.com/hschottm/tags/commit/8d39f8f47279f2c3835dc5be180a721b484d23c6)).
 
 ### [4.0.17] - 2020-09-14
 
@@ -395,10 +404,6 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 ### [4.0.16] - 2020-09-14
 
 - `Updated Contao version specific calls to Contao 4.5` ([commit](https://github.com/hschottm/tags/commit/4de7551ccf2e5c4de0b34af0473932a0f6e27dba)).
-- `Prevent 'Warning: count(): Parameter must be an array or an object that implements Countable'` ([commit](https://github.com/hschottm/tags/commit/e6a34a1d240d017915e60b9ad8b922ce98b16059)).
-- `https://github.com/hschottm/tags/issues/60` ([commit](https://github.com/hschottm/tags/commit/92952d8ee28ab6547e2dd1533fa69f2dd7fbd42f)).
-- `Fix addImageToTemplate for contao 4.10` ([commit](https://github.com/hschottm/tags/commit/529d38f914b5e333eabce78f9446540a502caadf)).
-- `Update ModuleTagCloud.php` ([commit](https://github.com/hschottm/tags/commit/8d39f8f47279f2c3835dc5be180a721b484d23c6)).
 
 ### [4.0.15] - 2020-09-14
 
@@ -518,7 +523,7 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 
 ### [3.4a] - 2015-12-29
 
-- `Removed templates` ([commit](https://github.com/hschottm/tags/commit/2e52fe0d998b0e65ea26a8b335566b4833c9d441)).
+- Release integration snapshot with no additional non-merge commits since `3.4.3`.
 
 ### [3.4.3] - 2026-11-10
 
@@ -543,6 +548,7 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 
 - `Update README.md` ([commit](https://github.com/hschottm/tags/commit/4956da0381ba5f09e4502e505d583ad2d5f7f7a2)).
 - `Changed maximum size of filter field from 255 to 1000 characters` ([commit](https://github.com/hschottm/tags/commit/82b92d555dc0c7c71b4ed431bc175110bbbf3a95)).
+- `Removed templates` ([commit](https://github.com/hschottm/tags/commit/2e52fe0d998b0e65ea26a8b335566b4833c9d441)).
 
 ### [3.4] - 2015-12-29
 
