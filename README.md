@@ -1,3 +1,5 @@
+![Contao Tags](logo.svg)
+
 # tags extension
 
 tags is a Contao extension that provides an architecture to tag any Contao element. It comes with a generalized database structure to save the tags and it can be used to visualize existing tags. tags also comes with ready-to-use tag support for Contao articles, news articles and calendar events.
@@ -252,3 +254,11 @@ Custom tag cloud styles should target `.toggle-button` instead of
 
 This extension is licensed under the GNU Lesser General Public License, version 3
 or (at your option) any later version (`LGPL-3.0-or-later`). See [LICENSE](LICENSE).
+
+## Package icon
+
+The scalable [logo.svg](logo.svg) shows two overlapping tags on an anthracite
+background with an orange corner, matching the extension family.
+For display in the Contao Manager, the logo is maintained separately in
+[contao/package-metadata](https://github.com/contao/package-metadata) under
+`meta/hschottm/tags/logo.svg`.
