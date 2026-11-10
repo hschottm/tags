@@ -1,3 +1,5 @@
+![Contao Tags](logo.svg)
+
 tags
 ====
 
@@ -251,3 +253,11 @@ Example:
 This creates a list of links to pages that is created from article tags. Only links to the selected website will be considered.
 
 ![Tag object list settings](https://cloud.githubusercontent.com/assets/873113/12077878/70aa1f88-b1f9-11e5-8a3e-5773eef28869.png)
+
+## Package icon
+
+The scalable [logo.svg](logo.svg) shows two overlapping tags on an anthracite
+background with an orange corner, matching the extension family.
+For display in the Contao Manager, the logo is maintained separately in
+[contao/package-metadata](https://github.com/contao/package-metadata) under
+`meta/hschottm/tags/logo.svg`.
