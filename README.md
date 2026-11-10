@@ -1,3 +1,5 @@
+![Contao Tags](logo.svg)
+
 Contao tags extension
 =====================
 
@@ -254,3 +256,11 @@ During the validation in the save process the tags module automatically saves th
 | isTag      | Count `integer`      |    The maximum number of tags that should be shown above the input field. This may be helpful if you have a large number of tags. If the maximum number is lower than the number of all tags, the component takes the tags with the most selections first and hides tags which are used rarely. |
 
 
+
+## Package icon
+
+The scalable [logo.svg](logo.svg) shows two overlapping tags on an anthracite
+background with an orange corner, matching the extension family.
+For display in the Contao Manager, the logo is maintained separately in
+[contao/package-metadata](https://github.com/contao/package-metadata) under
+`meta/hschottm/tags/logo.svg`.
