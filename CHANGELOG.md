@@ -8,6 +8,11 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 
 ## 5.1.x
 
+### [5.1.6] - 2026-11-11
+
+- Fixed frontend HTTP 500 errors in content-element tag clouds by removing two misplaced `array_push()` calls that accessed uninitialized variables.
+- Added regression coverage for public and preview mode, content selection, and empty/populated tag lists.
+
 ### [5.1.5] - 2026-11-10
 
 - Moved release history from the README into a complete, tag-based changelog.
@@ -40,6 +45,11 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 - Preserved existing tags and the database schema. Updated README compatibility and upgrade documentation.
 
 ## 5.0.x
+
+### [5.0.11] - 2026-11-11
+
+- Fixed frontend HTTP 500 errors in content-element tag clouds by removing two misplaced `array_push()` calls that accessed uninitialized variables.
+- Added regression coverage for public and preview mode, content selection, and empty/populated tag lists.
 
 ### [5.0.10] - 2026-11-10
 
@@ -744,3 +754,6 @@ Dates are taken from the tag metadata (or the commit date for lightweight tags).
 [3.4]: https://github.com/hschottm/tags/releases/tag/3.4
 [3.3.2]: https://github.com/hschottm/tags/releases/tag/3.3.2
 [3.3.1]: https://github.com/hschottm/tags/releases/tag/3.3.1
+
+[5.1.6]: https://github.com/hschottm/tags/releases/tag/5.1.6
+[5.0.11]: https://github.com/hschottm/tags/releases/tag/5.0.11

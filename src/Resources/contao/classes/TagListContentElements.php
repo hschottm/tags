@@ -115,7 +115,6 @@ class TagListContentElements extends TagList
 				if (!$showUnpublished) {
 					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND invisible<>1"  . " AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_content', time(), time());
-				\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
 				} else {
 					$objTags = Database::getInstance()->prepare("SELECT tag, COUNT(tag) as count FROM tl_tag, tl_content WHERE tl_tag.tid = tl_content.id AND from_table = ?" .  " AND tl_tag.tid IN (" . implode(',', $this->arrContentElements) . ") GROUP BY tag ORDER BY tag ASC")
 					->execute('tl_content');
@@ -168,7 +167,6 @@ class TagListContentElements extends TagList
 				->execute($time, $time)->fetchEach('id');
 			$this->arrContentElements = Database::getInstance()->prepare("SELECT id FROM tl_content WHERE pid IN (" . implode(',', $arrArticles) . ") " ." ORDER BY sorting")
 				->execute()->fetchEach('id');
-			\array_push($tags, array('tag_name' => $objTags->tag, 'tag_count' => $count));
 			} else {
 				$arrArticles = Database::getInstance()->prepare("SELECT id FROM tl_article WHERE pid IN (" . implode(',', $this->arrPages) . ") " . " AND (start='' OR start<?) AND (stop='' OR stop>?) AND published=1" . " ORDER BY sorting")
 				->execute($time, $time)->fetchEach('id');
